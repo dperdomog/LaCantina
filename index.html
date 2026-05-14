@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>La Cantina — Comunidad Deadlock LATAM</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    :root {
+      --bg:        #06070a;
+      --bg-panel:  #0d0f15;
+      --bg-raise:  #141823;
+      --ink:       #f1ede5;
+      --ink-dim:   rgba(241,237,229,0.55);
+      --ink-faint: rgba(241,237,229,0.22);
+      --rule:      rgba(241,237,229,0.08);
+      --rule-hi:   rgba(255,214,10,0.35);
+      --yellow:    #ffd60a;
+      --cyan:      #7fe3ff;
+      --pink:      #ff5e8a;
+      --green:     #3ddc84;
+      --red:       #ff3b30;
+      --f-display: 'Anton', Impact, sans-serif;
+      --f-body:    'Manrope', -apple-system, sans-serif;
+      --f-mono:    'IBM Plex Mono', monospace;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--f-body);
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    a { text-decoration: none; color: inherit; }
+    button { cursor: pointer; }
+    input, button { font-family: inherit; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg-panel); }
+    ::-webkit-scrollbar-thumb { background: var(--yellow); border-radius: 3px; }
+
+    /* ── Utility ── */
+    .mono {
+      font-family: var(--f-mono);
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-dim);
+    }
+    .display { font-family: var(--f-display); font-weight: 400; }
+
+    .pill {
+      font-family: var(--f-mono);
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      padding: 5px 9px;
+      border-radius: 99px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      line-height: 1;
+    }
+    .pill-outline { border: 1px solid currentColor; background: transparent; }
+    .pill-solid   { border: none; color: #0a0a0a; }
+
+    .dot {
+      display: inline-block;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+    }
+    .dot-anim { animation: pulse 1.8s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.35; } }
+
+    .rule-v { border-left: 1px solid var(--rule); }
+
+    /* ── Glow effect ── */
+    .glow-box {
+      box-shadow: 0 0 0 1px var(--rule-hi), 0 0 28px rgba(255,214,10,0.22), inset 0 0 20px rgba(255,214,10,0.04);
+    }
+
+    /* ── Ticker ── */
+    #ticker {
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--rule);
+      padding: 8px 56px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      font-family: var(--f-mono);
+      font-size: 11px;
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      overflow: hidden;
+    }
+    #ticker .live-dot { color: var(--green); display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+    #ticker .dimmed   { color: var(--ink-dim); white-space: nowrap; }
+    #ticker .ml-auto  { margin-left: auto; color: var(--ink-dim); white-space: nowrap; }
+
+    /* ── Navbar ── */
+    #navbar {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      padding: 18px 56px;
+      border-bottom: 1px solid var(--rule);
+      position: sticky;
+      top: 37px;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      background: rgba(6,7,10,0.85);
+    }
+    .nav-logo {
+      font-family: var(--f-display);
+      font-size: 30px;
+      line-height: 1;
+      letter-spacing: 0.02em;
+      color: var(--ink);
+      flex-shrink: 0;
+    }
+    .nav-logo .dot-y { color: var(--yellow); }
+    .nav-badge {
+      font-family: var(--f-mono);
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-dim);
+      padding: 3px 6px;
+      border: 1px solid var(--rule);
+    }
+    .nav-links { display: flex; gap: 26px; margin-left: 16px; list-style: none; }
+    .nav-links a {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink-dim);
+      padding-bottom: 4px;
+      border-bottom: 2px solid transparent;
+      transition: color .2s, border-color .2s;
+    }
+    .nav-links a.active, .nav-links a:hover { color: var(--ink); border-color: var(--yellow); }
+    .nav-right { margin-left: auto; display: flex; gap: 10px; align-items: center; }
+    .nav-search {
+      font-family: var(--f-mono);
+      font-size: 12px;
+      padding: 8px 12px;
+      background: var(--bg-panel);
+      border: 1px solid var(--rule);
+      color: var(--ink);
+      border-radius: 99px;
+      width: 220px;
+      outline: none;
+    }
+    .nav-search::placeholder { color: var(--ink-dim); }
+    .btn-ghost-sm {
+      font-size: 13px;
+      font-weight: 500;
+      background: transparent;
+      color: var(--ink);
+      border: 1px solid var(--rule);
+      padding: 9px 16px;
+      border-radius: 99px;
+      transition: border-color .2s;
+    }
+    .btn-ghost-sm:hover { border-color: var(--ink-dim); }
+    .btn-yellow {
+      font-size: 13px;
+      font-weight: 700;
+      background: var(--yellow);
+      color: #0a0a0a;
+      border: none;
+      padding: 9px 16px;
+      border-radius: 99px;
+      transition: opacity .2s, transform .15s;
+    }
+    .btn-yellow:hover { opacity: .9; transform: translateY(-1px); }
+    .btn-yellow-lg {
+      font-size: 15px;
+      font-weight: 700;
+      background: var(--yellow);
+      color: #0a0a0a;
+      border: none;
+      padding: 16px 24px;
+      border-radius: 99px;
+      box-shadow: 0 12px 32px rgba(255,214,10,0.32);
+      transition: opacity .2s, transform .15s, box-shadow .2s;
+    }
+    .btn-yellow-lg:hover { opacity: .9; transform: translateY(-2px); box-shadow: 0 16px 40px rgba(255,214,10,0.42); }
+    .btn-dark-lg {
+      font-size: 15px;
+      font-weight: 500;
+      background: rgba(255,255,255,0.04);
+      color: var(--ink);
+      border: 1px solid var(--rule);
+      padding: 16px 24px;
+      border-radius: 99px;
+      transition: background .2s;
+    }
+    .btn-dark-lg:hover { background: rgba(255,255,255,0.08); }
+
+    /* ── Nav mobile toggle ── */
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; padding: 4px; margin-left: auto; }
+    .nav-hamburger span { display: block; width: 22px; height: 2px; background: var(--ink); border-radius: 2px; }
+
+    /* ── Sections ── */
+    .section { padding: 96px 56px 0; }
+
+    .sec-label { color: var(--yellow); margin-bottom: 8px; display: block; }
+    .sec-title {
+      font-family: var(--f-display);
+      font-size: clamp(64px, 7vw, 96px);
+      line-height: 0.9;
+      color: var(--ink);
+      margin-top: 8px;
+    }
+    .sec-title .accent { color: var(--yellow); }
+
+    /* ── Hero ── */
+    #hero {
+      padding: 56px 56px 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-glow-r {
+      position: absolute; top: -160px; right: -200px;
+      width: 720px; height: 720px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,214,10,0.16), transparent 60%);
+      pointer-events: none;
+    }
+    .hero-glow-l {
+      position: absolute; bottom: -260px; left: -180px;
+      width: 640px; height: 640px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(127,227,255,0.07), transparent 60%);
+      pointer-events: none;
+    }
+    .hero-grid { display: grid; grid-template-columns: 8fr 4fr; gap: 56px; align-items: flex-end; position: relative; }
+    .hero-pills { display: flex; gap: 12px; align-items: center; }
+    .hero-h1 {
+      font-family: var(--f-display);
+      font-size: clamp(80px, 10.5vw, 148px);
+      line-height: 0.88;
+      margin: 24px 0 0;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+    }
+    .hero-h1 .accent-glow { color: var(--yellow); text-shadow: 0 0 32px rgba(255,214,10,0.4); }
+    .hero-sub { font-size: 18px; color: var(--ink-dim); max-width: 600px; margin-top: 24px; line-height: 1.5; }
+    .hero-ctas { display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap; }
+
+    /* Live card */
+    .live-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--rule-hi);
+      border-radius: 20px;
+      padding: 22px;
+    }
+    .live-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .live-card-match {
+      padding: 16px;
+      background: var(--bg-raise);
+      border-radius: 12px;
+    }
+    .match-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center; }
+    .team-logo {
+      width: 44px; height: 44px;
+      border-radius: 10px;
+      display: grid; place-items: center;
+      font-family: var(--f-mono);
+      font-size: 11px; font-weight: 700;
+      margin: 0 auto;
+    }
+    .team-score {
+      font-family: var(--f-display);
+      font-size: 38px;
+      color: var(--ink);
+      line-height: 1;
+      margin-top: 6px;
+      text-align: center;
+    }
+    .match-meta { font-family: var(--f-mono); font-size: 11px; color: var(--ink-dim); text-align: center; line-height: 1.5; }
+    .live-viewers {
+      margin-top: 12px;
+      padding: 12px;
+      background: var(--bg-raise);
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Stat bar */
+    .stat-bar {
+      margin-top: 64px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+    }
+    .stat-bar-item { padding: 28px 24px; }
+    .stat-bar-item + .stat-bar-item { border-left: 1px solid var(--rule); }
+    .stat-num {
+      font-family: var(--f-display);
+      font-size: clamp(40px, 4.5vw, 64px);
+      line-height: 1;
+      color: var(--ink);
+      letter-spacing: 0.01em;
+    }
+    .stat-num.green { color: var(--green); }
+
+    /* ── Live now ── */
+    .live-grid { display: grid; grid-template-columns: 7fr 5fr; gap: 24px; }
+    .stream-main {
+      background: var(--bg-panel);
+      border: 1px solid var(--rule);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .stream-thumb {
+      width: 100%; height: 360px;
+      background: var(--bg-panel);
+      background-image: repeating-linear-gradient(135deg, var(--rule) 0 1px, transparent 1px 14px);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      font-family: var(--f-mono); color: var(--ink-dim); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; gap: 8px;
+    }
+    .stream-main-body { padding: 22px; }
+    .stream-pills { display: flex; gap: 10px; margin-bottom: 10px; }
+    .stream-title { font-family: var(--f-display); font-size: 34px; line-height: 1; color: var(--ink); }
+    .stream-host { display: flex; gap: 12px; margin-top: 14px; align-items: center; }
+    .avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--yellow); display: grid; place-items: center;
+      font-family: var(--f-display); font-size: 16px; color: #0a0a0a;
+      flex-shrink: 0;
+    }
+
+    .streams-side { display: flex; flex-direction: column; gap: 12px; }
+    .stream-row {
+      display: grid; grid-template-columns: 140px 1fr; gap: 14px;
+      background: var(--bg-panel); border: 1px solid var(--rule);
+      border-radius: 12px; padding: 12px; align-items: center;
+    }
+    .stream-thumb-sm {
+      height: 80px; border-radius: 8px;
+      background: var(--bg-raise);
+      background-image: repeating-linear-gradient(135deg, var(--rule) 0 1px, transparent 1px 14px);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--f-mono); color: var(--ink-dim); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+    }
+
+    /* Match ticker */
+    .match-ticker {
+      background: var(--bg-panel);
+      border: 1px solid var(--rule);
+      border-radius: 12px; padding: 16px;
+      margin-top: 8px;
+    }
+    .match-row {
+      display: grid; grid-template-columns: 1fr auto 1fr 100px; gap: 8px;
+      align-items: center; padding: 10px 0;
+    }
+    .match-row + .match-row { border-top: 1px solid var(--rule); }
+    .match-team-a { font-family: var(--f-mono); font-size: 13px; color: var(--ink); font-weight: 600; }
+    .match-team-b { font-family: var(--f-mono); font-size: 13px; color: var(--ink); font-weight: 600; text-align: right; }
+    .match-score {
+      font-family: var(--f-display); font-size: 22px; color: var(--ink);
+      padding: 0 12px; background: var(--bg-raise); border-radius: 4px; line-height: 1.2; text-align: center;
+    }
+
+    /* ── Community ── */
+    .community-grid { display: grid; grid-template-columns: 7fr 5fr; gap: 48px; align-items: start; }
+    .feed-panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--rule);
+      border-radius: 16px; overflow: hidden;
+    }
+    .feed-row {
+      display: grid; grid-template-columns: 40px 1fr 100px; gap: 16px;
+      padding: 18px 22px; align-items: center;
+    }
+    .feed-row + .feed-row { border-top: 1px solid var(--rule); }
+    .feed-icon {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: var(--bg-raise);
+      display: grid; place-items: center;
+      font-family: var(--f-display); font-size: 16px;
+    }
+    .feed-text { font-size: 14px; color: var(--ink); line-height: 1.4; }
+    .feed-text .who { font-weight: 700; }
+    .feed-text .verb { color: var(--ink-dim); }
+    .feed-when { font-family: var(--f-mono); font-size: 11px; color: var(--ink-dim); text-align: right; letter-spacing: 0.1em; }
+
+    /* Discord widget */
+    .discord-widget {
+      background: var(--bg-panel); border: 1px solid var(--rule);
+      border-radius: 16px; padding: 22px;
+    }
+    .discord-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .discord-msg { font-size: 13px; color: var(--ink-dim); line-height: 1.4; margin-bottom: 10px; }
+    .discord-msg .user { font-weight: 700; }
+    .discord-msg .time { font-family: var(--f-mono); font-size: 10px; color: var(--ink-faint); margin-left: 8px; }
+
+    /* Player spotlight */
+    .spotlight {
+      border-radius: 16px; padding: 22px; margin-top: 18px;
+      background: linear-gradient(160deg, rgba(255,214,10,0.18), var(--bg-panel) 60%);
+      border: 1px solid var(--rule-hi);
+    }
+    .spotlight-inner { display: flex; gap: 16px; margin-top: 14px; align-items: center; }
+    .avatar-lg {
+      width: 88px; height: 88px; border-radius: 12px; flex-shrink: 0;
+      background: var(--bg-raise);
+      background-image: repeating-linear-gradient(135deg, var(--rule) 0 1px, transparent 1px 14px);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--f-mono); font-size: 11px; color: var(--ink-dim); letter-spacing: 0.16em;
+    }
+    .stats-row { display: flex; gap: 14px; margin-top: 12px; }
+    .stat-mini { }
+    .stat-mini-label { font-family: var(--f-mono); font-size: 9px; color: var(--ink-dim); text-transform: uppercase; letter-spacing: 0.14em; }
+    .stat-mini-val { font-family: var(--f-display); font-size: 20px; color: var(--yellow); line-height: 1; }
+
+    /* ── Events ── */
+    .events-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 24px; }
+    .events-cal-link { font-size: 14px; color: var(--ink); border-bottom: 1px solid var(--yellow); padding-bottom: 2px; }
+    .events-table { border-top: 1px solid var(--rule); }
+    .event-row {
+      display: grid;
+      grid-template-columns: 120px 1fr 160px 160px 140px 140px;
+      align-items: center; gap: 24px;
+      padding: 24px 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .event-date-box {
+      background: var(--bg-panel); border: 1px solid var(--rule);
+      border-radius: 8px; padding: 10px 14px; text-align: center;
+    }
+    .event-date-day { font-family: var(--f-display); font-size: 30px; color: var(--yellow); line-height: 1; }
+    .event-title-wrap { }
+    .event-pills { display: flex; gap: 10px; margin-bottom: 6px; }
+    .event-title-text { font-family: var(--f-display); font-size: 30px; line-height: 1; color: var(--ink); }
+    .event-field { }
+    .event-field-label { font-family: var(--f-mono); font-size: 10px; color: var(--ink-dim); letter-spacing: 0.14em; text-transform: uppercase; }
+    .event-field-val { font-size: 15px; font-weight: 600; color: var(--ink); margin-top: 4px; }
+    .event-prize { font-family: var(--f-display); font-size: 22px; color: var(--yellow); margin-top: 4px; line-height: 1; }
+    .btn-inscribir {
+      font-size: 13px; font-weight: 700;
+      background: var(--yellow); color: #0a0a0a;
+      border: none; padding: 12px 14px;
+      border-radius: 99px;
+      white-space: nowrap;
+      transition: opacity .2s, transform .15s;
+    }
+    .btn-inscribir:hover { opacity: .9; transform: translateY(-1px); }
+    .btn-inscribir:disabled {
+      background: var(--bg-raise); color: var(--ink-dim); cursor: not-allowed;
+    }
+
+    /* ── Results ── */
+    .results-grid { display: grid; grid-template-columns: 6fr 6fr; gap: 48px; align-items: start; }
+    .results-sec-title { font-family: var(--f-display); font-size: clamp(44px, 5vw, 64px); line-height: 0.9; color: var(--ink); margin: 8px 0 24px; }
+    .results-panel {
+      background: var(--bg-panel); border: 1px solid var(--rule);
+      border-radius: 14px; overflow: hidden;
+    }
+    .result-row {
+      display: grid; grid-template-columns: 1fr 70px 1fr 110px;
+      gap: 12px; padding: 16px 18px; align-items: center;
+    }
+    .result-row + .result-row { border-top: 1px solid var(--rule); }
+    .result-team { display: flex; align-items: center; gap: 10px; justify-content: flex-end; }
+    .result-team.left { flex-direction: row-reverse; justify-content: flex-end; }
+    .team-badge {
+      width: 28px; height: 28px; border-radius: 6px;
+      display: grid; place-items: center;
+      font-family: var(--f-mono); font-size: 9px; font-weight: 700;
+    }
+    .team-name { font-size: 13px; }
+    .result-score {
+      font-family: var(--f-display); font-size: 22px; color: var(--ink);
+      text-align: center; background: var(--bg-raise); border-radius: 4px; padding: 4px 0;
+    }
+
+    /* standings */
+    .standings-panel {
+      background: var(--bg-panel); border: 1px solid var(--rule);
+      border-radius: 14px; padding: 8px;
+    }
+    .standings-head {
+      display: grid; grid-template-columns: 40px 1fr 50px 50px 60px 60px;
+      gap: 12px; padding: 12px 16px;
+      border-bottom: 1px solid var(--rule);
+    }
+    .standings-row {
+      display: grid; grid-template-columns: 40px 1fr 50px 50px 60px 60px;
+      gap: 12px; padding: 14px 16px; align-items: center;
+      border-top: 1px solid var(--rule);
+    }
+    .standings-row.top1 { background: rgba(255,214,10,0.06); }
+    .rank-num { font-family: var(--f-display); font-size: 22px; line-height: 1; }
+    .standings-team { display: flex; gap: 10px; align-items: center; }
+    .streak-badge {
+      font-family: var(--f-mono); font-size: 10px;
+      padding: 3px 6px; border-radius: 99px;
+    }
+    .streak-w { background: rgba(61,220,132,0.16); color: var(--green); }
+    .streak-l { background: rgba(255,94,138,0.16); color: var(--pink); }
+
+    /* country bar */
+    .country-bar { margin-top: 18px; padding: 18px; background: var(--bg-panel); border: 1px solid var(--rule); border-radius: 14px; }
+    .country-row { display: grid; grid-template-columns: 36px 1fr 60px; gap: 12px; align-items: center; margin-top: 12px; }
+    .country-code { font-family: var(--f-mono); font-size: 11px; color: var(--ink); letter-spacing: 0.1em; }
+    .country-bar-track { height: 5px; background: var(--bg-raise); border-radius: 99px; margin-top: 4px; }
+    .country-bar-fill { height: 100%; background: var(--yellow); border-radius: 99px; }
+    .country-name { font-size: 12px; color: var(--ink-dim); }
+
+    /* ── Members ── */
+    .members-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; }
+    .member-card {
+      background: var(--bg-panel); border: 1px solid var(--rule);
+      border-radius: 14px; padding: 14px;
+      transition: border-color .22s, transform .22s;
+    }
+    .member-card:hover { border-color: rgba(255,214,10,0.35); transform: translateY(-3px); }
+    .member-thumb {
+      height: 130px; border-radius: 8px;
+      background: var(--bg-raise);
+      background-image: repeating-linear-gradient(135deg, var(--rule) 0 1px, transparent 1px 14px);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--f-mono); font-size: 11px; color: var(--ink-dim); letter-spacing: 0.16em; text-transform: uppercase;
+    }
+    .member-handle { font-family: var(--f-display); font-size: 22px; color: var(--ink); margin-top: 12px; line-height: 1; }
+    .member-meta { display: flex; justify-content: space-between; margin-top: 10px; align-items: center; }
+
+    /* Pillars */
+    .pillars-grid { margin-top: 80px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .pillar-card {
+      background: var(--bg-panel); border: 1px solid var(--rule);
+      border-radius: 16px; padding: 22px;
+      transition: border-color .22s;
+    }
+    .pillar-card:hover { border-color: rgba(255,214,10,0.35); }
+    .pillar-icon { font-family: var(--f-display); font-size: 32px; color: var(--yellow); }
+    .pillar-title { font-family: var(--f-display); font-size: 28px; color: var(--ink); margin-top: 10px; line-height: 1; }
+    .pillar-desc { font-size: 13px; color: var(--ink-dim); margin-top: 8px; line-height: 1.5; }
+
+    /* ── Closing ── */
+    .sponsors-bar {
+      padding: 32px 0;
+      border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+      display: flex; align-items: center; gap: 48px; flex-wrap: wrap;
+    }
+    .sponsor-name { font-family: var(--f-display); font-size: 26px; color: var(--ink-dim); letter-spacing: 0.04em; }
+    .cta-box {
+      margin-top: 80px; padding: 64px 48px;
+      background: radial-gradient(circle at 80% 0%, rgba(255,214,10,0.2), transparent 50%), var(--bg-panel);
+      border-radius: 24px; border: 1px solid var(--rule-hi);
+      display: grid; grid-template-columns: 7fr 5fr; gap: 48px; align-items: center;
+    }
+    .cta-title {
+      font-family: var(--f-display);
+      font-size: clamp(80px, 8.5vw, 120px);
+      line-height: 0.86; color: var(--ink); margin: 12px 0 0; letter-spacing: -0.01em;
+    }
+    .cta-title .accent { color: var(--yellow); }
+    .cta-sub { font-size: 17px; color: var(--ink-dim); max-width: 480px; margin-top: 20px; }
+    .cta-form { display: flex; flex-direction: column; gap: 12px; }
+    .cta-input {
+      padding: 16px; background: var(--bg-raise);
+      border: 1px solid var(--rule); color: var(--ink);
+      font-family: var(--f-mono); font-size: 14px; border-radius: 8px; outline: none;
+      transition: border-color .2s;
+    }
+    .cta-input::placeholder { color: var(--ink-dim); }
+    .cta-input:focus { border-color: var(--rule-hi); }
+    .btn-cta {
+      padding: 18px; background: var(--yellow); color: #0a0a0a;
+      border: none; font-size: 14px; font-weight: 700;
+      border-radius: 99px;
+      box-shadow: 0 12px 24px rgba(255,214,10,0.35);
+      transition: opacity .2s, transform .15s;
+    }
+    .btn-cta:hover { opacity: .9; transform: translateY(-2px); }
+    .btn-discord-outline {
+      padding: 14px; background: transparent; color: var(--ink);
+      border: 1px solid var(--rule); font-size: 13px; font-weight: 600;
+      border-radius: 99px; transition: border-color .2s;
+    }
+    .btn-discord-outline:hover { border-color: var(--ink-dim); }
+
+    /* Footer */
+    .site-footer {
+      margin-top: 64px; padding-top: 32px;
+      border-top: 1px solid var(--rule);
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
+    }
+    .footer-left { display: flex; align-items: center; gap: 24px; }
+    .footer-logo { font-family: var(--f-display); font-size: 24px; color: var(--ink); }
+    .footer-links { display: flex; gap: 18px; }
+
+    /* ── Responsive ── */
+    @media (max-width: 1100px) {
+      .hero-grid       { grid-template-columns: 1fr; }
+      .live-grid       { grid-template-columns: 1fr; }
+      .community-grid  { grid-template-columns: 1fr; }
+      .results-grid    { grid-template-columns: 1fr; }
+      .members-grid    { grid-template-columns: repeat(3, 1fr); }
+      .pillars-grid    { grid-template-columns: repeat(2, 1fr); }
+      .cta-box         { grid-template-columns: 1fr; }
+      .stat-bar        { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 900px) {
+      #ticker, #navbar, .section, #hero { padding-left: 24px; padding-right: 24px; }
+      .event-row { grid-template-columns: 1fr 1fr; }
+      .events-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+    }
+    @media (max-width: 720px) {
+      .nav-links, .nav-right, .nav-badge { display: none; }
+      .nav-hamburger { display: flex; }
+      .members-grid   { grid-template-columns: repeat(2, 1fr); }
+      .pillars-grid   { grid-template-columns: 1fr; }
+      .stat-bar       { grid-template-columns: repeat(2, 1fr); }
+      .hero-h1        { font-size: 64px; }
+      .sec-title      { font-size: 56px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══ LIVE TICKER ═══ -->
+  <div id="ticker">
+    <span class="live-dot"><span class="dot" style="background:var(--green)" id="live-dot"></span> 3 partidas en vivo</span>
+    <span class="dimmed">· ACE 2-1 CTL (J14)</span>
+    <span class="dimmed">· TGO 1-0 PMA</span>
+    <span class="dimmed">· @malaleche subió a Phantom · hace 12m</span>
+    <span class="ml-auto">12,840 miembros · 1,420 en línea</span>
+  </div>
+
+  <!-- ═══ NAVBAR ═══ -->
+  <nav id="navbar">
+    <div class="nav-logo">LA<span class="dot-y">·</span>CANTINA</div>
+    <span class="nav-badge mono">DEADLOCK · LATAM</span>
+    <ul class="nav-links">
+      <li><a href="#" class="active">Comunidad</a></li>
+      <li><a href="#live">En vivo</a></li>
+      <li><a href="#events">Torneos</a></li>
+      <li><a href="#results">Liga</a></li>
+      <li><a href="#members">Equipos</a></li>
+      <li><a href="#closing">Academia</a></li>
+    </ul>
+    <div class="nav-right">
+      <input class="nav-search" placeholder="Buscar jugador, equipo..." />
+      <button class="btn-ghost-sm">Entrar</button>
+      <button class="btn-yellow">Unirme</button>
+    </div>
+    <button class="nav-hamburger" id="navHamburger" aria-label="Menú">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Mobile nav -->
+  <div id="mobileNav" style="display:none; flex-direction:column; background:rgba(6,7,10,0.98); border-bottom:1px solid var(--rule); padding:16px 24px 24px; gap:4px; position:sticky; top:105px; z-index:99;">
+    <a href="#" style="color:var(--ink-dim); padding:12px 0; font-size:1.1rem; border-bottom:1px solid var(--rule);">Comunidad</a>
+    <a href="#live" style="color:var(--ink-dim); padding:12px 0; font-size:1.1rem; border-bottom:1px solid var(--rule);">En vivo</a>
+    <a href="#events" style="color:var(--ink-dim); padding:12px 0; font-size:1.1rem; border-bottom:1px solid var(--rule);">Torneos</a>
+    <a href="#results" style="color:var(--ink-dim); padding:12px 0; font-size:1.1rem; border-bottom:1px solid var(--rule);">Liga</a>
+    <a href="#members" style="color:var(--ink-dim); padding:12px 0; font-size:1.1rem;">Equipos</a>
+  </div>
+
+  <main>
+    <!-- ═══ HERO ═══ -->
+    <section id="hero">
+      <div class="hero-glow-r"></div>
+      <div class="hero-glow-l"></div>
+
+      <div class="hero-grid">
+        <!-- Left -->
+        <div>
+          <div class="hero-pills">
+            <span class="pill pill-solid" style="background:var(--green);">
+              <span class="dot dot-anim" style="background:#fff;"></span>COMUNIDAD ACTIVA
+            </span>
+            <span class="mono">Hub Deadlock · 9 países · Hecho en LATAM</span>
+          </div>
+
+          <h1 class="hero-h1">
+            <span style="display:block;">EL HOGAR</span>
+            <span style="display:block;">DEL DEADLOCK</span>
+            <span class="accent-glow" style="display:block;">EN ESPAÑOL.</span>
+          </h1>
+
+          <p class="hero-sub">
+            Discord activo 24/7, torneos cada semana, liga oficial con playoffs presenciales en CDMX y la base de datos más completa de jugadores LATAM. Gratis, en español, para siempre.
+          </p>
+
+          <div class="hero-ctas">
+            <button class="btn-yellow-lg">Únete al Discord ↗</button>
+            <button class="btn-dark-lg">Crear cuenta gratis</button>
+          </div>
+        </div>
+
+        <!-- Live match card -->
+        <div class="live-card glow-box">
+          <div class="live-card-header">
+            <span class="pill pill-solid" style="background:var(--pink);">
+              <span class="dot dot-anim" style="background:#fff;"></span>EN VIVO
+            </span>
+            <span class="mono">actualizado 3s</span>
+          </div>
+          <div class="display" style="font-size:36px; line-height:1;">LIGA · J14</div>
+          <span class="mono" style="margin-top:4px; display:block;">Los Aces vs Cartel Gaming · BO3</span>
+
+          <div class="live-card-match">
+            <div class="match-grid">
+              <div>
+                <div class="team-logo" style="background:var(--yellow); color:#0a0a0a;">ACE</div>
+                <div class="team-score">2</div>
+              </div>
+              <div class="match-meta">BO3<br />G3 · 12:48</div>
+              <div>
+                <div class="team-logo" style="background:var(--bg-panel); border:1px solid var(--rule); color:var(--ink);">CTL</div>
+                <div class="team-score">1</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="live-viewers">
+            <span class="mono" style="color:var(--green); display:flex; align-items:center; gap:6px;">
+              <span class="dot dot-anim" style="background:var(--green);"></span>2,148 viendo
+            </span>
+            <span class="mono" style="color:var(--yellow);">@malaleche · Twitch</span>
+          </div>
+
+          <button class="btn-yellow" style="width:100%; margin-top:12px; padding:12px; font-size:13px; font-weight:700; border-radius:99px;">Mirar ahora →</button>
+        </div>
+      </div>
+
+      <!-- Stat bar -->
+      <div class="stat-bar">
+        <div class="stat-bar-item">
+          <div class="stat-num">12,840</div>
+          <span class="mono" style="margin-top:8px; display:block;">jugadores</span>
+        </div>
+        <div class="stat-bar-item">
+          <div class="stat-num green">1,420</div>
+          <span class="mono" style="margin-top:8px; display:block;">en línea ahora</span>
+        </div>
+        <div class="stat-bar-item">
+          <div class="stat-num">9</div>
+          <span class="mono" style="margin-top:8px; display:block;">países LATAM</span>
+        </div>
+        <div class="stat-bar-item">
+          <div class="stat-num">384</div>
+          <span class="mono" style="margin-top:8px; display:block;">partidas / mes</span>
+        </div>
+        <div class="stat-bar-item">
+          <div class="stat-num">$48.5K</div>
+          <span class="mono" style="margin-top:8px; display:block;">premios T4</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ EN VIVO ═══ -->
+    <section class="section" id="live">
+      <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:24px; flex-wrap:wrap; gap:12px;">
+        <div>
+          <span class="mono sec-label">// EN VIVO AHORA</span>
+          <h2 class="sec-title">La cantina <span class="accent">está</span> abierta.</h2>
+        </div>
+        <span class="mono">actualizado cada 30s</span>
+      </div>
+
+      <div class="live-grid">
+        <!-- Featured stream -->
+        <div class="stream-main">
+          <div class="stream-thumb">
+            <span>[ malaleche · stream principal ]</span>
+            <span style="font-size:9px; opacity:.7;">ranked grind a phantom · q&a abierta</span>
+          </div>
+          <div class="stream-main-body">
+            <div class="stream-pills">
+              <span class="pill pill-solid" style="background:var(--pink);">
+                <span class="dot dot-anim" style="background:#fff;"></span>LIVE
+              </span>
+              <span class="pill pill-outline" style="color:var(--cyan);">2,148 viewers</span>
+              <span class="pill pill-outline" style="color:var(--green);">1h 14m</span>
+            </div>
+            <div class="stream-title">Ranked grind a Phantom · Q&A abierta</div>
+            <div class="stream-host">
+              <div class="avatar">ML</div>
+              <div>
+                <div style="font-size:14px; font-weight:600; color:var(--ink);">@malaleche · Los Aces · Carry</div>
+                <span class="mono">14.3K seguidores · ES-MX</span>
+              </div>
+              <button class="btn-yellow" style="margin-left:auto; padding:10px 16px;">Mirar →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Side -->
+        <div class="streams-side">
+          <!-- Stream rows -->
+          <div class="stream-row">
+            <div class="stream-thumb-sm">[ @cafeconleche.cl ]</div>
+            <div>
+              <div style="display:flex; gap:8px; margin-bottom:6px;">
+                <span class="pill pill-solid" style="background:var(--pink); font-size:10px;"><span class="dot dot-anim" style="background:#fff;"></span>LIVE</span>
+                <span class="mono">814 · ES-CL</span>
+              </div>
+              <div style="font-size:13px; font-weight:600; color:var(--ink); line-height:1.3;">Review draft Liga · Jornada 6</div>
+              <span class="mono" style="margin-top:4px; display:block;">@cafeconleche.cl</span>
+            </div>
+          </div>
+          <div class="stream-row">
+            <div class="stream-thumb-sm">[ @el_tata ]</div>
+            <div>
+              <div style="display:flex; gap:8px; margin-bottom:6px;">
+                <span class="pill pill-solid" style="background:var(--pink); font-size:10px;"><span class="dot dot-anim" style="background:#fff;"></span>LIVE</span>
+                <span class="mono">432 · ES-AR</span>
+              </div>
+              <div style="font-size:13px; font-weight:600; color:var(--ink); line-height:1.3;">Coaching abierto — push timings</div>
+              <span class="mono" style="margin-top:4px; display:block;">@el_tata</span>
+            </div>
+          </div>
+          <div class="stream-row">
+            <div class="stream-thumb-sm">[ @reina.colombia ]</div>
+            <div>
+              <div style="display:flex; gap:8px; margin-bottom:6px;">
+                <span class="pill pill-solid" style="background:var(--pink); font-size:10px;"><span class="dot dot-anim" style="background:#fff;"></span>LIVE</span>
+                <span class="mono">1,206 · ES-CO</span>
+              </div>
+              <div style="font-size:13px; font-weight:600; color:var(--ink); line-height:1.3;">Smurf hunting + tier list parche 4.2</div>
+              <span class="mono" style="margin-top:4px; display:block;">@reina.colombia</span>
+            </div>
+          </div>
+
+          <!-- Match ticker -->
+          <div class="match-ticker">
+            <span class="mono" style="color:var(--yellow);">PARTIDAS EN CURSO</span>
+            <div class="match-row">
+              <div class="match-team-a">ACE</div>
+              <div class="match-score">2-1</div>
+              <div class="match-team-b">CTL</div>
+              <span class="mono" style="color:var(--pink); text-align:right;">Liga J14</span>
+            </div>
+            <div class="match-row">
+              <div class="match-team-a">TGO</div>
+              <div class="match-score">1-0</div>
+              <div class="match-team-b">PMA</div>
+              <span class="mono" style="color:var(--pink); text-align:right;">Liga J14</span>
+            </div>
+            <div class="match-row">
+              <div class="match-team-a">TQB</div>
+              <div class="match-score">0-0</div>
+              <div class="match-team-b">CAF</div>
+              <span class="mono" style="color:var(--cyan); text-align:right;">Pre-game</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ COMUNIDAD ═══ -->
+    <section class="section" id="community">
+      <div class="community-grid">
+        <!-- Feed -->
+        <div>
+          <span class="mono sec-label">// LATIDO DE LA COMUNIDAD</span>
+          <h2 class="sec-title">Lo que pasa <span class="accent">hoy</span>.</h2>
+          <div class="feed-panel" style="margin-top:28px;">
+            <div class="feed-row">
+              <div class="feed-icon" style="border:1px solid rgba(61,220,132,.35); color:var(--green);">↑</div>
+              <div class="feed-text"><span class="who">@reina.colombia</span> <span class="verb">subió de rango a</span> <span style="color:var(--green); font-weight:600;">Ritualist</span></div>
+              <div class="feed-when">hace 4m</div>
+            </div>
+            <div class="feed-row">
+              <div class="feed-icon" style="border:1px solid rgba(255,214,10,.35); color:var(--yellow);">+</div>
+              <div class="feed-text"><span class="who">@el_tata</span> <span class="verb">creó torneo</span> <span style="color:var(--yellow); font-weight:600;">Noche de Stack · vie</span></div>
+              <div class="feed-when">hace 12m</div>
+            </div>
+            <div class="feed-row">
+              <div class="feed-icon" style="border:1px solid rgba(127,227,255,.35); color:var(--cyan);">⇄</div>
+              <div class="feed-text"><span class="who">Pumas Esports</span> <span class="verb">fichó a</span> <span style="color:var(--cyan); font-weight:600;">@volcán</span></div>
+              <div class="feed-when">hace 28m</div>
+            </div>
+            <div class="feed-row">
+              <div class="feed-icon" style="border:1px solid rgba(255,94,138,.35); color:var(--pink);">▶</div>
+              <div class="feed-text"><span class="who">@cafetero</span> <span class="verb">publicó VOD</span> <span style="color:var(--pink); font-weight:600;">Cómo leer rotaciones a Phantom</span></div>
+              <div class="feed-when">hace 1h</div>
+            </div>
+            <div class="feed-row">
+              <div class="feed-icon" style="border:1px solid rgba(61,220,132,.35); color:var(--green);">✓</div>
+              <div class="feed-text"><span class="who">Cartel Gaming</span> <span class="verb">cerró roster T4</span> <span style="color:var(--green); font-weight:600;">5/5 confirmados</span></div>
+              <div class="feed-when">hace 2h</div>
+            </div>
+            <div class="feed-row">
+              <div class="feed-icon" style="border:1px solid rgba(255,214,10,.35); color:var(--yellow);">☆</div>
+              <div class="feed-text"><span class="who">@malaleche</span> <span class="verb">abrió coaching 1:1</span> <span style="color:var(--yellow); font-weight:600;">3 horarios disponibles</span></div>
+              <div class="feed-when">hace 3h</div>
+            </div>
+            <div class="feed-row">
+              <div class="feed-icon" style="border:1px solid rgba(255,214,10,.35); color:var(--yellow);">★</div>
+              <div class="feed-text"><span class="who">@tata_ar</span> <span class="verb">ganó Open Mic</span> <span style="color:var(--yellow); font-weight:600;">$3,500 MXN</span></div>
+              <div class="feed-when">hace 5h</div>
+            </div>
+            <div class="feed-row">
+              <div class="feed-icon" style="border:1px solid rgba(127,227,255,.35); color:var(--cyan);">+</div>
+              <div class="feed-text"><span class="who">@pampa_99</span> <span class="verb">se unió a</span> <span style="color:var(--cyan); font-weight:600;">Pampa Wolves</span></div>
+              <div class="feed-when">hace 6h</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Discord + spotlight -->
+        <div style="display:flex; flex-direction:column; gap:18px;">
+          <div class="discord-widget">
+            <div class="discord-header">
+              <span class="pill pill-outline" style="color:var(--cyan);">DISCORD · #general</span>
+              <span class="mono" style="color:var(--green); display:flex; align-items:center; gap:6px;">
+                <span class="dot dot-anim" style="background:var(--green);"></span>1,420 en línea
+              </span>
+            </div>
+            <div class="discord-msg">
+              <span class="user" style="color:var(--yellow);">@malaleche</span>
+              <span class="time">hace 1m</span>
+              <div>alguien quiere stack ranked? phantom-arcanist</div>
+            </div>
+            <div class="discord-msg">
+              <span class="user" style="color:var(--green);">@reina</span>
+              <span class="time">hace 2m</span>
+              <div>voy ya</div>
+            </div>
+            <div class="discord-msg">
+              <span class="user" style="color:var(--pink);">@el_tata</span>
+              <span class="time">hace 3m</span>
+              <div>@everyone — noche de scrims el viernes, anótense en #scrims-friday 🍻</div>
+            </div>
+            <div class="discord-msg">
+              <span class="user" style="color:var(--cyan);">@pampa_99</span>
+              <span class="time">hace 4m</span>
+              <div>nuevo VOD de cafetero, está buenísimo el call de wave 14</div>
+            </div>
+            <div class="discord-msg" style="margin-bottom:0;">
+              <span class="user" style="color:var(--ink);">@volcán</span>
+              <span class="time">hace 5m</span>
+              <div>GG a los aces, intratables en casa</div>
+            </div>
+            <button class="btn-yellow" style="width:100%; margin-top:16px; padding:12px; font-size:13px; font-weight:700; border-radius:99px;">Únete al Discord ↗</button>
+          </div>
+
+          <!-- Player of the week -->
+          <div class="spotlight glow-box">
+            <span class="mono" style="color:var(--yellow);">★ JUGADOR DE LA SEMANA</span>
+            <div class="spotlight-inner">
+              <div class="avatar-lg">[ ML ]</div>
+              <div>
+                <div class="display" style="font-size:44px; color:var(--ink); line-height:1;">@malaleche</div>
+                <span class="mono" style="margin-top:4px; display:block;">Los Aces · Carry · MX</span>
+                <div class="stats-row">
+                  <div class="stat-mini"><div class="stat-mini-label">KDA</div><div class="stat-mini-val">4.2</div></div>
+                  <div class="stat-mini"><div class="stat-mini-label">WR</div><div class="stat-mini-val">82%</div></div>
+                  <div class="stat-mini"><div class="stat-mini-label">Rango</div><div class="stat-mini-val" style="font-size:15px;">Phantom</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ EVENTOS ═══ -->
+    <section class="section" id="events">
+      <div class="events-header">
+        <div>
+          <span class="mono sec-label">// PRÓXIMOS EVENTOS</span>
+          <h2 class="sec-title">La cartelera de <span class="accent">la semana</span>.</h2>
+        </div>
+        <a href="#" class="events-cal-link">Calendario completo →</a>
+      </div>
+
+      <div class="events-table">
+        <!-- Row: Copa Cantina -->
+        <div class="event-row">
+          <div class="event-date-box">
+            <div class="mono">SÁB</div>
+            <div class="event-date-day">23</div>
+            <div class="mono">MAY</div>
+          </div>
+          <div class="event-title-wrap">
+            <div class="event-pills">
+              <span class="pill pill-outline" style="color:var(--green);">Inscripciones</span>
+              <span class="mono">LATAM</span>
+            </div>
+            <div class="event-title-text">Copa Cantina · Apertura</div>
+          </div>
+          <div class="event-field">
+            <div class="event-field-label">HORA</div>
+            <div class="event-field-val">20:00 GMT-6</div>
+          </div>
+          <div class="event-field">
+            <div class="event-field-label">FORMATO</div>
+            <div class="event-field-val" style="font-size:13px;">6v6 · Single Elim</div>
+            <span class="mono" style="margin-top:2px; display:block;">32 equipos</span>
+          </div>
+          <div class="event-field">
+            <div class="event-field-label">PREMIO</div>
+            <div class="event-prize">$25,000 MXN</div>
+          </div>
+          <button class="btn-inscribir">Inscribirme →</button>
+        </div>
+
+        <!-- Row: Showdown -->
+        <div class="event-row">
+          <div class="event-date-box">
+            <div class="mono">VIE</div>
+            <div class="event-date-day">29</div>
+            <div class="mono">MAY</div>
+          </div>
+          <div class="event-title-wrap">
+            <div class="event-pills">
+              <span class="pill pill-outline" style="color:var(--green);">Inscripciones</span>
+              <span class="mono">MX · CO · AR</span>
+            </div>
+            <div class="event-title-text">Showdown Nocturno</div>
+          </div>
+          <div class="event-field">
+            <div class="event-field-label">HORA</div>
+            <div class="event-field-val">22:00 GMT-6</div>
+          </div>
+          <div class="event-field">
+            <div class="event-field-label">FORMATO</div>
+            <div class="event-field-val" style="font-size:13px;">6v6 · Doble Elim</div>
+            <span class="mono" style="margin-top:2px; display:block;">16 equipos</span>
+          </div>
+          <div class="event-field">
+            <div class="event-field-label">PREMIO</div>
+            <div class="event-prize">$8,000 MXN</div>
+          </div>
+          <button class="btn-inscribir">Inscribirme →</button>
+        </div>
+
+        <!-- Row: Liga (live) -->
+        <div class="event-row">
+          <div class="event-date-box">
+            <div class="mono">DOM</div>
+            <div class="event-date-day">31</div>
+            <div class="mono">MAY</div>
+          </div>
+          <div class="event-title-wrap">
+            <div class="event-pills">
+              <span class="pill pill-solid" style="background:var(--pink);"><span class="dot dot-anim" style="background:#fff;"></span>LIVE</span>
+              <span class="mono">LATAM</span>
+            </div>
+            <div class="event-title-text">Liga Cantina · Jornada 7</div>
+          </div>
+          <div class="event-field">
+            <div class="event-field-label">HORA</div>
+            <div class="event-field-val">19:00 GMT-6</div>
+          </div>
+          <div class="event-field">
+            <div class="event-field-label">FORMATO</div>
+            <div class="event-field-val" style="font-size:13px;">Round Robin</div>
+            <span class="mono" style="margin-top:2px; display:block;">8 equipos</span>
+          </div>
+          <div class="event-field">
+            <div class="event-field-label">PREMIO</div>
+            <div class="event-prize" style="font-size:16px;">Puntos liga</div>
+          </div>
+          <button class="btn-inscribir" disabled>En curso</button>
+        </div>
+
+        <!-- Row: Open Mic -->
+        <div class="event-row">
+          <div class="event-date-box">
+            <div class="mono">MIÉ</div>
+            <div class="event-date-day">03</div>
+            <div class="mono">JUN</div>
+          </div>
+          <div class="event-title-wrap">
+            <div class="event-pills">
+              <span class="pill pill-outline" style="color:var(--green);">Inscripciones</span>
+              <span class="mono">LATAM</span>
+            </div>
+            <div class="event-title-text">Open Mic — Noche de Stack</div>
+          </div>
+          <div class="event-field">
+            <div class="event-field-label">HORA</div>
+            <div class="event-field-val">21:00 GMT-6</div>
+          </div>
+          <div class="event-field">
+            <div class="event-field-label">FORMATO</div>
+            <div class="event-field-val" style="font-size:13px;">Stack Open</div>
+            <span class="mono" style="margin-top:2px; display:block;">48 equipos</span>
+          </div>
+          <div class="event-field">
+            <div class="event-field-label">PREMIO</div>
+            <div class="event-prize">$3,500 MXN</div>
+          </div>
+          <button class="btn-inscribir">Inscribirme →</button>
+        </div>
+
+        <!-- Row: Copa Femenil -->
+        <div class="event-row">
+          <div class="event-date-box">
+            <div class="mono">SÁB</div>
+            <div class="event-date-day">06</div>
+            <div class="mono">JUN</div>
+          </div>
+          <div class="event-title-wrap">
+            <div class="event-pills">
+              <span class="pill pill-outline" style="color:var(--cyan);">Pronto</span>
+              <span class="mono">LATAM</span>
+            </div>
+            <div class="event-title-text">Copa Femenil Cantina</div>
+          </div>
+          <div class="event-field">
+            <div class="event-field-label">HORA</div>
+            <div class="event-field-val">20:00 GMT-6</div>
+          </div>
+          <div class="event-field">
+            <div class="event-field-label">FORMATO</div>
+            <div class="event-field-val" style="font-size:13px;">6v6 · Single Elim</div>
+            <span class="mono" style="margin-top:2px; display:block;">16 equipos</span>
+          </div>
+          <div class="event-field">
+            <div class="event-field-label">PREMIO</div>
+            <div class="event-prize">$12,000 MXN</div>
+          </div>
+          <button class="btn-inscribir" disabled>Próximamente</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ RESULTADOS + STANDINGS ═══ -->
+    <section class="section" id="results">
+      <div class="results-grid">
+        <!-- Results -->
+        <div>
+          <span class="mono sec-label" style="color:var(--yellow);">// RESULTADOS · ÚLTIMAS 24H</span>
+          <h2 class="results-sec-title">Lo que pasó anoche.</h2>
+          <div class="results-panel">
+            <div class="result-row">
+              <div class="result-team">
+                <span class="team-name" style="font-weight:700; color:var(--ink);">Los Aces</span>
+                <div class="team-badge" style="background:var(--yellow); color:#0a0a0a;">ACE</div>
+              </div>
+              <div class="result-score">3–1</div>
+              <div class="result-team left">
+                <div class="team-badge" style="background:var(--bg-raise); color:var(--ink-dim);">CTL</div>
+                <span class="team-name" style="color:var(--ink-dim);">Cartel Gaming</span>
+              </div>
+              <span class="mono" style="text-align:right;">hace 2h</span>
+            </div>
+            <div class="result-row">
+              <div class="result-team">
+                <span class="team-name" style="font-weight:700; color:var(--ink);">Tango Royals</span>
+                <div class="team-badge" style="background:var(--yellow); color:#0a0a0a;">TGO</div>
+              </div>
+              <div class="result-score">3–0</div>
+              <div class="result-team left">
+                <div class="team-badge" style="background:var(--bg-raise); color:var(--ink-dim);">MAR</div>
+                <span class="team-name" style="color:var(--ink-dim);">Mariachi Five</span>
+              </div>
+              <span class="mono" style="text-align:right;">hace 4h</span>
+            </div>
+            <div class="result-row">
+              <div class="result-team">
+                <span class="team-name" style="color:var(--ink-dim);">Pumas Esports</span>
+                <div class="team-badge" style="background:var(--bg-raise); color:var(--ink-dim);">PMA</div>
+              </div>
+              <div class="result-score">2–3</div>
+              <div class="result-team left">
+                <div class="team-badge" style="background:var(--yellow); color:#0a0a0a;">CAF</div>
+                <span class="team-name" style="font-weight:700; color:var(--ink);">Cafetero Squad</span>
+              </div>
+              <span class="mono" style="color:var(--pink); text-align:right;">UPSET</span>
+            </div>
+            <div class="result-row">
+              <div class="result-team">
+                <span class="team-name" style="font-weight:700; color:var(--ink);">Tequila Bandits</span>
+                <div class="team-badge" style="background:var(--yellow); color:#0a0a0a;">TQB</div>
+              </div>
+              <div class="result-score">3–2</div>
+              <div class="result-team left">
+                <div class="team-badge" style="background:var(--bg-raise); color:var(--ink-dim);">PMP</div>
+                <span class="team-name" style="color:var(--ink-dim);">Pampa Wolves</span>
+              </div>
+              <span class="mono" style="text-align:right;">hace 6h</span>
+            </div>
+            <div class="result-row">
+              <div class="result-team">
+                <span class="team-name" style="color:var(--ink-dim);">ML mix</span>
+                <div class="team-badge" style="background:var(--bg-raise); color:var(--ink-dim);">ML</div>
+              </div>
+              <div class="result-score">1–2</div>
+              <div class="result-team left">
+                <div class="team-badge" style="background:var(--yellow); color:#0a0a0a;">TT</div>
+                <span class="team-name" style="font-weight:700; color:var(--ink);">tata mix</span>
+              </div>
+              <span class="mono" style="text-align:right;">hace 12h</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Standings + country -->
+        <div>
+          <span class="mono sec-label" style="color:var(--yellow);">// TABLA · TEMPORADA 4</span>
+          <h2 class="results-sec-title">La clasificación.</h2>
+          <div class="standings-panel">
+            <div class="standings-head">
+              <span class="mono">#</span>
+              <span class="mono">EQUIPO</span>
+              <span class="mono" style="text-align:right;">W</span>
+              <span class="mono" style="text-align:right;">L</span>
+              <span class="mono" style="text-align:right;">PTS</span>
+              <span class="mono" style="text-align:right;">RACHA</span>
+            </div>
+            <!-- rank 1 -->
+            <div class="standings-row top1">
+              <div class="rank-num" style="color:var(--yellow);">01</div>
+              <div class="standings-team">
+                <div class="team-badge" style="background:var(--yellow); color:#0a0a0a; width:30px; height:30px; border-radius:6px;">ACE</div>
+                <div>
+                  <div style="font-size:13px; font-weight:600; color:var(--ink);">Los Aces</div>
+                  <span class="mono" style="font-size:10px;">MX</span>
+                </div>
+              </div>
+              <div style="font-family:var(--f-mono); color:var(--ink); text-align:right;">12</div>
+              <div style="font-family:var(--f-mono); color:var(--ink-dim); text-align:right;">2</div>
+              <div class="display" style="font-size:18px; color:var(--ink); text-align:right;">36</div>
+              <div style="text-align:right;"><span class="streak-badge streak-w">W5</span></div>
+            </div>
+            <div class="standings-row">
+              <div class="rank-num" style="color:var(--yellow);">02</div>
+              <div class="standings-team">
+                <div class="team-badge" style="background:var(--bg-raise); border:1px solid var(--rule); color:var(--ink); width:30px; height:30px; border-radius:6px;">CTL</div>
+                <div>
+                  <div style="font-size:13px; font-weight:600; color:var(--ink);">Cartel Gaming</div>
+                  <span class="mono" style="font-size:10px;">CO</span>
+                </div>
+              </div>
+              <div style="font-family:var(--f-mono); color:var(--ink); text-align:right;">11</div>
+              <div style="font-family:var(--f-mono); color:var(--ink-dim); text-align:right;">3</div>
+              <div class="display" style="font-size:18px; color:var(--ink); text-align:right;">33</div>
+              <div style="text-align:right;"><span class="streak-badge streak-w">W3</span></div>
+            </div>
+            <div class="standings-row">
+              <div class="rank-num" style="color:var(--yellow);">03</div>
+              <div class="standings-team">
+                <div class="team-badge" style="background:var(--bg-raise); border:1px solid var(--rule); color:var(--ink); width:30px; height:30px; border-radius:6px;">PMA</div>
+                <div>
+                  <div style="font-size:13px; font-weight:600; color:var(--ink);">Pumas Esports</div>
+                  <span class="mono" style="font-size:10px;">MX</span>
+                </div>
+              </div>
+              <div style="font-family:var(--f-mono); color:var(--ink); text-align:right;">10</div>
+              <div style="font-family:var(--f-mono); color:var(--ink-dim); text-align:right;">4</div>
+              <div class="display" style="font-size:18px; color:var(--ink); text-align:right;">30</div>
+              <div style="text-align:right;"><span class="streak-badge streak-l">L1</span></div>
+            </div>
+            <div class="standings-row">
+              <div class="rank-num">04</div>
+              <div class="standings-team">
+                <div class="team-badge" style="background:var(--bg-raise); border:1px solid var(--rule); color:var(--ink); width:30px; height:30px; border-radius:6px;">TGO</div>
+                <div>
+                  <div style="font-size:13px; font-weight:600; color:var(--ink);">Tango Royals</div>
+                  <span class="mono" style="font-size:10px;">AR</span>
+                </div>
+              </div>
+              <div style="font-family:var(--f-mono); color:var(--ink); text-align:right;">9</div>
+              <div style="font-family:var(--f-mono); color:var(--ink-dim); text-align:right;">5</div>
+              <div class="display" style="font-size:18px; color:var(--ink); text-align:right;">27</div>
+              <div style="text-align:right;"><span class="streak-badge streak-w">W2</span></div>
+            </div>
+            <div class="standings-row">
+              <div class="rank-num">05</div>
+              <div class="standings-team">
+                <div class="team-badge" style="background:var(--bg-raise); border:1px solid var(--rule); color:var(--ink); width:30px; height:30px; border-radius:6px;">TQB</div>
+                <div>
+                  <div style="font-size:13px; font-weight:600; color:var(--ink);">Tequila Bandits</div>
+                  <span class="mono" style="font-size:10px;">MX</span>
+                </div>
+              </div>
+              <div style="font-family:var(--f-mono); color:var(--ink); text-align:right;">8</div>
+              <div style="font-family:var(--f-mono); color:var(--ink-dim); text-align:right;">6</div>
+              <div class="display" style="font-size:18px; color:var(--ink); text-align:right;">24</div>
+              <div style="text-align:right;"><span class="streak-badge streak-w">W1</span></div>
+            </div>
+            <div class="standings-row">
+              <div class="rank-num">06</div>
+              <div class="standings-team">
+                <div class="team-badge" style="background:var(--bg-raise); border:1px solid var(--rule); color:var(--ink); width:30px; height:30px; border-radius:6px;">CAF</div>
+                <div>
+                  <div style="font-size:13px; font-weight:600; color:var(--ink);">Cafetero Squad</div>
+                  <span class="mono" style="font-size:10px;">CO</span>
+                </div>
+              </div>
+              <div style="font-family:var(--f-mono); color:var(--ink); text-align:right;">7</div>
+              <div style="font-family:var(--f-mono); color:var(--ink-dim); text-align:right;">7</div>
+              <div class="display" style="font-size:18px; color:var(--ink); text-align:right;">21</div>
+              <div style="text-align:right;"><span class="streak-badge streak-l">L2</span></div>
+            </div>
+          </div>
+
+          <!-- Country leaderboard -->
+          <div class="country-bar">
+            <span class="mono">POR PAÍS · JUGADORES EN LIGA</span>
+            <div class="country-row">
+              <span class="country-code">MX</span>
+              <div>
+                <div class="country-name">México</div>
+                <div class="country-bar-track"><div class="country-bar-fill" style="width:100%;"></div></div>
+              </div>
+              <span style="font-family:var(--f-mono); font-size:12px; color:var(--ink); text-align:right;">5,840</span>
+            </div>
+            <div class="country-row">
+              <span class="country-code">CO</span>
+              <div>
+                <div class="country-name">Colombia</div>
+                <div class="country-bar-track"><div class="country-bar-fill" style="width:50%;"></div></div>
+              </div>
+              <span style="font-family:var(--f-mono); font-size:12px; color:var(--ink); text-align:right;">2,940</span>
+            </div>
+            <div class="country-row">
+              <span class="country-code">AR</span>
+              <div>
+                <div class="country-name">Argentina</div>
+                <div class="country-bar-track"><div class="country-bar-fill" style="width:37%;"></div></div>
+              </div>
+              <span style="font-family:var(--f-mono); font-size:12px; color:var(--ink); text-align:right;">2,160</span>
+            </div>
+            <div class="country-row">
+              <span class="country-code">CL</span>
+              <div>
+                <div class="country-name">Chile</div>
+                <div class="country-bar-track"><div class="country-bar-fill" style="width:17%;"></div></div>
+              </div>
+              <span style="font-family:var(--f-mono); font-size:12px; color:var(--ink); text-align:right;">980</span>
+            </div>
+            <div class="country-row">
+              <span class="country-code">PE</span>
+              <div>
+                <div class="country-name">Perú</div>
+                <div class="country-bar-track"><div class="country-bar-fill" style="width:9%;"></div></div>
+              </div>
+              <span style="font-family:var(--f-mono); font-size:12px; color:var(--ink); text-align:right;">540</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ MIEMBROS ═══ -->
+    <section class="section" id="members">
+      <span class="mono sec-label">// MIEMBROS DESTACADOS</span>
+      <h2 class="sec-title">Caras de <span class="accent">la casa</span>.</h2>
+
+      <div class="members-grid" style="margin-top:32px;">
+        <div class="member-card">
+          <div class="member-thumb">MX</div>
+          <div class="member-handle">@malaleche</div>
+          <span class="mono" style="margin-top:4px; display:block;">Los Aces</span>
+          <div class="member-meta">
+            <span style="font-family:var(--f-mono); font-size:11px; color:var(--yellow);">KDA 4.2</span>
+            <span class="mono" style="font-size:10px;">Carry</span>
+          </div>
+        </div>
+        <div class="member-card">
+          <div class="member-thumb">AR</div>
+          <div class="member-handle">@tata_ar</div>
+          <span class="mono" style="margin-top:4px; display:block;">Tango Royals</span>
+          <div class="member-meta">
+            <span style="font-family:var(--f-mono); font-size:11px; color:var(--yellow);">KDA 3.1</span>
+            <span class="mono" style="font-size:10px;">Initiator</span>
+          </div>
+        </div>
+        <div class="member-card">
+          <div class="member-thumb">CO</div>
+          <div class="member-handle">@cafetero</div>
+          <span class="mono" style="margin-top:4px; display:block;">Cartel Gaming</span>
+          <div class="member-meta">
+            <span style="font-family:var(--f-mono); font-size:11px; color:var(--yellow);">KDA 3.8</span>
+            <span class="mono" style="font-size:10px;">Mid</span>
+          </div>
+        </div>
+        <div class="member-card">
+          <div class="member-thumb">CO</div>
+          <div class="member-handle">@reina</div>
+          <span class="mono" style="margin-top:4px; display:block;">Cartel Gaming</span>
+          <div class="member-meta">
+            <span style="font-family:var(--f-mono); font-size:11px; color:var(--yellow);">KDA 5.4</span>
+            <span class="mono" style="font-size:10px;">Support</span>
+          </div>
+        </div>
+        <div class="member-card">
+          <div class="member-thumb">AR</div>
+          <div class="member-handle">@pampa</div>
+          <span class="mono" style="margin-top:4px; display:block;">Pampa Wolves</span>
+          <div class="member-meta">
+            <span style="font-family:var(--f-mono); font-size:11px; color:var(--yellow);">KDA 2.9</span>
+            <span class="mono" style="font-size:10px;">Anchor</span>
+          </div>
+        </div>
+        <div class="member-card">
+          <div class="member-thumb">MX</div>
+          <div class="member-handle">@pumamx</div>
+          <span class="mono" style="margin-top:4px; display:block;">Pumas Esports</span>
+          <div class="member-meta">
+            <span style="font-family:var(--f-mono); font-size:11px; color:var(--yellow);">KDA 4.0</span>
+            <span class="mono" style="font-size:10px;">Carry</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pillars -->
+      <div class="pillars-grid">
+        <div class="pillar-card">
+          <div class="pillar-icon">◆</div>
+          <div class="pillar-title">Discord 24/7</div>
+          <p class="pillar-desc">Chat activo, scrim-finder, mod-team latam, canales por país.</p>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-icon">✦</div>
+          <div class="pillar-title">Liga oficial</div>
+          <p class="pillar-desc">16 equipos, 18 jornadas, playoffs presenciales en CDMX.</p>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-icon">◇</div>
+          <div class="pillar-title">Torneos abiertos</div>
+          <p class="pillar-desc">Sin filtros: open mics, copas femenil, noche de stack.</p>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-icon">✱</div>
+          <div class="pillar-title">Academia LATAM</div>
+          <p class="pillar-desc">Cursos en español, coaches de la región, sesiones 1:1.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ CIERRE ═══ -->
+    <section class="section" id="closing" style="padding-bottom:64px;">
+      <!-- Sponsors -->
+      <div class="sponsors-bar">
+        <span class="mono" style="flex-shrink:0;">CON EL APOYO DE</span>
+        <span class="sponsor-name">CHILLI MX</span>
+        <span class="sponsor-name">MATÉ.AR</span>
+        <span class="sponsor-name">MAS-3</span>
+        <span class="sponsor-name">TINTO_CO</span>
+        <span class="sponsor-name">BARRIO</span>
+        <span class="sponsor-name">NORTE99</span>
+        <span class="sponsor-name">LOTERÍA</span>
+        <span class="sponsor-name">ARCADE_MX</span>
+      </div>
+
+      <!-- CTA -->
+      <div class="cta-box glow-box">
+        <div>
+          <span class="mono" style="color:var(--yellow);">BIENVENIDA A LA CASA</span>
+          <h2 class="cta-title">PASA,<br /><span class="accent">ESTAMOS</span><br />EN ALGO.</h2>
+          <p class="cta-sub">12,840 jugadores, 9 países, miles de partidas cada mes. Únete gratis y arma equipo en menos de 5 minutos.</p>
+        </div>
+        <form class="cta-form" onsubmit="return false;">
+          <span class="mono">EMPIEZA EN 30 SEGUNDOS</span>
+          <input class="cta-input" placeholder="tu.gamertag" type="text" />
+          <input class="cta-input" placeholder="correo@dominio.com" type="email" />
+          <button class="btn-cta">CREAR CUENTA GRATIS →</button>
+          <button type="button" class="btn-discord-outline">Unirme al Discord ↗</button>
+        </form>
+      </div>
+
+      <!-- Footer -->
+      <footer class="site-footer">
+        <div class="footer-left">
+          <div class="footer-logo">LA<span style="color:var(--yellow);">·</span>CANTINA</div>
+          <span class="mono">© 2026 · COMUNIDAD LATAM · HECHO EN MX/AR/CO</span>
+        </div>
+        <div class="footer-links">
+          <span class="mono" style="color:var(--ink);">Discord ↗</span>
+          <span class="mono" style="color:var(--ink);">Twitch ↗</span>
+          <span class="mono" style="color:var(--ink);">X ↗</span>
+          <span class="mono" style="color:var(--ink);">Instagram ↗</span>
+          <span class="mono" style="color:var(--ink);">YouTube ↗</span>
+        </div>
+      </footer>
+    </section>
+  </main>
+
+  <script>
+    // ── Mobile nav toggle ──
+    const hamburger = document.getElementById('navHamburger');
+    const mobileNav = document.getElementById('mobileNav');
+    hamburger.addEventListener('click', () => {
+      const open = mobileNav.style.display === 'flex';
+      mobileNav.style.display = open ? 'none' : 'flex';
+    });
+    mobileNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => { mobileNav.style.display = 'none'; }));
+
+    // ── Live ticker dot pulse ──
+    const liveDot = document.getElementById('live-dot');
+    if (liveDot) {
+      liveDot.style.animation = 'pulse 1.8s ease-in-out infinite';
+    }
+
+    // ── Reveal on scroll ──
+    const revealEls = document.querySelectorAll('.member-card, .pillar-card, .feed-panel, .discord-widget, .spotlight, .stream-main, .stream-row, .match-ticker, .standings-panel, .results-panel, .country-bar, .cta-box');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.style.opacity = '1';
+          e.target.style.transform = 'translateY(0)';
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    revealEls.forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(24px)';
+      el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      observer.observe(el);
+    });
+
+    // ── Stat counter animation ──
+    function animateCounter(el, target, suffix = '') {
+      const duration = 1800;
+      const start = performance.now();
+      const isFloat = String(target).includes('.');
+      const update = (now) => {
+        const t = Math.min((now - start) / duration, 1);
+        const ease = 1 - Math.pow(1 - t, 3);
+        const val = ease * target;
+        el.textContent = (isFloat ? val.toFixed(1) : Math.floor(val).toLocaleString('es-MX')) + suffix;
+        if (t < 1) requestAnimationFrame(update);
+        else el.textContent = (isFloat ? target.toFixed(1) : Number(target).toLocaleString('es-MX')) + suffix;
+      };
+      requestAnimationFrame(update);
+    }
+
+    const statBar = document.querySelector('.stat-bar');
+    let statAnimated = false;
+    if (statBar) {
+      const statObs = new IntersectionObserver(([entry]) => {
+        if (entry.isIntersecting && !statAnimated) {
+          statAnimated = true;
+          const nums = statBar.querySelectorAll('.stat-num');
+          const targets = [12840, 1420, 9, 384];
+          nums.forEach((el, i) => {
+            if (i < targets.length) animateCounter(el, targets[i]);
+          });
+          statObs.disconnect();
+        }
+      }, { threshold: 0.3 });
+      statObs.observe(statBar);
+    }
+
+    // ── Active nav link on scroll ──
+    const sections = document.querySelectorAll('section[id]');
+    const navAs = document.querySelectorAll('.nav-links a[href^="#"]');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(sec => {
+        if (window.scrollY >= sec.offsetTop - 120) current = sec.id;
+      });
+      navAs.forEach(a => {
+        const isActive = a.getAttribute('href') === '#' + current;
+        a.style.color = isActive ? 'var(--ink)' : '';
+        a.style.borderColor = isActive ? 'var(--yellow)' : 'transparent';
+      });
+    }, { passive: true });
+  </script>
+</body>
+</html>

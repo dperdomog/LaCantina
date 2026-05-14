@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: #0d0f15; }
+::-webkit-scrollbar-thumb { background: #ffd60a; border-radius: 3px; }
+
+/* ── Display font helper ── */
+.font-display {
+  font-family: var(--font-anton), Impact, sans-serif;
+  font-weight: 400;
+}
+
+/* ── Mono label ── */
+.mono-label {
+  font-family: var(--font-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(241,237,229,0.55);
+}
+
+/* ── Gradient text (amarillo → cyan) ── */
+.gradient-text {
+  background: linear-gradient(135deg, #ffd60a, #ffe566 60%, #7fe3ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Yellow glow box ── */
+.glow-yellow {
+  box-shadow: 0 0 0 1px rgba(255,214,10,0.35),
+              0 0 28px rgba(255,214,10,0.22),
+              inset 0 0 20px rgba(255,214,10,0.04);
+}
+
+/* ── Pill base ── */
+.pill {
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 5px 9px;
+  border-radius: 99px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1;
+}
+
+/* ── Dot indicator ── */
+.dot-live {
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  animation: pulse 1.8s ease-in-out infinite;
+}
+
+/* ── Reveal animation ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.65s ease, transform 0.65s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Progress bar fill ── */
+.bar-fill {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #ffd60a, #ffe566);
+  border-radius: 6px;
+  transition: width 1.2s ease;
+}
+
+/* ── Form inputs ── */
+.field {
+  width: 100%;
+  background: #141823;
+  border: 1px solid rgba(241,237,229,0.08);
+  border-radius: 8px;
+  padding: 14px 16px;
+  color: #f1ede5;
+  font-family: var(--font-mono), monospace;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.field:focus {
+  border-color: rgba(255,214,10,0.35);
+  box-shadow: 0 0 0 3px rgba(255,214,10,0.1);
+}
+.field::placeholder { color: rgba(241,237,229,0.35); }
+.field option { background: #141823; }
