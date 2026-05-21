@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { notFound } from 'next/navigation';
 import InviteButton from '@/components/InviteButton';
+import CopyButton from '@/components/CopyButton';
 
 const ROLE_COLORS = {
   Carry: 'text-yellow border-yellow/40 bg-yellow/10',
@@ -130,6 +131,23 @@ export default async function JugadorPage({ params }) {
                 </a>
               : <p className="text-ink-dim text-[13px]">Sin perfil vinculado.</p>
             }
+          </div>
+
+          {/* Contacto */}
+          <div className="bg-[#0d0f15] border border-[rgba(241,237,229,0.08)] rounded-[16px] p-5 sm:col-span-2">
+            <span className="mono-label text-yellow block mb-3">// CONTACTO</span>
+            {profile.discord_username ? (
+              <div className="flex items-center justify-between gap-4 flex-wrap">
+                <div>
+                  <p className="mono-label text-[10px] mb-1">Discord</p>
+                  <p className="text-ink text-[18px] font-semibold">@{profile.discord_username}</p>
+                  <p className="text-ink-dim text-[12px] mt-0.5">Buscá este usuario en Discord para contactarlo</p>
+                </div>
+                <CopyButton text={profile.discord_username} />
+              </div>
+            ) : (
+              <p className="text-ink-dim text-[13px]">Este jugador no tiene usuario de Discord registrado.</p>
+            )}
           </div>
 
         </div>
