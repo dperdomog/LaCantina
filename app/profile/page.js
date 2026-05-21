@@ -4,6 +4,7 @@ import StatlockerForm from '@/components/StatlockerForm';
 import TeamRoleForm from '@/components/TeamRoleForm';
 import TeamSection from '@/components/TeamSection';
 import InvitationsSection from '@/components/InvitationsSection';
+import UsernameForm from '@/components/UsernameForm';
 
 export const metadata = { title: 'Mi Perfil — La Cantina' };
 
@@ -106,20 +107,11 @@ export default async function ProfilePage() {
           {/* StatLocker */}
           <StatlockerForm initialUrl={profile?.statlocker_url ?? null} />
 
-          {/* Identidad + Contacto lado a lado */}
-          <div className="bg-[#0d0f15] border border-[rgba(241,237,229,0.08)] rounded-[16px] p-5">
-            <span className="mono-label text-yellow block mb-3">// IDENTIDAD</span>
-            <dl className="flex flex-col gap-3">
-              <div>
-                <dt className="mono-label text-[10px] mb-0.5">Display name</dt>
-                <dd className="text-ink text-[15px] font-semibold">{displayName ?? '—'}</dd>
-              </div>
-              <div>
-                <dt className="mono-label text-[10px] mb-0.5">Username</dt>
-                <dd className="text-ink text-[15px]">{username ? `@${username}` : '—'}</dd>
-              </div>
-            </dl>
-          </div>
+          {/* Identidad — editable */}
+          <UsernameForm
+            initialDisplayName={profile?.display_name ?? null}
+            discordName={username ?? null}
+          />
 
           <div className="bg-[#0d0f15] border border-[rgba(241,237,229,0.08)] rounded-[16px] p-5">
             <span className="mono-label text-yellow block mb-3">// CONTACTO</span>

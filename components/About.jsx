@@ -44,6 +44,7 @@ export default function About() {
       <div className="max-w-[1160px] mx-auto">
         {/* Header */}
         <div className="text-center max-w-[640px] mx-auto mb-16 reveal">
+          <img src="/lclogobarras.png" alt="La Cantina" className="h-20 w-auto mx-auto mb-6" />
           <span className="mono-label text-yellow">// QUIÉNES SOMOS</span>
           <h2 className="font-display text-[clamp(48px,6vw,80px)] leading-[0.9] mt-3 text-ink">
             LA <span className="gradient-text">CANTINA</span><br />ES TU CASA.
