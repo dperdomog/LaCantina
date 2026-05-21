@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function UsernameForm({ initialDisplayName, discordUsername }) {
+  const router = useRouter();
   const [value,   setValue]   = useState(initialDisplayName ?? '');
   const [status,  setStatus]  = useState(null); // 'saving' | 'saved' | 'error'
   const [msg,     setMsg]     = useState('');
@@ -24,8 +26,11 @@ export default function UsernameForm({ initialDisplayName, discordUsername }) {
       setMsg(json.error ?? 'Error al guardar');
     } else {
       setStatus('saved');
-      setMsg('Guardado — recargá la página para ver el cambio');
-      setTimeout(() => setStatus(null), 3000);
+      setMsg('¡Guardado!');
+      // Refrescar los datos del server component para que el nombre
+      // se actualice en la cabecera sin recargar toda la página
+      router.refresh();
+      setTimeout(() => setStatus(null), 2500);
     }
   }
 
@@ -71,8 +76,8 @@ export default function UsernameForm({ initialDisplayName, discordUsername }) {
       {/* Discord handle — solo lectura, para poder agregar al jugador */}
       {discordUsername && (
         <div className="mt-4 pt-4 border-t border-[rgba(241,237,229,0.06)]">
-          <dt className="mono-label text-[10px] mb-1">Discord</dt>
-          <dd className="flex items-center gap-2">
+          <p className="mono-label text-[10px] mb-1">Usuario de Discord</p>
+          <div className="flex items-center gap-2">
             <span className="text-ink text-[14px] font-semibold">@{discordUsername}</span>
             <button
               type="button"
@@ -81,7 +86,7 @@ export default function UsernameForm({ initialDisplayName, discordUsername }) {
             >
               Copiar
             </button>
-          </dd>
+          </div>
         </div>
       )}
     </div>

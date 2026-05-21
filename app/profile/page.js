@@ -16,12 +16,16 @@ export default async function ProfilePage() {
   const { data: profile } = await supabase
     .from('profiles').select('*').eq('id', user.id).single();
 
-  const meta         = user.user_metadata ?? {};
-  const avatarUrl    = profile?.avatar_url  ?? meta.avatar_url;
-  const bannerUrl    = profile?.banner_url;
-  const username     = profile?.discord_username ?? meta.user_name;
-  const displayName  = profile?.display_name ?? meta.full_name;
-  const email        = profile?.email ?? user.email;
+  const meta            = user.user_metadata ?? {};
+  const discordIdentity = user.identities?.find(i => i.provider === 'discord');
+  const avatarUrl       = profile?.avatar_url ?? meta.avatar_url;
+  const bannerUrl       = profile?.banner_url;
+  const username        = profile?.discord_username
+                        || meta.user_name
+                        || discordIdentity?.identity_data?.user_name
+                        || null;
+  const displayName     = profile?.display_name ?? meta.full_name;
+  const email           = profile?.email ?? user.email;
 
   // Equipo actual
   const { data: membership } = await supabase
@@ -110,7 +114,7 @@ export default async function ProfilePage() {
           {/* Identidad — editable */}
           <UsernameForm
             initialDisplayName={profile?.display_name ?? null}
-            discordUsername={profile?.discord_username ?? meta.user_name ?? null}
+            discordUsername={username ?? null}
           />
 
           <div className="bg-[#0d0f15] border border-[rgba(241,237,229,0.08)] rounded-[16px] p-5">

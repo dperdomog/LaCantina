@@ -18,11 +18,15 @@ export async function POST(request) {
     return NextResponse.json({ error: 'El nombre no puede superar 32 caracteres' }, { status: 400 });
   }
 
-  const updates = {
-    team_name:   team_name?.trim() || null,
-    player_role: player_role || null,
-  };
-  if (display_name !== undefined) updates.display_name = display_name;
+  // Solo actualizar los campos que vienen explícitamente en el body
+  const updates = {};
+  if (team_name   !== undefined) updates.team_name   = team_name?.trim()  || null;
+  if (player_role !== undefined) updates.player_role = player_role        || null;
+  if (display_name !== undefined) updates.display_name = display_name     || null;
+
+  if (Object.keys(updates).length === 0) {
+    return NextResponse.json({ error: 'Nada que actualizar' }, { status: 400 });
+  }
 
   const { error } = await supabase
     .from('profiles')
