@@ -22,8 +22,9 @@ export default function Navbar() {
   const pathname = usePathname();
   const isHome = pathname === '/';
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [user,     setUser]     = useState(null);
-  const [isAdmin,  setIsAdmin]  = useState(false);
+  const [user,        setUser]        = useState(null);
+  const [isAdmin,     setIsAdmin]     = useState(false);
+  const [displayName, setDisplayName] = useState(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -33,10 +34,11 @@ export default function Navbar() {
       if (u) {
         const { data: profile } = await supabase
           .from('profiles')
-          .select('is_admin')
+          .select('is_admin, display_name')
           .eq('id', u.id)
           .single();
         setIsAdmin(profile?.is_admin ?? false);
+        setDisplayName(profile?.display_name ?? null);
       }
     });
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
@@ -108,9 +110,7 @@ export default function Navbar() {
                     </div>
                   )}
                   <span className="mono-label hidden md:block group-hover:text-yellow transition-colors">
-                    {user.user_metadata?.user_name
-                      ? `@${user.user_metadata.user_name}`
-                      : (user.user_metadata?.full_name ?? user.email)}
+                    {displayName ?? user.user_metadata?.full_name ?? user.email}
                   </span>
                 </a>
                 {isAdmin && (

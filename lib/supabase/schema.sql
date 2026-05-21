@@ -53,7 +53,8 @@ BEGIN
   ON CONFLICT (id) DO UPDATE SET
     discord_id       = EXCLUDED.discord_id,
     discord_username = EXCLUDED.discord_username,
-    display_name     = EXCLUDED.display_name,
+    -- Preservar nombre personalizado: solo actualizar si el usuario no tiene uno propio
+    display_name     = COALESCE(profiles.display_name, EXCLUDED.display_name),
     avatar_url       = EXCLUDED.avatar_url,
     banner_url       = EXCLUDED.banner_url,
     email            = EXCLUDED.email,

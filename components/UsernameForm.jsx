@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-export default function UsernameForm({ initialDisplayName, discordName }) {
+export default function UsernameForm({ initialDisplayName, discordUsername }) {
   const [value,   setValue]   = useState(initialDisplayName ?? '');
   const [status,  setStatus]  = useState(null); // 'saving' | 'saved' | 'error'
   const [msg,     setMsg]     = useState('');
@@ -24,8 +24,8 @@ export default function UsernameForm({ initialDisplayName, discordName }) {
       setMsg(json.error ?? 'Error al guardar');
     } else {
       setStatus('saved');
-      setMsg('Guardado');
-      setTimeout(() => setStatus(null), 2500);
+      setMsg('Guardado — recargá la página para ver el cambio');
+      setTimeout(() => setStatus(null), 3000);
     }
   }
 
@@ -43,12 +43,12 @@ export default function UsernameForm({ initialDisplayName, discordName }) {
             type="text"
             value={value}
             onChange={e => setValue(e.target.value)}
-            placeholder={discordName ?? 'Tu nombre en Discord'}
+            placeholder="Tu nombre en La Cantina"
             maxLength={32}
             className="w-full bg-[#06070a] border border-[rgba(241,237,229,0.10)] rounded-[10px] px-3 py-2 text-ink text-[14px] placeholder:text-ink-dim/50 focus:outline-none focus:border-yellow/40 transition-colors"
           />
           <p className="text-ink-dim text-[11px] mt-1.5">
-            Si lo dejás vacío, se usa tu nombre de Discord.
+            Reemplaza tu nombre de Discord. Dejalo vacío para usar el de Discord.
           </p>
         </div>
 
@@ -68,12 +68,22 @@ export default function UsernameForm({ initialDisplayName, discordName }) {
         </div>
       </form>
 
-      <div className="mt-4 pt-4 border-t border-[rgba(241,237,229,0.06)]">
-        <dt className="mono-label text-[10px] mb-0.5">Username de Discord</dt>
-        <dd className="text-ink-dim text-[13px]">
-          {discordName ? `@${discordName}` : '—'}
-        </dd>
-      </div>
+      {/* Discord handle — solo lectura, para poder agregar al jugador */}
+      {discordUsername && (
+        <div className="mt-4 pt-4 border-t border-[rgba(241,237,229,0.06)]">
+          <dt className="mono-label text-[10px] mb-1">Discord</dt>
+          <dd className="flex items-center gap-2">
+            <span className="text-ink text-[14px] font-semibold">@{discordUsername}</span>
+            <button
+              type="button"
+              onClick={() => navigator.clipboard.writeText(discordUsername)}
+              className="mono-label text-[9px] text-ink-dim hover:text-yellow transition-colors border border-[rgba(241,237,229,0.08)] px-2 py-0.5 rounded-full"
+            >
+              Copiar
+            </button>
+          </dd>
+        </div>
+      )}
     </div>
   );
 }

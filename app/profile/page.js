@@ -110,7 +110,7 @@ export default async function ProfilePage() {
           {/* Identidad — editable */}
           <UsernameForm
             initialDisplayName={profile?.display_name ?? null}
-            discordName={username ?? null}
+            discordUsername={profile?.discord_username ?? meta.user_name ?? null}
           />
 
           <div className="bg-[#0d0f15] border border-[rgba(241,237,229,0.08)] rounded-[16px] p-5">
