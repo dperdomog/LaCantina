@@ -4,8 +4,25 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { slugify } from '@/lib/admin';
 
-const FORMATS   = ['1v1', '2v2', '4v4', '6v6', '5v5'];
-const STATUSES  = [
+// ─── Field fuera del componente para evitar re-mount en cada render ───────────
+function Field({ label, note, children }) {
+  return (
+    <label className="flex flex-col gap-1.5">
+      <span className="mono-label text-[10px]">
+        {label}
+        {note && <span className="ml-1 normal-case text-ink-faint">{note}</span>}
+      </span>
+      {children}
+    </label>
+  );
+}
+
+const FORMATS = [
+  { value: '4v4', label: 'Street Brawl (4v4)' },
+  { value: '6v6', label: 'Standard (6v6)' },
+];
+
+const STATUSES = [
   { value: 'open',   label: 'Abierto — inscripciones activas' },
   { value: 'soon',   label: 'Próximamente' },
   { value: 'live',   label: 'En vivo' },
@@ -14,42 +31,37 @@ const STATUSES  = [
 
 const EMPTY = {
   name:         '',
-  id:           '',       // slug — solo editable en creación
+  id:           '',
   format:       '4v4',
   status:       'soon',
   max_slots:    32,
-  date_display: 'Por definir',
-  time_display: 'Por definir',
+  date_display: '',
+  time_display: '',
   prize:        'Por definir',
   region:       'LATAM',
   featured:     false,
   description:  '',
 };
 
-/**
- * Props:
- *   tournament?: objeto existente (modo edición)
- *   onSaved?:   callback tras guardar
- */
 export default function TorneoForm({ tournament, onSaved }) {
-  const router   = useRouter();
-  const isEdit   = !!tournament;
-  const [form, setForm]   = useState(tournament ? {
-    ...EMPTY, ...tournament,
-    date_display: tournament.date_display ?? 'Por definir',
-    time_display: tournament.time_display ?? 'Por definir',
+  const router = useRouter();
+  const isEdit = !!tournament;
+
+  const [form, setForm] = useState(tournament ? {
+    ...EMPTY,
+    ...tournament,
+    date_display: tournament.date_display ?? '',
+    time_display: tournament.time_display ?? '',
     prize:        tournament.prize        ?? 'Por definir',
   } : EMPTY);
+
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState('');
 
   function set(key, value) {
     setForm(f => {
       const next = { ...f, [key]: value };
-      // Auto-generar slug al cambiar el nombre (solo en creación y si el usuario no lo tocó)
-      if (key === 'name' && !isEdit) {
-        next.id = slugify(value);
-      }
+      if (key === 'name' && !isEdit) next.id = slugify(value);
       return next;
     });
   }
@@ -70,28 +82,10 @@ export default function TorneoForm({ tournament, onSaved }) {
     const data = await res.json();
     setLoading(false);
 
-    if (!res.ok) {
-      setError(data.error ?? 'Error desconocido');
-      return;
-    }
+    if (!res.ok) { setError(data.error ?? 'Error desconocido'); return; }
 
-    if (onSaved) {
-      onSaved(data.tournament);
-    } else {
-      router.push(`/admin/torneos/${data.tournament.id}`);
-    }
-  }
-
-  function Field({ label, children, note }) {
-    return (
-      <label className="flex flex-col gap-1.5">
-        <span className="mono-label text-[10px]">
-          {label}
-          {note && <span className="ml-1 normal-case text-ink-faint">{note}</span>}
-        </span>
-        {children}
-      </label>
-    );
+    if (onSaved) onSaved(data.tournament);
+    else router.push(`/admin/torneos/${data.tournament.id}`);
   }
 
   return (
@@ -128,10 +122,13 @@ export default function TorneoForm({ tournament, onSaved }) {
       )}
 
       <div className="grid grid-cols-2 gap-4">
+
         {/* Formato */}
         <Field label="Formato">
           <select value={form.format} onChange={e => set('format', e.target.value)} className="field">
-            {FORMATS.map(f => <option key={f}>{f}</option>)}
+            {FORMATS.map(f => (
+              <option key={f.value} value={f.value}>{f.label}</option>
+            ))}
           </select>
         </Field>
 
@@ -148,26 +145,25 @@ export default function TorneoForm({ tournament, onSaved }) {
         </Field>
 
         {/* Fecha */}
-        <Field label="Fecha" note="(texto, ej: SÁB 15 JUN)">
+        <Field label="Fecha">
           <input
-            type="text"
+            type="date"
             value={form.date_display}
             onChange={e => set('date_display', e.target.value)}
-            placeholder="Por definir"
             className="field"
           />
         </Field>
 
         {/* Hora */}
-        <Field label="Hora" note="(texto, ej: 20:00 GMT-6)">
+        <Field label="Hora">
           <input
-            type="text"
+            type="time"
             value={form.time_display}
             onChange={e => set('time_display', e.target.value)}
-            placeholder="Por definir"
             className="field"
           />
         </Field>
+
       </div>
 
       {/* Premio */}
@@ -236,13 +232,11 @@ export default function TorneoForm({ tournament, onSaved }) {
         >
           {loading ? 'Guardando…' : isEdit ? 'Guardar cambios →' : 'Crear torneo →'}
         </button>
-        <a
-          href="/admin"
-          className="mono-label text-[11px] text-ink-dim hover:text-ink transition-colors no-underline"
-        >
+        <a href="/admin" className="mono-label text-[11px] text-ink-dim hover:text-ink transition-colors no-underline">
           Cancelar
         </a>
       </div>
+
     </form>
   );
 }
