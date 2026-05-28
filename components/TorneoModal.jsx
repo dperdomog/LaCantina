@@ -39,7 +39,7 @@ export default function TorneoModal({ torneo, onClose }) {
 
   // Player selection state
   const [starters, setStarters] = useState([]); // array of user_ids, max = slots
-  const [sub,      setSub]      = useState(null); // single user_id
+  const [subs,     setSubs]     = useState([]); // array of user_ids, max 2
 
   const isTeam = isTeamFormat(torneo.format);
   const slots  = teamSize(torneo.format); // e.g. 4 for "4v4"
@@ -91,17 +91,17 @@ export default function TorneoModal({ torneo, onClose }) {
     if (starters.includes(userId)) {
       setStarters(s => s.filter(id => id !== userId));
     } else if (starters.length < slots) {
-      if (sub === userId) setSub(null);
+      setSubs(s => s.filter(id => id !== userId)); // quitar de subs si estaba
       setStarters(s => [...s, userId]);
     }
   }
 
   function toggleSub(userId) {
-    if (sub === userId) {
-      setSub(null);
-    } else {
-      setSub(userId);
-      setStarters(s => s.filter(id => id !== userId));
+    if (subs.includes(userId)) {
+      setSubs(s => s.filter(id => id !== userId));
+    } else if (subs.length < 2) {
+      setStarters(s => s.filter(id => id !== userId)); // quitar de titulares si estaba
+      setSubs(s => [...s, userId]);
     }
   }
 
@@ -109,8 +109,8 @@ export default function TorneoModal({ torneo, onClose }) {
 
   async function handleSubmitTeam(e) {
     e.preventDefault();
-    if (starters.length !== slots || !sub) {
-      setError(`Seleccioná exactamente ${slots} titulares y 1 suplente.`);
+    if (starters.length !== slots) {
+      setError(`Seleccioná exactamente ${slots} titulares.`);
       return;
     }
     setLoading(true);
@@ -124,7 +124,7 @@ export default function TorneoModal({ torneo, onClose }) {
     };
 
     const starterNames = starters.map(getName).join(', ');
-    const subName      = getName(sub);
+    const subNames     = subs.map(getName).join(', ');
 
     const { error: dbError } = await supabase.from('registrations').insert({
       tournament_id:   torneo.id,
@@ -133,7 +133,7 @@ export default function TorneoModal({ torneo, onClose }) {
       captain_discord: user.user_metadata?.user_name ?? '',
       team_name:       team.name,
       region:          team.region ?? 'LATAM',
-      members:         `Titulares: ${starterNames}\nSuplente: ${subName}`,
+      members:         `Titulares: ${starterNames}${subNames ? `\nSuplentes: ${subNames}` : ''}`,
     });
 
     setLoading(false);
@@ -282,7 +282,7 @@ export default function TorneoModal({ torneo, onClose }) {
                         SELECCIONÁ LOS JUGADORES ({members.length} disponibles)
                       </span>
                       <p className="mono-label text-[9px] normal-case text-ink-faint mb-3">
-                        Elegí {slots} titulares (TIT) y 1 suplente (SUP).
+                        Elegí {slots} titulares (TIT) y hasta 2 suplentes (SUP).
                       </p>
 
                       {members.length < slots + 1 && (
@@ -297,7 +297,7 @@ export default function TorneoModal({ torneo, onClose }) {
                         {members.map(m => {
                           const uid       = m.user_id;
                           const isStarter = starters.includes(uid);
-                          const isSub     = sub === uid;
+                          const isSub     = subs.includes(uid);
                           const name      = m.profiles?.display_name ?? m.profiles?.discord_username ?? 'Jugador';
                           return (
                             <div key={uid} className="flex items-center gap-2">
@@ -328,7 +328,7 @@ export default function TorneoModal({ torneo, onClose }) {
                                 <button
                                   type="button"
                                   onClick={() => toggleSub(uid)}
-                                  disabled={!isSub && sub !== null}
+                                  disabled={!isSub && subs.length >= 2}
                                   className={`px-2 py-0.5 rounded-full mono-label text-[9px] border transition-colors ${
                                     isSub
                                       ? 'bg-cyan/20 border-cyan text-cyan'
@@ -346,8 +346,8 @@ export default function TorneoModal({ torneo, onClose }) {
                         <span className={`mono-label text-[10px] ${starters.length === slots ? 'text-yellow' : 'text-ink-dim'}`}>
                           {starters.length}/{slots} titulares
                         </span>
-                        <span className={`mono-label text-[10px] ${sub ? 'text-cyan' : 'text-ink-dim'}`}>
-                          {sub ? '1' : '0'}/1 suplente
+                        <span className={`mono-label text-[10px] ${subs.length > 0 ? 'text-cyan' : 'text-ink-dim'}`}>
+                          {subs.length}/2 suplentes
                         </span>
                       </div>
                     </div>
@@ -360,7 +360,7 @@ export default function TorneoModal({ torneo, onClose }) {
 
                     <button
                       type="submit"
-                      disabled={loading || starters.length !== slots || !sub || members.length < slots + 1}
+                      disabled={loading || starters.length !== slots || members.length < slots + 1}
                       className="w-full py-4 rounded-full bg-yellow text-[#0a0a0a] font-bold text-[15px] shadow-yellow-btn hover:opacity-90 hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                     >
                       {loading ? 'Enviando…' : 'Confirmar inscripción →'}

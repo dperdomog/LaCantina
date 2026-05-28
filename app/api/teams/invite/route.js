@@ -20,6 +20,11 @@ export async function POST(request) {
     .from('team_members').select('id').eq('user_id', invitee_id).single();
   if (member) return NextResponse.json({ error: 'El jugador ya está en un equipo' }, { status: 400 });
 
+  // Verificar que el equipo no supere los 9 miembros
+  const { count } = await supabase
+    .from('team_members').select('id', { count: 'exact', head: true }).eq('team_id', team.id);
+  if (count >= 9) return NextResponse.json({ error: 'Tu equipo ya tiene el máximo de 9 miembros' }, { status: 400 });
+
   const { error } = await supabase.from('team_invitations')
     .insert({ team_id: team.id, invitee_id });
 

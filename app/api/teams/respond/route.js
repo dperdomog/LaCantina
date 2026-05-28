@@ -27,6 +27,11 @@ export async function POST(request) {
         .from('team_members').select('id').eq('user_id', user.id).single();
       if (existing) return NextResponse.json({ error: 'Ya estás en un equipo' }, { status: 400 });
 
+      // Verificar que el equipo no supere los 9 miembros
+      const { count } = await supabase
+        .from('team_members').select('id', { count: 'exact', head: true }).eq('team_id', inv.team_id);
+      if (count >= 9) return NextResponse.json({ error: 'El equipo ya tiene el máximo de 9 miembros' }, { status: 400 });
+
       await supabase.from('team_members').insert({ team_id: inv.team_id, user_id: user.id });
     }
 
@@ -66,6 +71,11 @@ export async function POST(request) {
     await supabase.from('team_applications').update({ status }).eq('id', id);
 
     if (accept) {
+      // Verificar que el equipo no supere los 9 miembros
+      const { count } = await supabase
+        .from('team_members').select('id', { count: 'exact', head: true }).eq('team_id', app.team_id);
+      if (count >= 9) return NextResponse.json({ error: 'El equipo ya tiene el máximo de 9 miembros' }, { status: 400 });
+
       await supabase.from('team_members').insert({ team_id: app.team_id, user_id: app.applicant_id });
     }
 
