@@ -15,10 +15,17 @@ export async function POST(request) {
     .from('team_members').select('id').eq('user_id', user.id).single();
   if (member) return NextResponse.json({ error: 'Ya estás en un equipo' }, { status: 400 });
 
+  // Limpiar cualquier aplicación previa (aceptada, rechazada) para permitir re-aplicar
+  await supabase.from('team_applications')
+    .delete()
+    .eq('team_id', team_id)
+    .eq('applicant_id', user.id)
+    .neq('status', 'pending');
+
   const { error } = await supabase.from('team_applications')
     .insert({ team_id, applicant_id: user.id });
 
-  if (error?.code === '23505') return NextResponse.json({ error: 'Ya aplicaste a este equipo' }, { status: 400 });
+  if (error?.code === '23505') return NextResponse.json({ error: 'Ya tenés una solicitud pendiente para este equipo' }, { status: 400 });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   // Notificar al capitán del equipo
