@@ -21,18 +21,23 @@ export default async function TeamPage({ params }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  const { data: team } = await supabase
+  // Aceptar tanto slug (los-lobos) como UUID para compatibilidad
+  const isUuid = /^[0-9a-f-]{36}$/i.test(params.id);
+  const teamQuery = supabase
     .from('teams')
     .select(`
-      id, name, region, logo_url, description, commitment, created_at, captain_id,
+      id, name, slug, region, logo_url, description, commitment, created_at, captain_id,
       profiles!teams_captain_id_fkey (id, display_name, discord_username, avatar_url),
       team_members (
         user_id, joined_at,
         profiles!team_members_user_id_fkey (id, display_name, discord_username, avatar_url, player_role, statlocker_url)
       )
-    `)
-    .eq('id', params.id)
-    .single();
+    `);
+
+  const { data: team } = await (isUuid
+    ? teamQuery.eq('id', params.id)
+    : teamQuery.eq('slug', params.id)
+  ).single();
 
   if (!team) notFound();
 

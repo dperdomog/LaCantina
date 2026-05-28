@@ -11,7 +11,7 @@ export default async function EquiposPage() {
   const { data: teams } = await supabase
     .from('teams')
     .select(`
-      id, name, region, logo_url, description, commitment, captain_id, created_at,
+      id, name, slug, region, logo_url, description, commitment, captain_id, created_at,
       profiles!teams_captain_id_fkey (display_name, discord_username, avatar_url),
       team_members (
         user_id,

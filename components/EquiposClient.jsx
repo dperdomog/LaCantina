@@ -166,7 +166,7 @@ function TeamCard({ team, currentUserId }) {
   const memberCount = team.team_members?.length ?? 0;
 
   return (
-    <a href={`/equipos/${team.id}`} className="no-underline block">
+    <a href={`/equipos/${team.slug ?? team.id}`} className="no-underline block">
     <div className={`bg-[#0d0f15] rounded-[16px] p-6 border transition-all cursor-pointer ${
       isMine ? 'border-[rgba(255,214,10,0.4)] shadow-[0_0_30px_rgba(255,214,10,0.06)]'
              : 'border-[rgba(241,237,229,0.08)] hover:border-[rgba(255,214,10,0.35)] hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,.4)]'

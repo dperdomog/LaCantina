@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { slugify } from '@/lib/admin';
 import { NextResponse } from 'next/server';
 
 // POST /api/teams — crear equipo
@@ -15,11 +16,18 @@ export async function POST(request) {
   const { name, region, logo_url, description, commitment } = await request.json();
   if (!name?.trim()) return NextResponse.json({ error: 'El nombre es requerido' }, { status: 400 });
 
+  // Generar slug único
+  const baseSlug = slugify(name.trim());
+  const { count } = await supabase
+    .from('teams').select('id', { count: 'exact', head: true }).like('slug', `${baseSlug}%`);
+  const slug = count > 0 ? `${baseSlug}-${count + 1}` : baseSlug;
+
   // Crear el equipo
   const { data: team, error: teamErr } = await supabase
     .from('teams')
     .insert({
       name:        name.trim(),
+      slug,
       captain_id:  user.id,
       region:      region      || null,
       logo_url:    logo_url    || null,

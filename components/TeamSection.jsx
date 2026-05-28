@@ -37,7 +37,7 @@ export default function TeamSection({ team, isCaptain, applications }) {
         </button>
       </div>
 
-      <a href={`/equipos/${team.id}`} className="flex items-center gap-3 mb-1 no-underline group">
+      <a href={`/equipos/${team.slug ?? team.id}`} className="flex items-center gap-3 mb-1 no-underline group">
         {team.logo_url
           ? <img src={team.logo_url} alt={team.name} className="w-10 h-10 rounded-[8px] object-cover border border-[rgba(255,214,10,0.2)] shrink-0" />
           : <div className="w-10 h-10 rounded-[8px] bg-yellow/10 border border-yellow/20 flex items-center justify-center font-display text-[18px] text-yellow shrink-0">
