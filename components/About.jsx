@@ -11,7 +11,7 @@ const FEATURES = [
   {
     icon: '◆',
     title: 'Discord 24/7',
-    body: 'Chat activo con más de 12,000 jugadores. Encontrá compañeros de equipo, analizá partidas y mejorá tu juego con la comunidad.',
+    body: 'Chat activo todos los días. Encontrá compañeros de equipo, analizá partidas y mejorá tu juego con la comunidad.',
   },
   {
     icon: '◇',

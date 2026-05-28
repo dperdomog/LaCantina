@@ -71,14 +71,15 @@ export default function Navbar() {
           {/* Desktop links */}
           <ul className="hidden lg:flex items-center gap-6 list-none ml-4">
             {[
-              ['/torneos',  'Torneos'],
-              ['/equipos',  'Equipos'],
-              ['/jugadores','Jugadores'],
-              ['#discord',  'Discord'],
-            ].map(([href, label]) => (
-              <li key={href}>
+              ['/torneos',  'Torneos',  false],
+              ['/equipos',  'Equipos',  false],
+              ['/jugadores','Jugadores',false],
+              [DISCORD_INVITE, 'Discord', true],
+            ].map(([href, label, external]) => (
+              <li key={label}>
                 <a
                   href={href}
+                  {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                   className="text-ink-dim text-[13px] font-medium hover:text-ink transition-colors no-underline pb-1 border-b-2 border-transparent hover:border-yellow"
                 >
                   {label}
@@ -154,15 +155,16 @@ export default function Navbar() {
         {mobileOpen && (
           <div className="lg:hidden flex flex-col bg-[rgba(6,7,10,0.98)] border-t border-[rgba(241,237,229,0.08)] px-6 py-4 gap-0.5">
             {[
-              ['/torneos',  'Torneos'],
-              ['/equipos',  'Equipos'],
-              ['/jugadores','Jugadores'],
-              ['#discord',  'Discord'],
-            ].map(([href, label]) => (
+              ['/torneos',  'Torneos',  false],
+              ['/equipos',  'Equipos',  false],
+              ['/jugadores','Jugadores',false],
+              [DISCORD_INVITE, 'Discord', true],
+            ].map(([href, label, external]) => (
               <a
                 key={href}
                 href={href}
                 onClick={() => setMobileOpen(false)}
+                {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                 className="text-ink-dim no-underline py-3 text-[1.05rem] border-b border-[rgba(241,237,229,0.08)] hover:text-yellow transition-colors"
               >
                 {label}
