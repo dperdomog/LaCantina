@@ -65,7 +65,7 @@ export default function TorneoModal({ torneo, onClose }) {
 
           const { data: mList } = await supabase
             .from('team_members')
-            .select('user_id, profiles!team_members_user_id_fkey(display_name, discord_username, avatar_url, player_role)')
+            .select('user_id, profiles!team_members_user_id_fkey(display_name, discord_username, avatar_url, player_role, statlocker_url)')
             .eq('team_id', t.id);
           setMembers(mList ?? []);
         }
@@ -295,12 +295,13 @@ export default function TorneoModal({ torneo, onClose }) {
 
                       <div className="flex flex-col gap-2.5">
                         {members.map(m => {
-                          const uid       = m.user_id;
-                          const isStarter = starters.includes(uid);
-                          const isSub     = subs.includes(uid);
-                          const name      = m.profiles?.display_name ?? m.profiles?.discord_username ?? 'Jugador';
+                          const uid        = m.user_id;
+                          const isStarter  = starters.includes(uid);
+                          const isSub      = subs.includes(uid);
+                          const hasLocker  = !!m.profiles?.statlocker_url;
+                          const name       = m.profiles?.display_name ?? m.profiles?.discord_username ?? 'Jugador';
                           return (
-                            <div key={uid} className="flex items-center gap-2">
+                            <div key={uid} className={`flex items-center gap-2 ${!hasLocker ? 'opacity-50' : ''}`}>
                               {m.profiles?.avatar_url
                                 ? <img src={m.profiles.avatar_url} alt="" className="w-7 h-7 rounded-full border border-[rgba(241,237,229,0.1)] shrink-0" />
                                 : <div className="w-7 h-7 rounded-full bg-yellow/10 flex items-center justify-center mono-label text-[10px] text-yellow shrink-0">
@@ -311,14 +312,17 @@ export default function TorneoModal({ torneo, onClose }) {
                               {uid === team.captain_id && (
                                 <span className="mono-label text-yellow text-[9px]">CAP</span>
                               )}
-                              {m.profiles?.player_role && (
-                                <span className="mono-label text-ink-faint text-[9px]">{m.profiles.player_role}</span>
-                              )}
+                              {!hasLocker
+                                ? <span className="mono-label text-pink text-[9px]">SIN STAT</span>
+                                : m.profiles?.player_role && (
+                                    <span className="mono-label text-ink-faint text-[9px]">{m.profiles.player_role}</span>
+                                  )
+                              }
                               <div className="flex gap-1 ml-1 shrink-0">
                                 <button
                                   type="button"
                                   onClick={() => toggleStarter(uid)}
-                                  disabled={!isStarter && starters.length >= slots}
+                                  disabled={!hasLocker || (!isStarter && starters.length >= slots)}
                                   className={`px-2 py-0.5 rounded-full mono-label text-[9px] border transition-colors ${
                                     isStarter
                                       ? 'bg-yellow/20 border-yellow text-yellow'
@@ -328,7 +332,7 @@ export default function TorneoModal({ torneo, onClose }) {
                                 <button
                                   type="button"
                                   onClick={() => toggleSub(uid)}
-                                  disabled={!isSub && subs.length >= 2}
+                                  disabled={!hasLocker || (!isSub && subs.length >= 2)}
                                   className={`px-2 py-0.5 rounded-full mono-label text-[9px] border transition-colors ${
                                     isSub
                                       ? 'bg-cyan/20 border-cyan text-cyan'

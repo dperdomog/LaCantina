@@ -133,7 +133,7 @@ export default async function TeamPage({ params }) {
                     </a>
                   </span>
                 </div>
-                <span className="mono-label text-[10px] text-ink-dim">{memberCount}/6 miembros</span>
+                <span className="mono-label text-[10px] text-ink-dim">{memberCount}/9 miembros</span>
                 <span className="mono-label text-[10px] text-ink-dim">
                   Creado {new Date(team.created_at).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </span>
@@ -144,11 +144,11 @@ export default async function TeamPage({ params }) {
           {/* Barra de ocupación */}
           <div className="mt-6">
             <div className="flex justify-between mono-label mb-2">
-              <span>Cupos</span><span>{memberCount} / 6</span>
+              <span>Cupos</span><span>{memberCount} / 9</span>
             </div>
             <div className="h-[4px] bg-[rgba(241,237,229,0.07)] rounded-full overflow-hidden">
               <div className="h-full bg-gradient-to-r from-yellow to-[#ffe566] rounded-full transition-all"
-                style={{ width: `${(memberCount / 6) * 100}%` }} />
+                style={{ width: `${(memberCount / 9) * 100}%` }} />
             </div>
           </div>
 
