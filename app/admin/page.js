@@ -24,5 +24,10 @@ export default async function AdminPage() {
     registrations: countMap[t.id] ?? 0,
   }));
 
-  return <AdminDashboard tournaments={data} />;
+  const { data: players } = await supabase
+    .from('profiles')
+    .select('id, display_name, discord_username, statlocker_url, created_at, is_admin')
+    .order('created_at', { ascending: false });
+
+  return <AdminDashboard tournaments={data} players={players ?? []} />;
 }

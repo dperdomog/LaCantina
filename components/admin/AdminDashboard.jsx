@@ -13,9 +13,13 @@ const STATUS_LABEL = {
   open: 'Abierto', soon: 'Próximamente', live: 'En vivo', closed: 'Cerrado',
 };
 
-export default function AdminDashboard({ tournaments }) {
+export default function AdminDashboard({ tournaments, players }) {
   const router  = useRouter();
-  const [deleting, setDeleting] = useState(null);
+  const [deleting,      setDeleting]      = useState(null);
+  const [deletingPlayer,setDeletingPlayer]= useState(null);
+  const [editingPlayer, setEditingPlayer] = useState(null); // player id being edited
+  const [editUrl,       setEditUrl]       = useState('');
+  const [savingPlayer,  setSavingPlayer]  = useState(false);
 
   const totalRegs = tournaments.reduce((s, t) => s + t.registrations, 0);
 
@@ -24,6 +28,26 @@ export default function AdminDashboard({ tournaments }) {
     setDeleting(id);
     await fetch(`/api/admin/tournaments/${id}`, { method: 'DELETE' });
     setDeleting(null);
+    router.refresh();
+  }
+
+  async function handleDeletePlayer(id) {
+    if (!confirm('¿Eliminar este jugador? Se borrarán sus datos, membresías y solicitudes.')) return;
+    setDeletingPlayer(id);
+    await fetch(`/api/admin/players/${id}`, { method: 'DELETE' });
+    setDeletingPlayer(null);
+    router.refresh();
+  }
+
+  async function handleSaveStatlocker(id) {
+    setSavingPlayer(true);
+    await fetch(`/api/admin/players/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ statlocker_url: editUrl.trim() || null }),
+    });
+    setSavingPlayer(false);
+    setEditingPlayer(null);
     router.refresh();
   }
 
@@ -142,6 +166,92 @@ export default function AdminDashboard({ tournaments }) {
             ))}
           </div>
         )}
+        {/* ── Jugadores ── */}
+        <div className="mt-14">
+          <div className="flex items-center justify-between mb-4">
+            <span className="mono-label text-yellow text-[10px]">// JUGADORES ({players.length})</span>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            {players.map(p => {
+              const name    = p.display_name ?? p.discord_username ?? 'Sin nombre';
+              const isEditing = editingPlayer === p.id;
+              return (
+                <div key={p.id} className="bg-[#0d0f15] border border-[rgba(241,237,229,0.08)] rounded-[14px] p-4">
+                  <div className="flex items-center gap-3 flex-wrap">
+
+                    {/* Info */}
+                    <div className="flex-1 min-w-[160px]">
+                      <p className="text-ink font-semibold text-[14px] leading-tight">
+                        {name}
+                        {p.is_admin && <span className="ml-2 mono-label text-yellow text-[9px]">ADMIN</span>}
+                      </p>
+                      {p.discord_username && (
+                        <p className="mono-label text-[10px] text-ink-dim mt-0.5">@{p.discord_username}</p>
+                      )}
+                    </div>
+
+                    {/* StatLocker */}
+                    <div className="flex-1 min-w-[200px]">
+                      {isEditing ? (
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="url"
+                            value={editUrl}
+                            onChange={e => setEditUrl(e.target.value)}
+                            placeholder="https://statlocker.gg/profile/..."
+                            className="flex-1 bg-[#06070a] border border-yellow/30 rounded-[8px] px-3 py-1.5 text-ink text-[12px] focus:outline-none focus:border-yellow/60"
+                          />
+                          <button
+                            onClick={() => handleSaveStatlocker(p.id)}
+                            disabled={savingPlayer}
+                            className="mono-label text-[9px] text-yellow border border-yellow/30 px-2.5 py-1.5 rounded-full hover:bg-yellow/10 transition-colors disabled:opacity-40"
+                          >
+                            {savingPlayer ? '…' : 'Guardar'}
+                          </button>
+                          <button
+                            onClick={() => setEditingPlayer(null)}
+                            className="mono-label text-[9px] text-ink-dim border border-[rgba(241,237,229,0.1)] px-2.5 py-1.5 rounded-full hover:border-ink-dim transition-colors"
+                          >
+                            Cancelar
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          {p.statlocker_url
+                            ? <a href={p.statlocker_url} target="_blank" rel="noopener noreferrer"
+                                className="mono-label text-[10px] text-yellow hover:opacity-70 transition-opacity no-underline truncate max-w-[180px]">
+                                StatLocker ↗
+                              </a>
+                            : <span className="mono-label text-[10px] text-ink-faint">Sin StatLocker</span>
+                          }
+                          <button
+                            onClick={() => { setEditingPlayer(p.id); setEditUrl(p.statlocker_url ?? ''); }}
+                            className="mono-label text-[9px] text-ink-dim border border-[rgba(241,237,229,0.1)] px-2 py-1 rounded-full hover:border-yellow/40 hover:text-yellow transition-colors"
+                          >
+                            Editar
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Delete */}
+                    {!p.is_admin && (
+                      <button
+                        onClick={() => handleDeletePlayer(p.id)}
+                        disabled={deletingPlayer === p.id}
+                        className="mono-label text-[9px] text-pink border border-pink/20 px-3 py-1.5 rounded-full hover:bg-pink/10 transition-colors disabled:opacity-40 shrink-0"
+                      >
+                        {deletingPlayer === p.id ? '…' : 'Eliminar'}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
       </div>
     </main>
   );
