@@ -62,7 +62,7 @@ export default function Navbar() {
 
           {/* Logo */}
           <a href={isHome ? '#hero' : '/'} className="shrink-0 no-underline">
-            <img src="/lcloo.png" alt="La Cantina" className="h-8 w-auto" />
+            <img src="/lclogocolor.png" alt="La Cantina" className="h-[50px] w-auto" />
           </a>
           <span className="mono-label px-1.5 py-0.5 border border-[rgba(241,237,229,0.08)] hidden md:inline">
             DEADLOCK · LATAM
