@@ -118,7 +118,7 @@ export default function Hero() {
           </h1>
 
           <p className="text-[clamp(16px,2vw,18px)] text-ink-dim max-w-[600px] mt-6 leading-[1.55] animate-fade-up-2">
-            Discord activo 24/7, torneos cada semana, liga oficial con playoffs en LATAM y la base de datos más completa de jugadores de la región. Gratis, en español, para siempre.
+            Discord activo 24/7, consigue gente con quien jugar. Gratis y en Español.
           </p>
 
           <div className="flex gap-3 mt-7 flex-wrap animate-fade-up-3">
