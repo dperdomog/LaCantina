@@ -4,13 +4,16 @@ import { useState, useEffect, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
 
 const TYPE_ICON = {
-  team_invite:        '📨',
-  team_accepted:      '✅',
-  team_declined:      '❌',
-  tournament_open:    '🏆',
-  tournament_live:    '🔴',
-  tournament_closed:  '🏁',
-  default:            '🔔',
+  team_apply:           '📩',
+  team_invite:          '📨',
+  team_accepted:        '✅',
+  team_declined:        '❌',
+  tournament_open:      '🏆',
+  tournament_live:      '🔴',
+  tournament_closed:    '🏁',
+  tournament_registered:'✅',
+  registration_removed: '⚠️',
+  default:              '🔔',
 };
 
 function timeAgo(dateStr) {

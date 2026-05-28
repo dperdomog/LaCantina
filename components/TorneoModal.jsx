@@ -126,23 +126,21 @@ export default function TorneoModal({ torneo, onClose }) {
     const starterNames = starters.map(getName).join(', ');
     const subNames     = subs.map(getName).join(', ');
 
-    const { error: dbError } = await supabase.from('registrations').insert({
-      tournament_id:   torneo.id,
-      user_id:         user.id,
-      captain_nick:    user.user_metadata?.full_name ?? user.email,
-      captain_discord: user.user_metadata?.user_name ?? '',
-      team_name:       team.name,
-      region:          team.region ?? 'LATAM',
-      members:         `Titulares: ${starterNames}${subNames ? `\nSuplentes: ${subNames}` : ''}`,
+    const res = await fetch('/api/tournaments/register', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        tournament_id: torneo.id,
+        team_name:     team.name,
+        region:        team.region ?? 'LATAM',
+        members:       `Titulares: ${starterNames}${subNames ? `\nSuplentes: ${subNames}` : ''}`,
+      }),
     });
+    const json = await res.json();
 
     setLoading(false);
-    if (dbError) {
-      setError(
-        dbError.code === '23505'
-          ? 'Este equipo ya está inscrito en este torneo.'
-          : 'Ocurrió un error. Intentá de nuevo o contactanos por Discord.'
-      );
+    if (!res.ok) {
+      setError(json.error ?? 'Ocurrió un error. Intentá de nuevo o contactanos por Discord.');
       return;
     }
     setSubmitted(true);
