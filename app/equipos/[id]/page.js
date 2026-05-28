@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { notFound } from 'next/navigation';
 import TeamActions from '@/components/TeamActions';
+import { TeamApplicationsSection, PendingInvitationBanner } from '@/components/TeamPageActions';
 
 export async function generateMetadata({ params }) {
   const supabase = await createClient();
@@ -42,10 +43,10 @@ export default async function TeamPage({ params }) {
   if (!team) notFound();
 
   // Estado del usuario respecto al equipo
-  let userTeamId    = null;
-  let hasApplied    = false;
-  let isInvited     = false;
-  let viewerTeamId  = null;
+  let userTeamId       = null;
+  let hasApplied       = false;
+  let applications     = [];
+  let pendingInvitation = null;
 
   if (user) {
     const { data: membership } = await supabase
@@ -57,12 +58,23 @@ export default async function TeamPage({ params }) {
         .from('team_applications')
         .select('id').eq('team_id', team.id).eq('applicant_id', user.id).eq('status', 'pending').single();
       hasApplied = !!app;
+
+      // Invitación pendiente de este equipo para el visitante
+      const { data: inv } = await supabase
+        .from('team_invitations')
+        .select('id').eq('team_id', team.id).eq('invitee_id', user.id).eq('status', 'pending').single();
+      pendingInvitation = inv ?? null;
     }
 
-    // Si el visitante es capitán de otro equipo
-    const { data: vTeam } = await supabase
-      .from('teams').select('id').eq('captain_id', user.id).single();
-    viewerTeamId = vTeam?.id ?? null;
+    // Solicitudes pendientes al equipo (solo capitán)
+    if (team.captain_id === user.id) {
+      const { data: apps } = await supabase
+        .from('team_applications')
+        .select('id, applicant_id, profiles!team_applications_applicant_id_fkey(display_name, discord_username, avatar_url)')
+        .eq('team_id', team.id)
+        .eq('status', 'pending');
+      applications = apps ?? [];
+    }
   }
 
   const isMember  = team.team_members?.some(m => m.user_id === user?.id);
@@ -167,6 +179,12 @@ export default async function TeamPage({ params }) {
             isLoggedIn={!!user}
           />
         </div>
+
+        {/* Solicitudes pendientes — solo capitán */}
+        <TeamApplicationsSection applications={applications} teamId={team.id} />
+
+        {/* Invitación pendiente — solo para el invitado */}
+        <PendingInvitationBanner invitation={pendingInvitation} />
 
         {/* Miembros */}
         <div className="bg-[#0d0f15] border border-[rgba(241,237,229,0.08)] rounded-[20px] p-8">

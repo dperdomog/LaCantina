@@ -19,6 +19,8 @@ export async function POST(request) {
   } else {
     // Miembro sale del equipo
     await supabase.from('team_members').delete().eq('team_id', team_id).eq('user_id', user.id);
+    // Limpiar aplicaciones pendientes del usuario para poder volver a aplicar
+    await supabase.from('team_applications').delete().eq('applicant_id', user.id).eq('status', 'pending');
   }
 
   return NextResponse.json({ ok: true });
