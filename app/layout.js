@@ -26,10 +26,10 @@ const ibmPlexMono = IBM_Plex_Mono({
 export const metadata = {
   title: 'La Cantina — Comunidad Deadlock LATAM',
   description:
-    'El punto de encuentro de la escena competitiva de Deadlock en Latinoamérica. Torneos, comunidad y mucho más.',
+    'Discord activo 24/7, consigue gente con quien jugar. Gratis y en Español.',
   openGraph: {
     title: 'La Cantina — Comunidad Deadlock LATAM',
-    description: 'Torneos, comunidad y competencia de Deadlock en LATAM.',
+    description: 'Discord activo 24/7, consigue gente con quien jugar. Gratis y en Español.',
     type: 'website',
   },
 };
