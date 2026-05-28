@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { notFound } from 'next/navigation';
 import TeamActions from '@/components/TeamActions';
 import { TeamApplicationsSection, PendingInvitationBanner } from '@/components/TeamPageActions';
+import TeamRoster from '@/components/TeamRoster';
 
 export async function generateMetadata({ params }) {
   const supabase = await createClient();
@@ -9,14 +10,6 @@ export async function generateMetadata({ params }) {
   return { title: team ? `${team.name} — La Cantina` : 'Equipo — La Cantina' };
 }
 
-const ROLE_COLORS = {
-  Carry:     'text-yellow  border-yellow/40    bg-yellow/10',
-  Flex:      'text-green   border-green/40     bg-green/10',
-  Frontline: 'text-[#f97316] border-[#f97316]/40 bg-[#f97316]/10',
-  Support:   'text-cyan    border-cyan/40      bg-cyan/10',
-  Pick:      'text-[#a78bfa] border-[#a78bfa]/40 bg-[#a78bfa]/10',
-  Roamer:    'text-pink    border-pink/40      bg-pink/10',
-};
 
 export default async function TeamPage({ params }) {
   const supabase = await createClient();
@@ -189,48 +182,12 @@ export default async function TeamPage({ params }) {
         {/* Miembros */}
         <div className="bg-[#0d0f15] border border-[rgba(241,237,229,0.08)] rounded-[20px] p-8">
           <span className="mono-label text-yellow block mb-6">// ROSTER</span>
-
-          {team.team_members?.length === 0 ? (
-            <p className="text-ink-dim text-[13px]">Sin miembros aún.</p>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {team.team_members?.map(m => (
-                <a key={m.user_id} href={`/jugador/${m.user_id}`}
-                  className="flex items-center gap-4 p-4 rounded-[14px] bg-[#06070a] border border-[rgba(241,237,229,0.06)] hover:border-[rgba(255,214,10,0.25)] transition-all no-underline group">
-
-                  {m.profiles?.avatar_url
-                    ? <img src={m.profiles.avatar_url} alt=""
-                        className="w-12 h-12 rounded-full border-2 border-[rgba(241,237,229,0.1)] group-hover:border-yellow/40 transition-colors shrink-0" />
-                    : <div className="w-12 h-12 rounded-full bg-yellow/10 border-2 border-yellow/20 flex items-center justify-center font-display text-[20px] text-yellow shrink-0">
-                        {(m.profiles?.display_name ?? '?')[0]}
-                      </div>
-                  }
-
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-ink text-[14px] font-semibold group-hover:text-yellow transition-colors truncate">
-                        {m.profiles?.display_name ?? m.profiles?.discord_username ?? 'Jugador'}
-                      </span>
-                      {m.user_id === team.captain_id && (
-                        <span className="mono-label text-yellow text-[9px]">CAP</span>
-                      )}
-                    </div>
-
-                    <div className="flex items-center gap-2 mt-1 flex-wrap">
-                      {m.profiles?.player_role && (
-                        <span className={`pill border text-[10px] font-semibold ${ROLE_COLORS[m.profiles.player_role] ?? 'text-ink-dim'}`}>
-                          {m.profiles.player_role}
-                        </span>
-                      )}
-                      {m.profiles?.statlocker_url && (
-                        <span className="mono-label text-[9px] text-ink-faint">StatLocker ↗</span>
-                      )}
-                    </div>
-                  </div>
-                </a>
-              ))}
-            </div>
-          )}
+          <TeamRoster
+            members={team.team_members}
+            captainId={team.captain_id}
+            teamId={team.id}
+            isCaptain={isCaptain}
+          />
         </div>
 
       </div>
