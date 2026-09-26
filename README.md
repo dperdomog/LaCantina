@@ -16,7 +16,8 @@ npm install
 
 1. Entrá a [supabase.com](https://supabase.com) y creá una cuenta / nuevo proyecto.
 2. Anotá tu **Project URL** y **anon public key** (Settings → API).
-3. Abrí **SQL Editor** y pegá el contenido de `lib/supabase/schema.sql`. Ejecutalo — crea las tablas, RLS y los torneos de ejemplo.
+3. Abrí **SQL Editor** y pegá el contenido de `supabase/setup.sql`. Ejecutalo — crea las tablas, RLS, el bucket `avatars` y el trigger de perfiles.
+4. Después de loguearte por primera vez, hacete admin: `update profiles set is_admin = true where discord_username = 'TU_HANDLE';`
 
 ### 3. Configurar Discord OAuth en Supabase
 
@@ -39,6 +40,9 @@ NEXT_PUBLIC_SUPABASE_URL=https://TU_PROYECTO.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=TU_ANON_KEY
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 NEXT_PUBLIC_DISCORD_INVITE=https://discord.gg/TU_INVITE
+SUPABASE_SERVICE_ROLE_KEY=TU_SECRET_KEY        # Settings → API Keys → Secret key (solo server)
+TWITCH_CLIENT_ID=TU_TWITCH_CLIENT_ID
+TWITCH_CLIENT_SECRET=TU_TWITCH_CLIENT_SECRET
 ```
 
 ### 5. Correr en desarrollo
