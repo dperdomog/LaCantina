@@ -13,13 +13,14 @@ const ROLE_COLORS = {
 };
 
 export default async function JugadorPage({ params }) {
+  const { id } = await params;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   const { data: profile } = await supabase
     .from('profiles')
     .select('*')
-    .eq('id', params.id)
+    .eq('id', id)
     .single();
 
   if (!profile) notFound();

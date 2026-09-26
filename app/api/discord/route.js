@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 
-export const revalidate = 60; // refrescar cada 60s
+// Sin caché ISR en Cloudflare: con revalidate quedaría congelado del build
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   const inviteUrl = process.env.NEXT_PUBLIC_DISCORD_INVITE ?? '';

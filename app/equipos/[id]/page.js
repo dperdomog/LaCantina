@@ -5,18 +5,20 @@ import { TeamApplicationsSection, PendingInvitationBanner } from '@/components/T
 import TeamRoster from '@/components/TeamRoster';
 
 export async function generateMetadata({ params }) {
+  const { id } = await params;
   const supabase = await createClient();
-  const { data: team } = await supabase.from('teams').select('name').eq('id', params.id).single();
+  const { data: team } = await supabase.from('teams').select('name').eq('id', id).single();
   return { title: team ? `${team.name} — La Cantina` : 'Equipo — La Cantina' };
 }
 
 
 export default async function TeamPage({ params }) {
+  const { id } = await params;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   // Aceptar tanto slug (los-lobos) como UUID para compatibilidad
-  const isUuid = /^[0-9a-f-]{36}$/i.test(params.id);
+  const isUuid = /^[0-9a-f-]{36}$/i.test(id);
   const teamQuery = supabase
     .from('teams')
     .select(`
@@ -29,8 +31,8 @@ export default async function TeamPage({ params }) {
     `);
 
   const { data: team } = await (isUuid
-    ? teamQuery.eq('id', params.id)
-    : teamQuery.eq('slug', params.id)
+    ? teamQuery.eq('id', id)
+    : teamQuery.eq('slug', id)
   ).single();
 
   if (!team) notFound();

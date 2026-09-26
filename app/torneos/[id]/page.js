@@ -3,22 +3,24 @@ import { createClient } from '@/lib/supabase/server';
 import TorneoDetallePage from '@/components/TorneoDetallePage';
 
 export async function generateMetadata({ params }) {
+  const { id } = await params;
   const supabase = await createClient();
   const { data: t } = await supabase
     .from('tournaments')
     .select('name')
-    .eq('id', params.id)
+    .eq('id', id)
     .single();
   return { title: t ? `${t.name} — La Cantina` : 'Torneo — La Cantina' };
 }
 
 export default async function Page({ params }) {
+  const { id } = await params;
   const supabase = await createClient();
 
   const { data: tournament } = await supabase
     .from('tournaments')
     .select('*')
-    .eq('id', params.id)
+    .eq('id', id)
     .single();
 
   if (!tournament) notFound();
@@ -34,7 +36,7 @@ export default async function Page({ params }) {
   const { data: registrations } = await supabase
     .from('registrations')
     .select('id, team_name, captain_nick, captain_discord, region, created_at')
-    .eq('tournament_id', params.id)
+    .eq('tournament_id', id)
     .order('created_at', { ascending: true });
 
   return (

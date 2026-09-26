@@ -5,6 +5,7 @@ import { NextResponse } from 'next/server';
 
 // DELETE /api/admin/registrations/[id] — eliminar inscripción
 export async function DELETE(request, { params }) {
+  const { id } = await params;
   const supabase = await createClient();
   const { error: authError } = await requireAdmin(supabase);
   if (authError) return authError;
@@ -13,13 +14,13 @@ export async function DELETE(request, { params }) {
   const { data: reg } = await supabase
     .from('registrations')
     .select('user_id, team_name, tournament_id, tournaments(name)')
-    .eq('id', params.id)
+    .eq('id', id)
     .single();
 
   const { error } = await supabase
     .from('registrations')
     .delete()
-    .eq('id', params.id);
+    .eq('id', id);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 

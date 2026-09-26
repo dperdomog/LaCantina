@@ -12,6 +12,7 @@ const STATUS_LABELS = {
 
 // PATCH /api/admin/tournaments/[id] — editar torneo
 export async function PATCH(request, { params }) {
+  const { id } = await params;
   const supabase = await createClient();
   const { error: authError } = await requireAdmin(supabase);
   if (authError) return authError;
@@ -31,14 +32,14 @@ export async function PATCH(request, { params }) {
   let prevStatus = null;
   if (updates.status) {
     const { data: prev } = await supabase
-      .from('tournaments').select('status').eq('id', params.id).single();
+      .from('tournaments').select('status').eq('id', id).single();
     prevStatus = prev?.status ?? null;
   }
 
   const { data: tournament, error } = await supabase
     .from('tournaments')
     .update(updates)
-    .eq('id', params.id)
+    .eq('id', id)
     .select()
     .single();
 
@@ -58,14 +59,14 @@ export async function PATCH(request, { params }) {
         type:  'tournament_open',
         title: `🏆 ${tournament.name} abrió inscripciones`,
         body:  statusBody,
-        data:  { tournament_id: params.id },
+        data:  { tournament_id: id },
       });
     } else {
       // Notificar a capitanes inscritos: match por discord_username
       const { data: regs } = await supabase
         .from('registrations')
         .select('captain_discord')
-        .eq('tournament_id', params.id);
+        .eq('tournament_id', id);
 
       const discordNames = [...new Set((regs ?? []).map(r => r.captain_discord).filter(Boolean))];
 
@@ -84,7 +85,7 @@ export async function PATCH(request, { params }) {
             ? `🔴 ${tournament.name} está en vivo`
             : `🏁 ${tournament.name} ha finalizado`,
           body:  statusBody,
-          data:  { tournament_id: params.id },
+          data:  { tournament_id: id },
         });
       }
     }
@@ -95,6 +96,7 @@ export async function PATCH(request, { params }) {
 
 // DELETE /api/admin/tournaments/[id] — eliminar torneo
 export async function DELETE(request, { params }) {
+  const { id } = await params;
   const supabase = await createClient();
   const { error: authError } = await requireAdmin(supabase);
   if (authError) return authError;
@@ -102,7 +104,7 @@ export async function DELETE(request, { params }) {
   const { error } = await supabase
     .from('tournaments')
     .delete()
-    .eq('id', params.id);
+    .eq('id', id);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 

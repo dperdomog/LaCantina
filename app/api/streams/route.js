@@ -25,7 +25,8 @@ async function getAppToken() {
   return tokenCache.token;
 }
 
-export const revalidate = 30;
+// Sin caché ISR en Cloudflare: con revalidate quedaría congelado del build
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   const clientId     = process.env.TWITCH_CLIENT_ID;
