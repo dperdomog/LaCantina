@@ -1,6 +1,6 @@
 # La Cantina — Comunidad Deadlock LATAM
 
-Stack: **Next.js 14** · **Tailwind CSS** · **Supabase** (PostgreSQL + Auth) · **Discord OAuth** · **Vercel**
+Stack: **Next.js 15** · **Tailwind CSS** · **Supabase** (PostgreSQL + Auth) · **Discord OAuth** · **Cloudflare Workers** (OpenNext)
 
 ---
 
@@ -55,13 +55,21 @@ Abrí [http://localhost:3000](http://localhost:3000).
 
 ---
 
-## Deploy en Vercel
+## Deploy en Cloudflare Workers
 
-1. Pusheá el repo a GitHub.
-2. En [vercel.com](https://vercel.com): **New Project → Import** desde GitHub.
-3. En **Environment Variables**, agregá las mismas del `.env.local` — pero con `NEXT_PUBLIC_SITE_URL` apuntando a tu dominio de Vercel (ej: `https://lacantina.vercel.app`).
-4. En Discord Developer → OAuth2 → Redirects, agregá también: `https://TU_PROYECTO.supabase.co/auth/v1/callback` (si no lo hiciste antes).
-5. Deploy automático con cada push a `main`.
+Se deploya con [OpenNext](https://opennext.js.org/cloudflare) (config en `wrangler.jsonc` y `open-next.config.ts`).
+
+1. En el dashboard de Cloudflare: **Workers & Pages → Create → Import a repository** y elegí este repo.
+   - **Project name:** `lacantina` (tiene que coincidir con `name` en `wrangler.jsonc`).
+   - **Build command:** `npx opennextjs-cloudflare build`
+   - **Deploy command:** `npx opennextjs-cloudflare deploy`
+2. Variables — van en **dos lugares**:
+   - **Settings → Build → Variables and secrets:** las `NEXT_PUBLIC_*` (se inyectan en el build).
+   - **Settings → Variables and Secrets:** todas las del `.env.local` (runtime). `SUPABASE_SERVICE_ROLE_KEY` y las de Twitch como *Secret*.
+3. En Supabase → **Authentication → URL Configuration**, agregá `https://lacantina.TU_SUBDOMINIO.workers.dev/**` (y tu dominio propio si tenés) a Redirect URLs.
+4. Deploy automático con cada push a `main`.
+
+Para probar el build de Workers localmente: `npm run preview`.
 
 ---
 
@@ -100,4 +108,4 @@ lacantina/
 - **Panel de admin**: página `/admin` para ver y gestionar inscripciones desde Supabase.
 - **Bracket automático**: generar llaves de torneo en base a inscripciones confirmadas.
 - **Perfil de usuario**: mostrar avatar e historial de torneos del jugador logueado.
-- **Dominio propio**: configurar en Vercel → Settings → Domains.
+- **Dominio propio**: configurar en Cloudflare → Workers → lacantina → Settings → Domains & Routes.
