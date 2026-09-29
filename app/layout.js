@@ -1,5 +1,6 @@
 import { Fredoka, DM_Sans } from 'next/font/google';
 import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 import './globals.css';
 
 const fredoka = Fredoka({
@@ -39,6 +40,7 @@ export default function RootLayout({ children }) {
       <body className="bg-bg text-ink font-body overflow-x-hidden">
         <Navbar />
         {children}
+        <Footer />
       </body>
     </html>
   );

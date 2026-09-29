@@ -91,11 +91,11 @@ export default function NotificationBell({ userId }) {
       <button
         onClick={handleOpen}
         aria-label="Notificaciones"
-        className="relative flex items-center justify-center w-9 h-9 rounded-full border border-rule hover:border-yellow/30 transition-colors text-[18px]"
+        className="relative flex items-center justify-center w-10 h-10 rounded-full border-[3px] border-line bg-surface shadow-sticker-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all text-[17px]"
       >
         🔔
         {unread > 0 && (
-          <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-yellow text-on-color font-bold text-[10px] rounded-full flex items-center justify-center px-0.5 leading-none">
+          <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-[20px] bg-red text-white border-2 border-line font-bold text-[10px] rounded-full flex items-center justify-center px-0.5 leading-none">
             {unread > 9 ? '9+' : unread}
           </span>
         )}
@@ -103,10 +103,10 @@ export default function NotificationBell({ userId }) {
 
       {/* Dropdown panel */}
       {open && (
-        <div className="absolute right-0 top-[calc(100%+8px)] w-[340px] max-h-[420px] overflow-y-auto bg-surface border border-ink/[0.10] rounded-[16px] shadow-[0_16px_48px_rgba(0,0,0,.6)] z-[200]">
+        <div className="sticker absolute right-0 top-[calc(100%+12px)] w-[min(340px,calc(100vw-40px))] max-h-[420px] overflow-y-auto z-[200]">
 
-          <div className="flex items-center justify-between px-4 pt-4 pb-2 border-b border-ink/[0.06]">
-            <span className="mono-label text-yellow-ink">NOTIFICACIONES</span>
+          <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b-[3px] border-line">
+            <span className="font-display text-[17px]">Notificaciones</span>
             {notifications.length > 0 && (
               <button
                 onClick={() => {
@@ -116,7 +116,7 @@ export default function NotificationBell({ userId }) {
                     .eq('user_id', userId)
                     .then(() => setNotifications(prev => prev.map(n => ({ ...n, read: true }))));
                 }}
-                className="mono-label text-[9px] text-ink-dim hover:text-yellow-ink transition-colors"
+                className="text-[12px] font-bold text-ink-dim hover:text-ink underline underline-offset-2"
               >
                 Marcar todo leído
               </button>
@@ -133,7 +133,7 @@ export default function NotificationBell({ userId }) {
                 <div
                   key={n.id}
                   className={`flex items-start gap-3 px-4 py-3 transition-colors ${
-                    !n.read ? 'bg-yellow/[0.03]' : ''
+                    !n.read ? 'bg-yellow/[0.18]' : ''
                   }`}
                 >
                   <span className="text-[20px] shrink-0 mt-0.5">
@@ -147,7 +147,7 @@ export default function NotificationBell({ userId }) {
                       <p className="text-[11px] text-ink-dim mt-0.5 leading-snug">{n.body}</p>
                     )}
                   </div>
-                  <span className="mono-label text-[9px] shrink-0 mt-0.5">{timeAgo(n.created_at)}</span>
+                  <span className="text-[11px] text-ink-dim shrink-0 mt-0.5 whitespace-nowrap">{timeAgo(n.created_at)}</span>
                 </div>
               ))}
             </div>
