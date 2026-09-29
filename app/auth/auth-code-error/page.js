@@ -1,19 +1,16 @@
 export default function AuthCodeError() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-bg px-6">
-      <div className="text-center max-w-[420px]">
-        <p className="font-display text-[64px] text-yellow-ink leading-none mb-4">!</p>
-        <h1 className="font-display text-[32px] text-ink mb-3">Error al conectar</h1>
-        <p className="text-ink-dim text-[14px] leading-relaxed mb-8">
+    <main className="min-h-[70vh] flex items-center justify-center px-5 py-14 md:py-20">
+      <div className="sticker p-8 md:p-10 text-center max-w-[460px] w-full">
+        <span className="font-display w-20 h-20 rounded-full border-[3px] border-line shadow-sticker-sm bg-red text-white inline-flex items-center justify-center text-[44px] leading-none -rotate-6">
+          !
+        </span>
+        <h1 className="font-display text-[clamp(30px,5vw,40px)] leading-[1.05] text-ink mt-6">Uy, no pudimos conectarte</h1>
+        <p className="text-ink-dim text-[16px] leading-relaxed mt-3 mb-8">
           No se pudo completar la conexión con Discord. Esto puede pasar si cancelaste la autorización o el enlace expiró.
         </p>
-        <a
-          href="/"
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-yellow text-on-color font-bold text-[14px] no-underline hover:opacity-90 transition-opacity"
-        >
-          Volver al inicio
-        </a>
+        <a href="/" className="btn btn-primary">Volver al inicio</a>
       </div>
-    </div>
+    </main>
   );
 }

@@ -5,12 +5,12 @@ import { useState } from 'react';
 const ROLES = ['Carry', 'Flex', 'Frontline', 'Support', 'Pick', 'Roamer'];
 
 const ROLE_COLORS = {
-  Carry:     'text-yellow-ink  border-yellow/40    bg-yellow/10',
-  Flex:      'text-green-ink   border-green/40     bg-green/10',
-  Frontline: 'text-[#f97316] border-[#f97316]/40 bg-[#f97316]/10',
-  Support:   'text-cyan-ink    border-cyan/40      bg-cyan/10',
-  Pick:      'text-[#a78bfa] border-[#a78bfa]/40 bg-[#a78bfa]/10',
-  Roamer:    'text-pink-ink    border-pink/40      bg-pink/10',
+  Carry:     'bg-yellow text-on-color',
+  Flex:      'bg-green text-on-color',
+  Frontline: 'bg-[#f97316] text-on-color',
+  Support:   'bg-cyan text-on-color',
+  Pick:      'bg-[#a78bfa] text-on-color',
+  Roamer:    'bg-pink text-on-color',
 };
 
 export default function TeamRoleForm({ initialTeam, initialRole }) {
@@ -46,26 +46,26 @@ export default function TeamRoleForm({ initialTeam, initialRole }) {
   const roleClass = savedRole ? ROLE_COLORS[savedRole] : '';
 
   return (
-    <div className="bg-surface border border-rule rounded-[16px] px-5 py-4 col-span-full">
+    <div className="sticker px-6 py-5 col-span-full">
       <div className="flex items-center gap-4">
-        <span className="mono-label text-yellow-ink shrink-0">ROL</span>
+        <span className="mono-label shrink-0">🎯 Rol</span>
 
         {!editing && (
           <>
             <div className="flex-1">
               {savedRole ? (
-                <span className={`pill border text-[12px] font-semibold ${roleClass}`}>
+                <span className={`pill ${roleClass}`}>
                   {savedRole}
                 </span>
               ) : (
-                <span className="text-ink-dim text-[13px]">Sin rol asignado.</span>
+                <span className="text-ink-dim text-[15px]">Todavía no eliges un rol.</span>
               )}
             </div>
             <button
               onClick={() => setEditing(true)}
-              className="mono-label text-[10px] text-ink-dim hover:text-yellow-ink transition-colors shrink-0"
+              className="btn btn-secondary btn-sm shrink-0"
             >
-              Editar →
+              Editar
             </button>
           </>
         )}
@@ -74,19 +74,19 @@ export default function TeamRoleForm({ initialTeam, initialRole }) {
       {!editing && null /* evitar espacio extra */}
 
       {editing && (
-        <form onSubmit={handleSave} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1.5">
-            <span className="mono-label text-[10px]">Rol</span>
+        <form onSubmit={handleSave} className="flex flex-col gap-4 mt-4">
+          <div className="flex flex-col gap-2">
+            <span className="mono-label text-[11px]">Elige tu rol</span>
             <div className="flex flex-wrap gap-2">
               {ROLES.map(r => (
                 <button
                   key={r}
                   type="button"
                   onClick={() => setRole(role === r ? '' : r)}
-                  className={`pill border text-[12px] font-semibold transition-all ${
+                  className={`pill !py-2 transition-transform hover:-translate-y-0.5 ${
                     role === r
                       ? ROLE_COLORS[r]
-                      : 'text-ink-dim border-ink/[0.12] bg-transparent hover:border-ink-dim'
+                      : 'bg-surface text-ink-dim'
                   }`}
                 >
                   {r}
@@ -95,20 +95,20 @@ export default function TeamRoleForm({ initialTeam, initialRole }) {
             </div>
           </div>
 
-          {error && <p className="text-pink-ink text-[12px]">{error}</p>}
+          {error && <p className="text-pink-ink text-[14px] font-bold">{error}</p>}
 
-          <div className="flex gap-2">
+          <div className="flex gap-3 flex-wrap">
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 py-3 rounded-full bg-yellow text-on-color font-bold text-[13px] hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn btn-primary flex-1"
             >
               {loading ? 'Guardando…' : 'Guardar →'}
             </button>
             <button
               type="button"
               onClick={() => { setEditing(false); setTeam(savedTeam); setRole(savedRole); setError(''); }}
-              className="px-5 py-3 rounded-full border border-rule text-ink-dim text-[13px] hover:border-ink-dim transition-colors"
+              className="btn btn-secondary"
             >
               Cancelar
             </button>

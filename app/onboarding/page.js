@@ -43,35 +43,33 @@ export default function OnboardingPage() {
   }
 
   return (
-    <main className="min-h-screen bg-bg flex items-center justify-center px-6">
-      <div className="w-full max-w-[480px]">
+    <main className="min-h-screen flex items-center justify-center px-5 py-14 md:py-20">
+      <div className="w-full max-w-[520px]">
 
         {/* Header */}
         <div className="text-center mb-10">
-          <div className="font-display text-[28px] text-ink mb-1">
-            LA<span className="text-yellow-ink">·</span>CANTINA
-          </div>
-          <span className="mono-label text-yellow-ink">SETUP DE PERFIL</span>
-          <h1 className="font-display text-[clamp(36px,6vw,56px)] leading-none text-ink mt-4">
-            VINCULA<br />TU <span className="gradient-text">RANGO.</span>
+          <span className="mono-label">✨ Setup de perfil</span>
+          <h1 className="font-display text-[clamp(40px,6vw,60px)] leading-[1] tracking-[-0.02em] text-ink mt-2">
+            Vincula tu{' '}
+            <mark className="bg-yellow text-on-color px-3 rounded-2xl border-[3px] border-line inline-block -rotate-2">rango</mark>
           </h1>
-          <p className="text-ink-dim text-[14px] mt-4 leading-relaxed">
+          <p className="text-ink-dim text-[18px] mt-4 leading-relaxed">
             Pega la URL de tu perfil en StatLocker para vincularlo a tu cuenta en La Cantina.
           </p>
         </div>
 
         {/* Card */}
-        <div className="bg-surface border border-yellow/[0.2] rounded-[20px] p-7 glow-yellow">
+        <div className="sticker p-6 md:p-8">
 
           {/* Cómo encontrar la URL */}
-          <div className="mb-6 p-4 bg-surface-2 rounded-[12px]">
-            <span className="mono-label text-yellow-ink block mb-2">¿Cómo encontrar tu URL?</span>
-            <ol className="text-ink-dim text-[13px] flex flex-col gap-1.5 list-none">
-              <li><span className="text-yellow-ink font-bold">1.</span> Entra a <a href="https://statlocker.gg" target="_blank" rel="noopener noreferrer" className="text-yellow-ink hover:opacity-80 transition-opacity">statlocker.gg</a></li>
-              <li><span className="text-yellow-ink font-bold">2.</span> Busca tu perfil por nombre de Steam</li>
-              <li><span className="text-yellow-ink font-bold">3.</span> Copia la URL de la barra del navegador</li>
+          <div className="mb-6 p-5 bg-surface-2 border-[3px] border-line rounded-2xl">
+            <span className="mono-label block mb-3">¿Cómo encontrar tu URL?</span>
+            <ol className="text-ink text-[15px] flex flex-col gap-2 list-none">
+              <li><span className="font-display mr-1">1.</span> Entra a <a href="https://statlocker.gg" target="_blank" rel="noopener noreferrer" className="font-bold text-ink underline decoration-[3px] decoration-yellow underline-offset-2">statlocker.gg</a></li>
+              <li><span className="font-display mr-1">2.</span> Busca tu perfil por nombre de Steam</li>
+              <li><span className="font-display mr-1">3.</span> Copia la URL de la barra del navegador</li>
             </ol>
-            <div className="mt-3 px-3 py-2 bg-bg rounded-[8px] font-mono text-[11px] text-ink-faint">
+            <div className="mt-4 px-3 py-2 bg-surface border-2 border-line rounded-xl font-mono text-[12px] text-ink-dim break-all">
               https://statlocker.gg/profile/161957659
             </div>
           </div>
@@ -90,7 +88,7 @@ export default function OnboardingPage() {
             </label>
 
             {error && (
-              <div className="px-4 py-3 bg-pink/10 border border-pink/30 rounded-xl text-pink-ink text-[13px]">
+              <div className="px-4 py-3 bg-pink/15 border-[3px] border-line rounded-2xl text-pink-ink text-[14px] font-bold">
                 {error}
               </div>
             )}
@@ -98,7 +96,7 @@ export default function OnboardingPage() {
             <button
               type="submit"
               disabled={loading || !url}
-              className="flex items-center justify-center gap-2 w-full py-4 rounded-full bg-yellow text-on-color font-bold text-[15px] shadow-yellow-btn hover:opacity-90 hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              className="btn btn-primary w-full text-[17px]"
             >
               {STATLOCKER_ICON}
               {loading ? 'Vinculando…' : 'Vincular perfil →'}
@@ -107,14 +105,14 @@ export default function OnboardingPage() {
             <button
               type="button"
               onClick={handleSkip}
-              className="w-full py-3 rounded-full bg-transparent border border-rule text-ink-dim text-[13px] font-medium hover:border-ink-dim transition-colors"
+              className="btn btn-secondary w-full"
             >
               Saltar por ahora
             </button>
           </form>
         </div>
 
-        <p className="text-center mono-label text-[10px] normal-case mt-5 text-ink-faint">
+        <p className="text-center text-[14px] mt-6 text-ink-dim">
           Puedes vincular o cambiar tu StatLocker en cualquier momento desde tu perfil.
         </p>
       </div>

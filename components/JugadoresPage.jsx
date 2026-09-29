@@ -3,12 +3,12 @@
 import { useState, useMemo } from 'react';
 
 const ROLE_COLORS = {
-  Carry:     'text-yellow-ink  border-yellow/40  bg-yellow/10',
-  Flex:      'text-green-ink   border-green/40   bg-green/10',
-  Frontline: 'text-[#f97316] border-[#f97316]/40 bg-[#f97316]/10',
-  Support:   'text-cyan-ink    border-cyan/40    bg-cyan/10',
-  Pick:      'text-[#a78bfa] border-[#a78bfa]/40 bg-[#a78bfa]/10',
-  Roamer:    'text-pink-ink    border-pink/40    bg-pink/10',
+  Carry:     'bg-yellow',
+  Flex:      'bg-green',
+  Frontline: 'bg-[#f97316]',
+  Support:   'bg-cyan',
+  Pick:      'bg-[#a78bfa]',
+  Roamer:    'bg-pink',
 };
 
 const ROLES = ['Carry', 'Flex', 'Frontline', 'Support', 'Pick', 'Roamer'];
@@ -20,7 +20,7 @@ function PlayerCard({ player, currentUserId, viewerTeamId }) {
   return (
     <a
       href={`/jugador/${player.id}`}
-      className="block bg-surface border border-rule rounded-[16px] p-5 no-underline hover:-translate-y-0.5 hover:border-yellow/[0.25] transition-all duration-[200ms] group"
+      className="sticker block p-5 no-underline text-ink hover:-translate-y-1 transition-transform duration-[200ms] group"
     >
       {/* Avatar + nombre */}
       <div className="flex items-center gap-3 mb-4">
@@ -28,41 +28,41 @@ function PlayerCard({ player, currentUserId, viewerTeamId }) {
           <img
             src={player.avatar_url}
             alt={player.display_name ?? ''}
-            className="w-11 h-11 rounded-full border border-ink/[0.15] group-hover:border-yellow/40 transition-colors shrink-0"
+            className="w-12 h-12 rounded-full border-[3px] border-line object-cover shrink-0"
           />
         ) : (
-          <div className="w-11 h-11 rounded-full bg-yellow flex items-center justify-center font-display text-[18px] text-on-color shrink-0">
+          <div className="w-12 h-12 rounded-full border-[3px] border-line bg-yellow flex items-center justify-center font-display text-[18px] text-on-color shrink-0">
             {(player.display_name ?? player.discord_username ?? '?')[0].toUpperCase()}
           </div>
         )}
         <div className="min-w-0">
-          <p className="text-ink text-[14px] font-semibold leading-tight truncate group-hover:text-yellow-ink transition-colors">
+          <p className="font-display text-ink text-[18px] leading-tight truncate group-hover:underline">
             {player.display_name ?? player.discord_username ?? 'Jugador'}
           </p>
           {player.discord_username && (
-            <p className="mono-label text-[10px] truncate">@{player.discord_username}</p>
+            <p className="text-[13px] text-ink-dim truncate">@{player.discord_username}</p>
           )}
         </div>
         {isOwnProfile && (
-          <span className="ml-auto mono-label text-[9px] text-yellow-ink/60 shrink-0">TÚ</span>
+          <span className="ml-auto pill bg-yellow text-on-color shrink-0">Tú</span>
         )}
       </div>
 
       {/* Team + rol */}
       <div className="flex items-center justify-between gap-2 flex-wrap">
         {teamName ? (
-          <span className="flex items-center gap-1.5 text-[12px] text-ink-dim font-medium">
+          <span className="flex items-center gap-1.5 text-[13px] text-ink-dim font-bold">
             <span className="text-[14px]">🛡️</span>
             <span className="truncate max-w-[120px]">{teamName}</span>
           </span>
         ) : (
-          <span className="pill border border-cyan/30 text-cyan-ink bg-cyan/10 text-[10px] font-bold tracking-wide">
-            F/A
+          <span className="pill bg-cyan text-on-color">
+            Free agent
           </span>
         )}
 
         {player.player_role && (
-          <span className={`pill border text-[10px] font-semibold ${ROLE_COLORS[player.player_role] ?? 'text-ink-dim border-ink-dim/20'}`}>
+          <span className={`pill text-on-color ${ROLE_COLORS[player.player_role] ?? 'bg-surface-2'}`}>
             {player.player_role}
           </span>
         )}
@@ -97,12 +97,13 @@ export default function JugadoresPage({ players, currentUserId, viewerTeamId }) 
   return (
     <div>
       {/* Header */}
-      <div className="mb-12">
-        <span className="mono-label text-yellow-ink">DIRECTORIO</span>
-        <h1 className="font-display text-[clamp(48px,6vw,80px)] leading-[0.9] mt-3 text-ink">
-          JUGADORES <span className="gradient-text">LATAM.</span>
+      <div className="mb-10">
+        <span className="mono-label">👋 Directorio</span>
+        <h1 className="font-display text-[clamp(40px,6vw,68px)] leading-[1] tracking-[-0.02em] mt-2 text-ink">
+          Jugadores{' '}
+          <mark className="bg-yellow text-on-color px-3 rounded-2xl border-[3px] border-line inline-block -rotate-2">LATAM</mark>
         </h1>
-        <p className="text-ink-dim text-[15px] mt-4 max-w-[520px]">
+        <p className="text-[18px] text-ink-dim mt-4 max-w-[560px]">
           {players.length} jugadores registrados · {faCount} Free Agent{faCount !== 1 ? 's' : ''} · {teamCount} en equipo
         </p>
       </div>
@@ -115,11 +116,11 @@ export default function JugadoresPage({ players, currentUserId, viewerTeamId }) 
           placeholder="Buscar jugador…"
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="bg-surface border border-ink/[0.10] rounded-full px-4 py-2 text-[13px] text-ink placeholder:text-ink-dim focus:outline-none focus:border-yellow/40 transition-colors w-full sm:w-[240px]"
+          className="field !rounded-full !py-2.5 w-full sm:w-[260px]"
         />
 
         {/* Status filter */}
-        <div className="flex gap-1.5">
+        <div className="flex gap-2 flex-wrap">
           {[
             ['all',  'Todos'],
             ['fa',   `Free Agents (${faCount})`],
@@ -128,10 +129,8 @@ export default function JugadoresPage({ players, currentUserId, viewerTeamId }) 
             <button
               key={val}
               onClick={() => setFilterTeam(val)}
-              className={`px-3 py-1.5 rounded-full text-[12px] font-semibold transition-all ${
-                filterTeam === val
-                  ? 'bg-yellow text-on-color'
-                  : 'border border-ink/[0.10] text-ink-dim hover:border-yellow/30 hover:text-ink'
+              className={`pill !py-2 transition-transform hover:-translate-y-0.5 ${
+                filterTeam === val ? 'bg-ink text-bg' : 'bg-surface text-ink'
               }`}
             >
               {label}
@@ -140,7 +139,7 @@ export default function JugadoresPage({ players, currentUserId, viewerTeamId }) 
         </div>
 
         {/* Rol filter */}
-        <div className="flex gap-1.5 flex-wrap">
+        <div className="flex gap-2 flex-wrap">
           {ROLES.map(role => {
             const active = filterRole === role;
             const color  = ROLE_COLORS[role] ?? '';
@@ -148,8 +147,8 @@ export default function JugadoresPage({ players, currentUserId, viewerTeamId }) 
               <button
                 key={role}
                 onClick={() => setFilterRole(active ? '' : role)}
-                className={`px-3 py-1 rounded-full text-[11px] font-semibold border transition-all ${
-                  active ? color : 'border-rule text-ink-dim hover:border-ink/[0.20]'
+                className={`pill !py-2 transition-transform hover:-translate-y-0.5 ${
+                  active ? `${color} text-on-color` : 'bg-surface text-ink-dim'
                 }`}
               >
                 {role}
@@ -161,11 +160,12 @@ export default function JugadoresPage({ players, currentUserId, viewerTeamId }) 
 
       {/* Grid */}
       {filtered.length === 0 ? (
-        <div className="text-center py-16">
-          <p className="font-display text-[24px] text-ink-dim">Sin resultados.</p>
+        <div className="sticker p-10 text-center">
+          <p className="font-display text-[26px]">Nadie por aquí con esos filtros.</p>
+          <p className="text-ink-dim mt-2">Prueba con otro nombre o quita algún filtro.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filtered.map(p => (
             <PlayerCard
               key={p.id}

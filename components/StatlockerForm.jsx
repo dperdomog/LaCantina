@@ -30,15 +30,15 @@ export default function StatlockerForm({ initialUrl }) {
   }
 
   return (
-    <div className="bg-surface border border-rule rounded-[16px] p-5 col-span-full">
-      <div className="flex items-center justify-between mb-4">
-        <span className="mono-label text-yellow-ink">DEADLOCK · STATLOCKER</span>
+    <div className="sticker p-6 col-span-full">
+      <div className="flex items-center justify-between gap-3 mb-4">
+        <span className="mono-label">📈 Deadlock · StatLocker</span>
         {!editing && (
           <button
             onClick={() => setEditing(true)}
-            className="mono-label text-[10px] text-ink-dim hover:text-yellow-ink transition-colors"
+            className="btn btn-secondary btn-sm"
           >
-            {saved ? 'Editar →' : 'Vincular →'}
+            {saved ? 'Editar' : 'Vincular'}
           </button>
         )}
       </div>
@@ -49,7 +49,7 @@ export default function StatlockerForm({ initialUrl }) {
             href={saved}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full border border-yellow/[0.3] text-yellow-ink text-[13px] font-semibold no-underline hover:bg-yellow/10 transition-colors"
+            className="btn btn-primary"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
@@ -57,36 +57,36 @@ export default function StatlockerForm({ initialUrl }) {
             Ver perfil en StatLocker ↗
           </a>
         ) : (
-          <p className="text-ink-dim text-[13px]">No vinculado aún.</p>
+          <p className="text-ink-dim text-[15px]">Todavía no vinculas tu perfil. Así los demás pueden ver tus partidas.</p>
         )
       )}
 
       {editing && (
         <form onSubmit={handleSave} className="flex flex-col gap-3">
           <label className="flex flex-col gap-1.5">
-            <span className="mono-label text-[10px]">URL de StatLocker</span>
+            <span className="mono-label text-[11px]">URL de StatLocker</span>
             <input
               type="url"
               value={url}
               onChange={e => setUrl(e.target.value)}
               placeholder="https://statlocker.gg/profile/161957659"
-              className="field text-[13px]"
+              className="field"
               required
             />
           </label>
-          {error && <p className="text-pink-ink text-[12px]">{error}</p>}
-          <div className="flex gap-2">
+          {error && <p className="text-pink-ink text-[14px] font-bold">{error}</p>}
+          <div className="flex gap-3 flex-wrap">
             <button
               type="submit"
               disabled={loading || !url}
-              className="flex-1 py-3 rounded-full bg-yellow text-on-color font-bold text-[13px] hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn btn-primary flex-1"
             >
               {loading ? 'Guardando…' : 'Guardar →'}
             </button>
             <button
               type="button"
               onClick={() => { setEditing(false); setUrl(saved); setError(''); }}
-              className="px-5 py-3 rounded-full border border-rule text-ink-dim text-[13px] hover:border-ink-dim transition-colors"
+              className="btn btn-secondary"
             >
               Cancelar
             </button>

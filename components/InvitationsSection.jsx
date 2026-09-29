@@ -18,22 +18,22 @@ export default function InvitationsSection({ invitations }) {
   if (!invitations?.length) return null;
 
   return (
-    <div className="bg-surface border border-[rgba(127,227,255,0.25)] rounded-[16px] p-5 col-span-full">
-      <span className="mono-label text-cyan-ink block mb-4">INVITACIONES PENDIENTES</span>
-      <div className="flex flex-col gap-4">
+    <div className="sticker bg-cyan text-on-color p-6 col-span-full">
+      <span className="font-display text-[15px] uppercase tracking-wider block mb-4">📨 Invitaciones pendientes</span>
+      <div className="flex flex-col gap-3">
         {invitations.map(inv => (
-          <div key={inv.id} className="flex items-center justify-between gap-4 flex-wrap">
+          <div key={inv.id} className="flex items-center justify-between gap-4 flex-wrap bg-white text-[#1c1c1c] border-[3px] border-[#1c1c1c] rounded-2xl px-4 py-3">
             <div>
-              <p className="text-ink text-[14px] font-semibold">{inv.teams?.name ?? 'Equipo'}</p>
-              <p className="mono-label text-[10px] mt-0.5">Te invitaron a unirte</p>
+              <p className="font-display text-[20px] leading-tight">{inv.teams?.name ?? 'Equipo'}</p>
+              <p className="text-[14px] mt-0.5">Te invitaron a unirte</p>
             </div>
             <div className="flex gap-2">
               <button onClick={() => respond(inv.id, true)}
-                className="px-4 py-2 rounded-full bg-yellow text-on-color font-bold text-[13px] hover:opacity-90 transition-opacity">
+                className="btn btn-primary btn-sm">
                 Aceptar →
               </button>
               <button onClick={() => respond(inv.id, false)}
-                className="px-4 py-2 rounded-full border border-rule text-ink-dim text-[13px] hover:border-ink-dim transition-colors">
+                className="btn btn-sm bg-white text-[#1c1c1c]">
                 Rechazar
               </button>
             </div>

@@ -8,6 +8,8 @@ import UsernameForm from '@/components/UsernameForm';
 
 export const metadata = { title: 'Mi Perfil — La Cantina' };
 
+const STRIPES = ['#00d97e', '#00c8f0', '#ffd400', '#ff7043', '#ff2d2d'];
+
 export default async function ProfilePage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -55,55 +57,56 @@ export default async function ProfilePage() {
     .eq('status', 'pending');
 
   return (
-    <main className="min-h-screen bg-bg">
+    <main className="min-h-screen">
+      <div className="max-w-[860px] mx-auto px-5 py-14 md:py-20">
 
-      {/* Banner */}
-      <div className="relative w-full h-[200px] md:h-[260px] bg-surface overflow-hidden">
-        {bannerUrl
-          ? <img src={bannerUrl} alt="Banner de Discord" className="w-full h-full object-cover" />
-          : <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,214,10,0.12)_0%,transparent_70%)]" />
-        }
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-bg" />
-      </div>
-
-      <div className="max-w-[760px] mx-auto px-6 md:px-14 -mt-16 relative z-10 pb-24">
-
-        {/* Avatar + nombre */}
-        <div className="flex items-end gap-5 mb-8">
-          {avatarUrl
-            ? <img src={avatarUrl} alt={displayName ?? 'Avatar'}
-                className="w-28 h-28 rounded-full border-4 border-bg shadow-[0_0_0_2px_rgba(255,214,10,0.3)] shrink-0" />
-            : <div className="w-28 h-28 rounded-full border-4 border-bg bg-yellow flex items-center justify-center font-display text-[48px] text-on-color shrink-0">
-                {(displayName ?? email ?? '?')[0].toUpperCase()}
+        {/* Portada + identidad */}
+        <div className="sticker overflow-hidden">
+          <div className="relative h-[150px] md:h-[190px] border-b-[3px] border-line">
+            {bannerUrl
+              ? <img src={bannerUrl} alt="Banner de Discord" className="w-full h-full object-cover" />
+              : <div className="absolute inset-0 flex">
+                  {STRIPES.map(c => <span key={c} className="flex-1" style={{ background: c }} />)}
+                </div>
+            }
+          </div>
+          <div className="px-6 pb-6 flex flex-col sm:flex-row gap-4 sm:gap-5">
+            {avatarUrl
+              ? <img src={avatarUrl} alt={displayName ?? 'Avatar'}
+                  className="w-28 h-28 rounded-full border-[4px] border-line bg-surface object-cover shadow-sticker-sm shrink-0 relative -mt-14" />
+              : <div className="w-28 h-28 rounded-full border-[4px] border-line bg-yellow flex items-center justify-center font-display text-[48px] text-on-color shadow-sticker-sm shrink-0 relative -mt-14">
+                  {(displayName ?? email ?? '?')[0].toUpperCase()}
+                </div>
+            }
+            <div className="flex-1 min-w-0 flex items-start justify-between gap-4 flex-wrap sm:pt-4">
+              <div className="min-w-0">
+                <span className="mono-label">Mi perfil</span>
+                <h1 className="font-display text-[clamp(30px,5vw,48px)] leading-none text-ink break-words mt-1">
+                  {displayName ?? username ?? 'Jugador'}
+                </h1>
+                {username && <p className="text-[15px] text-ink-dim mt-1.5">@{username}</p>}
               </div>
-          }
-          <div className="pb-2">
-            <h1 className="font-display text-[clamp(28px,5vw,48px)] leading-none text-ink">
-              {displayName ?? username ?? 'Jugador'}
-            </h1>
-            {username && <p className="mono-label text-yellow-ink mt-1.5">@{username}</p>}
+              <a href={`/jugador/${user.id}`} className="btn btn-secondary btn-sm">Ver perfil público →</a>
+            </div>
           </div>
         </div>
 
-        {/* Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
+        {/* Tarjetas */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-8 items-start">
 
-          {/* Invitaciones pendientes — span full */}
+          {/* Invitaciones pendientes — ancho completo */}
           <InvitationsSection invitations={invitations ?? []} />
 
-          {/* Equipo actual — span full */}
+          {/* Equipo actual — ancho completo */}
           {team
             ? <TeamSection team={team} isCaptain={isCaptain} applications={applications} />
             : (
-              <div className="bg-surface border border-rule rounded-[16px] p-5 col-span-full flex items-center justify-between gap-4">
+              <div className="sticker bg-cyan text-on-color p-6 col-span-full flex items-center justify-between gap-4 flex-wrap">
                 <div>
-                  <span className="mono-label text-yellow-ink block mb-1">MI EQUIPO</span>
-                  <p className="text-ink-dim text-[13px]">Sin equipo — Free Agent</p>
+                  <span className="font-display text-[15px] uppercase tracking-wider block mb-1">🛡️ Mi equipo</span>
+                  <p className="text-[16px]">Todavía no tienes equipo. Eres free agent.</p>
                 </div>
-                <a href="/equipos"
-                  className="px-4 py-2 rounded-full border border-yellow text-yellow-ink font-bold text-[13px] no-underline hover:bg-yellow/10 transition-colors">
-                  Ver equipos →
-                </a>
+                <a href="/equipos" className="btn bg-white text-[#1c1c1c]">Ver equipos →</a>
               </div>
             )
           }
@@ -117,16 +120,16 @@ export default async function ProfilePage() {
             discordUsername={username ?? null}
           />
 
-          <div className="bg-surface border border-rule rounded-[16px] p-5">
-            <span className="mono-label text-yellow-ink block mb-3">CONTACTO</span>
-            <dl className="flex flex-col gap-3">
+          <div className="sticker p-6">
+            <span className="mono-label block mb-4">✉️ Contacto</span>
+            <dl className="flex flex-col gap-4">
               <div>
-                <dt className="mono-label text-[10px] mb-0.5">Email</dt>
+                <dt className="mono-label text-[11px] mb-1">Email</dt>
                 <dd className="text-ink text-[15px] break-all">{email ?? '—'}</dd>
               </div>
               <div>
-                <dt className="mono-label text-[10px] mb-0.5">Miembro desde</dt>
-                <dd className="text-ink-dim text-[13px]">
+                <dt className="mono-label text-[11px] mb-1">Miembro desde</dt>
+                <dd className="text-ink-dim text-[15px]">
                   {profile?.created_at
                     ? new Date(profile.created_at).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' })
                     : '—'}
@@ -135,7 +138,7 @@ export default async function ProfilePage() {
             </dl>
           </div>
 
-          {/* Rol — franja full width */}
+          {/* Rol — ancho completo */}
           <TeamRoleForm
             initialTeam={null}
             initialRole={profile?.player_role ?? null}
@@ -143,12 +146,9 @@ export default async function ProfilePage() {
 
         </div>
 
-        <div className="mt-6 flex items-center justify-between">
-          <a href="/" className="mono-label text-ink-dim hover:text-yellow-ink transition-colors no-underline">
+        <div className="mt-8">
+          <a href="/" className="font-display text-[17px] text-ink underline decoration-[3px] underline-offset-4">
             ← Volver al inicio
-          </a>
-          <a href={`/jugador/${user.id}`} className="mono-label text-ink-dim hover:text-yellow-ink transition-colors no-underline text-[10px]">
-            Ver perfil público →
           </a>
         </div>
       </div>

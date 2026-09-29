@@ -38,8 +38,8 @@ export default async function Page() {
   }
 
   return (
-    <main className="min-h-screen bg-bg py-24 px-6 md:px-14">
-      <div className="max-w-[1160px] mx-auto">
+    <main className="min-h-screen">
+      <div className="max-w-[1180px] mx-auto px-5 py-14 md:py-20">
         <JugadoresPage
           players={players}
           currentUserId={user?.id ?? null}

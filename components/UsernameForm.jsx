@@ -35,14 +35,14 @@ export default function UsernameForm({ initialDisplayName, discordUsername }) {
   }
 
   return (
-    <div className="bg-surface border border-rule rounded-[16px] p-5">
-      <span className="mono-label text-yellow-ink block mb-3">IDENTIDAD</span>
+    <div className="sticker p-6">
+      <span className="mono-label block mb-4">🪪 Identidad</span>
 
       <form onSubmit={handleSave} className="flex flex-col gap-3">
         <div>
-          <label className="mono-label text-[10px] block mb-1.5">
+          <label className="mono-label text-[11px] block mb-2">
             Nombre personalizado
-            <span className="text-ink-dim ml-1">(opcional)</span>
+            <span className="normal-case tracking-normal font-medium ml-1">(opcional)</span>
           </label>
           <input
             type="text"
@@ -50,10 +50,10 @@ export default function UsernameForm({ initialDisplayName, discordUsername }) {
             onChange={e => setValue(e.target.value)}
             placeholder="Tu nombre en La Cantina"
             maxLength={32}
-            className="w-full bg-bg border border-ink/[0.10] rounded-[10px] px-3 py-2 text-ink text-[14px] placeholder:text-ink-dim/50 focus:outline-none focus:border-yellow/40 transition-colors"
+            className="field"
           />
-          <p className="text-ink-dim text-[11px] mt-1.5">
-            Reemplaza tu nombre de Discord. Dejalo vacío para usar el de Discord.
+          <p className="text-ink-dim text-[13px] mt-2">
+            Reemplaza tu nombre de Discord. Déjalo vacío para usar el de Discord.
           </p>
         </div>
 
@@ -61,12 +61,12 @@ export default function UsernameForm({ initialDisplayName, discordUsername }) {
           <button
             type="submit"
             disabled={status === 'saving'}
-            className="px-4 py-2 rounded-full bg-yellow text-on-color font-bold text-[12px] hover:opacity-90 transition-opacity disabled:opacity-50"
+            className="btn btn-primary btn-sm"
           >
             {status === 'saving' ? 'Guardando…' : 'Guardar'}
           </button>
           {msg && (
-            <span className={`mono-label text-[10px] ${status === 'error' ? 'text-red-400' : 'text-yellow-ink'}`}>
+            <span className={`text-[14px] font-bold ${status === 'error' ? 'text-pink-ink' : 'text-green-ink'}`}>
               {msg}
             </span>
           )}
@@ -75,14 +75,14 @@ export default function UsernameForm({ initialDisplayName, discordUsername }) {
 
       {/* Discord handle — solo lectura, para poder agregar al jugador */}
       {discordUsername && (
-        <div className="mt-4 pt-4 border-t border-ink/[0.06]">
-          <p className="mono-label text-[10px] mb-1">Usuario de Discord</p>
+        <div className="mt-5 pt-5 border-t-[3px] border-line">
+          <p className="mono-label text-[11px] mb-1.5">Usuario de Discord</p>
           <div className="flex items-center gap-2">
-            <span className="text-ink text-[14px] font-semibold">@{discordUsername}</span>
+            <span className="text-ink text-[16px] font-bold break-all">@{discordUsername}</span>
             <button
               type="button"
               onClick={() => navigator.clipboard.writeText(discordUsername)}
-              className="mono-label text-[9px] text-ink-dim hover:text-yellow-ink transition-colors border border-rule px-2 py-0.5 rounded-full"
+              className="pill bg-surface-2 text-ink hover:bg-yellow hover:text-on-color transition-colors"
             >
               Copiar
             </button>
