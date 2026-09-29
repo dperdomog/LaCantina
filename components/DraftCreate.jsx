@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { FORMATS, TIMERS, MAX_BANS } from '@/lib/draft';
+import { FORMATS, TIMERS, BANS_BY_FORMAT } from '@/lib/draft';
 import DraftOrderStrip from '@/components/DraftOrderStrip';
 import { LocalTime } from '@/components/Countdown';
 
@@ -42,7 +42,6 @@ function Pills({ label, options, value, onChange }) {
 export default function DraftCreate({ isLoggedIn, recent }) {
   const router = useRouter();
   const [format, setFormat] = useState('6v6');
-  const [bans, setBans]     = useState(2);
   const [timer, setTimer]   = useState(30);
   const [nameA, setNameA]   = useState('Equipo A');
   const [nameB, setNameB]   = useState('Equipo B');
@@ -50,6 +49,7 @@ export default function DraftCreate({ isLoggedIn, recent }) {
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState('');
   const [code, setCode]       = useState('');
+  const bans = BANS_BY_FORMAT[format];
 
   async function handleCreate(e) {
     e.preventDefault();
@@ -58,7 +58,7 @@ export default function DraftCreate({ isLoggedIn, recent }) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        format, bans_per_team: bans, timer_s: timer,
+        format, timer_s: timer,
         name_a: nameA, name_b: nameB,
         side: side === 'none' ? undefined : side,
       }),
@@ -96,8 +96,9 @@ export default function DraftCreate({ isLoggedIn, recent }) {
 
           <Pills label="Formato" value={format} onChange={setFormat}
             options={Object.keys(FORMATS).map(f => [f, f])} />
-          <Pills label="Bans por equipo" value={bans} onChange={setBans}
-            options={Array.from({ length: MAX_BANS + 1 }, (_, i) => [i, i === 0 ? '—' : String(i)])} />
+          <p className="text-[14px] text-ink-dim -mt-3">
+            <b className="text-ink">{bans} {bans === 1 ? 'ban' : 'bans'} por equipo</b> (fijo en {format}).
+          </p>
           <Pills label="Tiempo por turno" value={timer} onChange={setTimer}
             options={TIMERS.map(t => [t, t === 0 ? 'Sin límite' : `${t}s`])} />
 
@@ -119,9 +120,9 @@ export default function DraftCreate({ isLoggedIn, recent }) {
             <span className="mono-label block mb-2">Orden</span>
             <DraftOrderStrip format={format} bans={bans} names={{ A: nameA, B: nameB }} />
             <p className="text-[13px] text-ink-dim mt-2">
-              Picks en serpiente. {bans > 0
-                ? 'La mitad de los bans va al principio y el resto a mitad del draft.'
-                : 'Sin bans.'} Si se acaba el tiempo, el ban se pierde y el pick es al azar.
+              Picks en serpiente. {Math.floor(bans / 2) > 0
+                ? 'Un ban por equipo al principio y otro a mitad del draft.'
+                : 'Un ban por equipo al principio.'} Si se acaba el tiempo, el ban se pierde y el pick es al azar.
             </p>
           </div>
 

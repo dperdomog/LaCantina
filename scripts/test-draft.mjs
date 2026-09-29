@@ -74,7 +74,18 @@ for (const [msg, fn] of [
 assert(D.autoAction({ format: '6v6', bans_per_team: 2, actions: [] }).hero_id === null, 'ban por tiempo debería perderse');
 for (let i = 0; i < 200; i++) assert(/^[A-HJ-NP-Z2-9]{6}$/.test(D.roomCode()), 'código de sala inválido');
 
-console.log('\nOrdenes de ejemplo:');
-for (const [f, b] of [['6v6', 2], ['6v6', 3], ['4v4', 2], ['2v2', 1]]) console.log(`  ${f}, ${b} bans: ${fmt(D.buildSequence(f, b))}`);
+// 5) Bans fijos por formato
+const expected = {
+  '6v6': 'bA bB pA pB pB pA pA pB bB bA pB pA pA pB pB pA',
+  '4v4': 'bA bB pA pB pB pA pA pB pB pA',
+  '2v2': 'bA bB pA pB pB pA',
+};
+for (const [f, seq] of Object.entries(expected)) {
+  assert(D.BANS_BY_FORMAT[f] === (f === '6v6' ? 2 : 1), `bans fijos de ${f}`);
+  assert(fmt(D.buildSequence(f, D.BANS_BY_FORMAT[f])) === seq, `orden fijo de ${f}: ${fmt(D.buildSequence(f, D.BANS_BY_FORMAT[f]))}`);
+}
+
+console.log('\nOrden de cada formato (bans fijos):');
+for (const f of Object.keys(D.FORMATS)) console.log(`  ${f}, ${D.BANS_BY_FORMAT[f]} por equipo: ${fmt(D.buildSequence(f, D.BANS_BY_FORMAT[f]))}`);
 console.log(`\n${checks} comprobaciones, ${failures} fallas`);
 process.exit(failures ? 1 : 0);

@@ -89,7 +89,7 @@ export default function BracketAdmin({ tournament, matches, registrations }) {
     const res  = await fetch('/api/drafts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ match_id: matchId, format: '6v6', bans_per_team: 2, timer_s: 30 }),
+      body: JSON.stringify({ match_id: matchId, format: '6v6', timer_s: 30 }),
     }).catch(() => null);
     const data = res ? await res.json().catch(() => ({})) : {};
     setBusy(false);

@@ -108,7 +108,7 @@ export default function ScrimsSection({ teamId, isCaptain, scrims, rivals }) {
     const res = await fetch('/api/drafts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ scrim_id: scrimId, format: '6v6', bans_per_team: 2, timer_s: 30 }),
+      body: JSON.stringify({ scrim_id: scrimId, format: '6v6', timer_s: 30 }),
     }).catch(() => null);
     const data = res ? await res.json().catch(() => ({})) : {};
     if (!res?.ok) { setBusy(null); setError(data.error ?? 'No se pudo abrir el draft.'); return; }

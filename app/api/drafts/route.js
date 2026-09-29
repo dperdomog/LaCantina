@@ -3,7 +3,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { NextResponse } from 'next/server';
 import { bannedResponse } from '@/lib/moderation';
 import { notifyMany } from '@/lib/notify';
-import { FORMATS, TIMERS, MAX_BANS, roomCode } from '@/lib/draft';
+import { FORMATS, TIMERS, BANS_BY_FORMAT, roomCode } from '@/lib/draft';
 
 const DAILY_LIMIT = 20;
 const cleanName = (s, fallback) => (typeof s === 'string' && s.trim() ? s.trim().slice(0, 40) : fallback);
@@ -52,7 +52,7 @@ async function fromMatch(admin, matchId, userId, isAdmin) {
 }
 
 // POST /api/drafts — crea una sala de draft
-// body: { format, bans_per_team, timer_s, name_a?, name_b?, side?, scrim_id?, match_id? }
+// body: { format, timer_s, name_a?, name_b?, side?, scrim_id?, match_id? } (los bans dependen del formato)
 export async function POST(request) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -62,10 +62,9 @@ export async function POST(request) {
 
   const body = await request.json().catch(() => ({}));
   const format = body.format;
-  const bans   = Number(body.bans_per_team ?? 0);
   const timer  = Number(body.timer_s ?? 0);
   if (!FORMATS[format]) return NextResponse.json({ error: 'Formato inválido' }, { status: 400 });
-  if (!Number.isInteger(bans) || bans < 0 || bans > MAX_BANS) return NextResponse.json({ error: 'Cantidad de bans inválida' }, { status: 400 });
+  const bans = BANS_BY_FORMAT[format];
   if (!TIMERS.includes(timer)) return NextResponse.json({ error: 'Tiempo por turno inválido' }, { status: 400 });
 
   const admin = createAdminClient();
