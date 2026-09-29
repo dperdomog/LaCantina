@@ -4,6 +4,8 @@
   "name": "lacantina",
   "compatibility_date": "2026-08-01",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  // Las variables se configuran en el dashboard; sin esto el deploy las borra
+  "keep_vars": true,
   "routes": [
     { "pattern": "lacantina.club", "custom_domain": true },
     { "pattern": "www.lacantina.club", "custom_domain": true }
