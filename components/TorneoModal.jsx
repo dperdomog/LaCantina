@@ -173,7 +173,10 @@ export default function TorneoModal({ torneo, onClose }) {
       setError(
         dbError.code === '23505'
           ? 'Ya existe una inscripción con ese Discord para este torneo.'
-          : 'Ocurrió un error. Intenta de nuevo o contáctanos por Discord.'
+          // 42501 = RLS: la única política que rechaza aquí es la de cuentas bloqueadas
+          : dbError.code === '42501'
+            ? 'Tu cuenta está bloqueada. Si crees que es un error, escríbenos por Discord.'
+            : 'Ocurrió un error. Intenta de nuevo o contáctanos por Discord.'
       );
       return;
     }

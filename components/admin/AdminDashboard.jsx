@@ -20,6 +20,7 @@ export default function AdminDashboard({ tournaments, players }) {
   const [editingPlayer, setEditingPlayer] = useState(null); // player id being edited
   const [editUrl,       setEditUrl]       = useState('');
   const [savingPlayer,  setSavingPlayer]  = useState(false);
+  const [banBusy,       setBanBusy]       = useState(null);
 
   const totalRegs = tournaments.reduce((s, t) => s + t.registrations, 0);
 
@@ -36,6 +37,28 @@ export default function AdminDashboard({ tournaments, players }) {
     setDeletingPlayer(id);
     await fetch(`/api/admin/players/${id}`, { method: 'DELETE' });
     setDeletingPlayer(null);
+    router.refresh();
+  }
+
+  async function handleBan(p) {
+    const reason = prompt(`Motivo para bloquear a ${p.display_name ?? p.discord_username ?? 'este jugador'} (lo verá el jugador):`, '');
+    if (reason === null) return;
+    setBanBusy(p.id);
+    const res = await fetch(`/api/admin/players/${p.id}/ban`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reason }),
+    });
+    setBanBusy(null);
+    if (!res.ok) { const d = await res.json().catch(() => ({})); alert(d.error ?? 'No se pudo bloquear.'); }
+    router.refresh();
+  }
+
+  async function handleUnban(p) {
+    if (!confirm(`¿Desbloquear a ${p.display_name ?? p.discord_username ?? 'este jugador'}?`)) return;
+    setBanBusy(p.id);
+    await fetch(`/api/admin/players/${p.id}/ban`, { method: 'DELETE' });
+    setBanBusy(null);
     router.refresh();
   }
 
@@ -165,6 +188,7 @@ export default function AdminDashboard({ tournaments, players }) {
                     <p className="text-ink font-bold text-[15px] leading-tight flex items-center gap-2 flex-wrap">
                       {name}
                       {p.is_admin && <span className="pill bg-yellow text-on-color text-[10px]">Admin</span>}
+                      {p.banned_at && <span className="pill bg-red text-white text-[10px]" title={p.ban_reason ?? ''}>Bloqueado</span>}
                     </p>
                     {p.discord_username && (
                       <p className="text-[13px] text-ink-dim mt-0.5">@{p.discord_username}</p>
@@ -214,6 +238,15 @@ export default function AdminDashboard({ tournaments, players }) {
                       </div>
                     )}
                   </div>
+
+                  {/* Bloquear / desbloquear */}
+                  {!p.is_admin && (p.banned_at
+                    ? <button onClick={() => handleUnban(p)} disabled={banBusy === p.id} className="btn btn-secondary btn-sm shrink-0">
+                        {banBusy === p.id ? '…' : 'Desbloquear'}
+                      </button>
+                    : <button onClick={() => handleBan(p)} disabled={banBusy === p.id} className="btn btn-sm bg-pink text-on-color shrink-0">
+                        {banBusy === p.id ? '…' : 'Bloquear'}
+                      </button>)}
 
                   {/* Eliminar */}
                   {!p.is_admin && (

@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 import { isCountry } from '@/lib/countries';
+import { bannedResponse } from '@/lib/moderation';
 
 const VALID_ROLES = ['Carry', 'Flex', 'Frontline', 'Support', 'Pick', 'Roamer'];
 
@@ -9,6 +10,8 @@ export async function POST(request) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+  const banned = await bannedResponse(supabase, user.id);
+  if (banned) return banned;
 
   const { team_name, player_role, display_name, country, custom_banner_url } = await request.json();
 

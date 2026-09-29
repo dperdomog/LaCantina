@@ -2,12 +2,15 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { notify } from '@/lib/notify';
 import { NextResponse } from 'next/server';
+import { bannedResponse } from '@/lib/moderation';
 
 // POST /api/teams/transfer — el capitán pasa la capitanía a otro miembro
 export async function POST(request) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+  const banned = await bannedResponse(supabase, user.id);
+  if (banned) return banned;
 
   const { team_id, new_captain_id } = await request.json();
   if (!team_id || !new_captain_id)

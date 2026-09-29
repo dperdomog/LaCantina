@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { notify } from '@/lib/notify';
 import { NextResponse } from 'next/server';
+import { bannedResponse } from '@/lib/moderation';
 
 const MESSAGES = {
   accepted:  (team) => ({ type: 'scrim_accepted',  title: `✅ ${team} aceptó el scrim` }),
@@ -17,6 +18,8 @@ export async function PATCH(request, { params }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+  const banned = await bannedResponse(supabase, user.id);
+  if (banned) return banned;
 
   const { status } = await request.json();
   if (!MESSAGES[status]) return NextResponse.json({ error: 'Estado inválido' }, { status: 400 });

@@ -1,12 +1,15 @@
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { NextResponse } from 'next/server';
+import { bannedResponse } from '@/lib/moderation';
 
 // POST /api/tournaments/checkin — el capitán confirma asistencia { registration_id }
 export async function POST(request) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+  const banned = await bannedResponse(supabase, user.id);
+  if (banned) return banned;
 
   const { registration_id } = await request.json();
   const admin = createAdminClient();

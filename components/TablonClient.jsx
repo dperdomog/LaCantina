@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import RankBadge from '@/components/RankBadge';
 import CopyButton from '@/components/CopyButton';
+import ReportButton from '@/components/ReportButton';
+import BannedNotice from '@/components/BannedNotice';
 import { RANK_OPTIONS, rankInfo } from '@/lib/ranks';
 import { COUNTRIES, countryInfo } from '@/lib/countries';
 
@@ -154,6 +156,7 @@ function PostCard({ post, viewer }) {
   const country  = countryInfo(post.country);
   const rank     = postRank(post);
   const canDelete = viewer && (viewer.id === post.author_id || viewer.isAdmin);
+  const canReport = viewer?.id !== post.author_id;
 
   async function handleDelete() {
     if (!confirm('¿Borrar esta publicación?')) return;
@@ -207,6 +210,7 @@ function PostCard({ post, viewer }) {
       <div className="flex items-center gap-2 flex-wrap mt-auto pt-1">
         {author?.discord_username && <CopyButton text={author.discord_username} />}
         <a href={`/jugador/${post.author_id}`} className="btn btn-secondary btn-sm">Ver perfil</a>
+        {canReport && <ReportButton targetType="post" targetId={post.id} isLoggedIn={!!viewer} className={canDelete ? '' : 'ml-auto'} />}
         {canDelete && (
           <button onClick={handleDelete} disabled={deleting} className="btn btn-sm bg-red text-white ml-auto">
             {deleting ? 'Borrando…' : 'Borrar'}
@@ -248,12 +252,14 @@ export default function TablonClient({ posts, viewer }) {
             Publica qué buscas y encuentra con quién jugar. Las publicaciones duran 14 días.
           </p>
         </div>
-        {!creating && (viewer
+        {!creating && !viewer?.banned && (viewer
           ? <button onClick={() => setCreating(true)} className="btn btn-primary">+ Publicar</button>
           : <button onClick={loginWithDiscord} className="btn btn-discord">Conecta Discord para publicar</button>)}
       </div>
 
-      {creating && viewer && <NewPostForm viewer={viewer} onDone={() => setCreating(false)} />}
+      {viewer?.banned && <BannedNotice reason={viewer.banReason} className="mb-10" />}
+
+      {creating && viewer && !viewer.banned && <NewPostForm viewer={viewer} onDone={() => setCreating(false)} />}
 
       {/* Filtros */}
       <div className="flex flex-wrap gap-3 mb-8 items-center">

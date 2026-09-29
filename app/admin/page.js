@@ -29,5 +29,15 @@ export default async function AdminPage() {
     .select('id, display_name, discord_username, statlocker_url, created_at, is_admin')
     .order('created_at', { ascending: false });
 
-  return <AdminDashboard tournaments={data} players={players ?? []} />;
+  // Bloqueos en una consulta aparte: si la columna aún no existe, la lista sigue cargando
+  const { data: bans } = await supabase
+    .from('profiles').select('id, banned_at, ban_reason').not('banned_at', 'is', null);
+  const banMap = Object.fromEntries((bans ?? []).map(b => [b.id, b]));
+  const playersWithBans = (players ?? []).map(p => ({
+    ...p,
+    banned_at:  banMap[p.id]?.banned_at ?? null,
+    ban_reason: banMap[p.id]?.ban_reason ?? null,
+  }));
+
+  return <AdminDashboard tournaments={data} players={playersWithBans} />;
 }

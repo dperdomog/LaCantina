@@ -1,12 +1,15 @@
 import { createClient } from '@/lib/supabase/server';
 import { notify, notifyMany } from '@/lib/notify';
 import { NextResponse } from 'next/server';
+import { bannedResponse } from '@/lib/moderation';
 
 // POST /api/tournaments/register — inscribir equipo a un torneo
 export async function POST(request) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+  const banned = await bannedResponse(supabase, user.id);
+  if (banned) return banned;
 
   const { tournament_id, team_name, region, members, player_ids } = await request.json();
   if (!tournament_id) return NextResponse.json({ error: 'Falta tournament_id' }, { status: 400 });

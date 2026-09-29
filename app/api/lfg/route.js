@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { announce, COLORS } from '@/lib/discord';
 import { rankInfo } from '@/lib/ranks';
 import { isCountry, countryInfo } from '@/lib/countries';
+import { bannedResponse } from '@/lib/moderation';
 
 const VALID_ROLES = ['Carry', 'Flex', 'Frontline', 'Support', 'Pick', 'Roamer'];
 const MAX_ACTIVE  = 3;          // publicaciones por persona en los últimos 14 días
@@ -13,6 +14,8 @@ export async function POST(request) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+  const banned = await bannedResponse(supabase, user.id);
+  if (banned) return banned;
 
   const body     = await request.json();
   const kind     = body.kind;

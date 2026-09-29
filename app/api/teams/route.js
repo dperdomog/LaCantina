@@ -2,12 +2,15 @@ import { createClient } from '@/lib/supabase/server';
 import { slugify } from '@/lib/admin';
 import { NextResponse } from 'next/server';
 import { announce, COLORS } from '@/lib/discord';
+import { bannedResponse } from '@/lib/moderation';
 
 // POST /api/teams — crear equipo
 export async function POST(request) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+  const banned = await bannedResponse(supabase, user.id);
+  if (banned) return banned;
 
   // Verificar que no esté ya en un equipo
   const { data: existing } = await supabase
@@ -59,6 +62,8 @@ export async function PATCH(request) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+  const banned = await bannedResponse(supabase, user.id);
+  if (banned) return banned;
 
   const body = await request.json();
   const { team_id } = body;

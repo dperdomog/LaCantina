@@ -1,12 +1,15 @@
 import { createClient } from '@/lib/supabase/server';
 import { notify } from '@/lib/notify';
 import { NextResponse } from 'next/server';
+import { bannedResponse } from '@/lib/moderation';
 
 // POST /api/scrims — el capitán propone un scrim (partida de práctica) a otro equipo
 export async function POST(request) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+  const banned = await bannedResponse(supabase, user.id);
+  if (banned) return banned;
 
   const { from_team, to_team, proposed_at, message } = await request.json();
   if (!from_team || !to_team)

@@ -27,20 +27,24 @@ export default async function TablonPage() {
   // ¿El visitante es capitán? (para publicar como equipo)
   let captainTeam = null;
   let isAdmin     = false;
+  let ban         = null;
   if (user) {
-    const [{ data: team }, { data: me }] = await Promise.all([
+    const [{ data: team }, { data: me }, { data: banInfo }] = await Promise.all([
       supabase.from('teams').select('id, name').eq('captain_id', user.id).maybeSingle(),
       supabase.from('profiles').select('is_admin').eq('id', user.id).single(),
+      // Consulta aparte: si la columna no existe todavía, no rompe lo demás
+      supabase.from('profiles').select('banned_at, ban_reason').eq('id', user.id).maybeSingle(),
     ]);
     captainTeam = team ?? null;
     isAdmin     = !!me?.is_admin;
+    ban         = banInfo?.banned_at ? { reason: banInfo.ban_reason ?? null } : null;
   }
 
   return (
     <main className="max-w-[1180px] mx-auto px-5 py-14 md:py-20">
       <TablonClient
         posts={posts ?? []}
-        viewer={user ? { id: user.id, captainTeam, isAdmin } : null}
+        viewer={user ? { id: user.id, captainTeam, isAdmin, banned: !!ban, banReason: ban?.reason ?? null } : null}
       />
     </main>
   );

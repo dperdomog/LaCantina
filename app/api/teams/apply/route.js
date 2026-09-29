@@ -2,12 +2,15 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { notify } from '@/lib/notify';
 import { NextResponse } from 'next/server';
+import { bannedResponse } from '@/lib/moderation';
 
 // POST /api/teams/apply — jugador libre aplica a un equipo
 export async function POST(request) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+  const banned = await bannedResponse(supabase, user.id);
+  if (banned) return banned;
 
   const { team_id } = await request.json();
 
