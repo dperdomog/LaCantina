@@ -1,4 +1,5 @@
 import HeroStreams from '@/components/home/HeroStreams';
+import { LocalTime } from '@/components/Countdown';
 
 const DISCORD_INVITE = process.env.NEXT_PUBLIC_DISCORD_INVITE ?? '#discord';
 const STRIPES = ['#00d97e', '#00c8f0', '#ffd400', '#ff7043', '#ff2d2d'];
@@ -82,9 +83,12 @@ export default function Landing({ data }) {
               <>
                 <h3 className="font-display text-[clamp(28px,4vw,44px)] leading-[1.05] mt-3">{next.name}</h3>
                 <div className="flex flex-wrap gap-2 mt-4">
-                  {[next.format, next.date_display, next.time_display, next.region].filter(Boolean).map(p => (
+                  {[next.format, ...(next.starts_at ? [] : [next.date_display, next.time_display]), next.region].filter(Boolean).map(p => (
                     <span key={p} className="bg-white border-2 border-[#1c1c1c] rounded-full px-3 py-1 text-[14px] font-bold">{p}</span>
                   ))}
+                  {next.starts_at && (
+                    <span className="bg-white border-2 border-[#1c1c1c] rounded-full px-3 py-1 text-[14px] font-bold"><LocalTime iso={next.starts_at} /></span>
+                  )}
                 </div>
                 <div className="mt-auto pt-8 flex items-end justify-between gap-6 flex-wrap">
                   <div className="flex-1 min-w-[200px]">

@@ -13,6 +13,12 @@ const TYPE_ICON = {
   tournament_closed:    '🏁',
   tournament_registered:'✅',
   registration_removed: '⚠️',
+  tournament_champion:  '🥇',
+  team_captain:         '👑',
+  scrim_request:        '🤝',
+  scrim_accepted:       '✅',
+  scrim_declined:       '❌',
+  scrim_cancelled:      '🚫',
   default:              '🔔',
 };
 
