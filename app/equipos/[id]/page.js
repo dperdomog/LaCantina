@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { notFound } from 'next/navigation';
 import TeamActions from '@/components/TeamActions';
-import { TeamApplicationsSection, PendingInvitationBanner } from '@/components/TeamPageActions';
+import { TeamApplicationsSection, PendingInvitationBanner, InvitePlayersSection } from '@/components/TeamPageActions';
 import TeamRoster from '@/components/TeamRoster';
 
 export async function generateMetadata({ params }) {
@@ -42,6 +42,7 @@ export default async function TeamPage({ params }) {
   let hasApplied       = false;
   let applications     = [];
   let pendingInvitation = null;
+  let freeAgents       = [];
 
   if (user) {
     const { data: membership } = await supabase
@@ -69,6 +70,20 @@ export default async function TeamPage({ params }) {
         .eq('team_id', team.id)
         .eq('status', 'pending');
       applications = apps ?? [];
+
+      // Jugadores sin equipo para invitar, marcando los ya invitados
+      const [{ data: profiles }, { data: members }, { data: invites }] = await Promise.all([
+        supabase.from('profiles')
+          .select('id, display_name, discord_username, avatar_url, player_role')
+          .order('created_at', { ascending: false }),
+        supabase.from('team_members').select('user_id'),
+        supabase.from('team_invitations').select('invitee_id').eq('team_id', team.id).eq('status', 'pending'),
+      ]);
+      const inTeam  = new Set((members ?? []).map(m => m.user_id));
+      const invited = new Set((invites ?? []).map(i => i.invitee_id));
+      freeAgents = (profiles ?? [])
+        .filter(p => !inTeam.has(p.id))
+        .map(p => ({ ...p, invited: invited.has(p.id) }));
     }
   }
 
@@ -177,6 +192,9 @@ export default async function TeamPage({ params }) {
 
         {/* Solicitudes pendientes — solo capitán */}
         <TeamApplicationsSection applications={applications} teamId={team.id} />
+
+        {/* Invitar jugadores — solo capitán, si hay cupo */}
+        {isCaptain && memberCount < 9 && <InvitePlayersSection players={freeAgents} teamId={team.id} />}
 
         {/* Invitación pendiente — solo para el invitado */}
         <PendingInvitationBanner invitation={pendingInvitation} />

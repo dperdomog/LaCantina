@@ -1,6 +1,8 @@
 'use client';
 
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import InviteButton from '@/components/InviteButton';
 
 // Sección de solicitudes pendientes (vista del capitán)
 export function TeamApplicationsSection({ applications, teamId }) {
@@ -54,6 +56,66 @@ export function TeamApplicationsSection({ applications, teamId }) {
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+// Jugadores sin equipo que el capitán puede invitar
+export function InvitePlayersSection({ players, teamId }) {
+  const [search, setSearch] = useState('');
+
+  const filtered = useMemo(() => {
+    const q = search.toLowerCase();
+    return players.filter(p =>
+      `${p.display_name ?? ''} ${p.discord_username ?? ''}`.toLowerCase().includes(q)
+    );
+  }, [players, search]);
+
+  return (
+    <div className="bg-[#0d0f15] border border-[rgba(241,237,229,0.08)] rounded-[20px] p-8 mt-6 mb-6">
+      <div className="flex items-center justify-between gap-4 flex-wrap mb-5">
+        <span className="mono-label text-yellow">// INVITAR JUGADORES</span>
+        <input
+          type="text"
+          placeholder="Buscar por nombre o @discord…"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          className="bg-[#06070a] border border-[rgba(241,237,229,0.10)] rounded-full px-4 py-2 text-[13px] text-ink placeholder:text-ink-dim focus:outline-none focus:border-yellow/40 transition-colors w-full sm:w-[260px]"
+        />
+      </div>
+      {filtered.length === 0 ? (
+        <p className="text-ink-dim text-[14px]">
+          {players.length === 0
+            ? 'No hay jugadores sin equipo por ahora. Cuando alguien inicie sesión con Discord, aparecerá aquí.'
+            : 'Ningún jugador coincide con la búsqueda.'}
+        </p>
+      ) : (
+        <div className="flex flex-col gap-4 max-h-[420px] overflow-y-auto pr-1">
+          {filtered.map(p => (
+            <div key={p.id} className="flex items-center justify-between gap-4 flex-wrap">
+              <a href={`/jugador/${p.id}`} className="flex items-center gap-3 no-underline group">
+                {p.avatar_url
+                  ? <img src={p.avatar_url} alt="" className="w-9 h-9 rounded-full" />
+                  : <div className="w-9 h-9 rounded-full bg-yellow/20 flex items-center justify-center mono-label text-[11px] text-yellow">
+                      {(p.display_name ?? '?')[0]}
+                    </div>
+                }
+                <div>
+                  <span className="text-ink text-[14px] font-semibold group-hover:text-yellow transition-colors">
+                    {p.display_name ?? p.discord_username ?? 'Jugador'}
+                  </span>
+                  <p className="mono-label text-[10px] text-ink-dim">
+                    {[p.discord_username && `@${p.discord_username}`, p.player_role].filter(Boolean).join(' · ')}
+                  </p>
+                </div>
+              </a>
+              {p.invited
+                ? <span className="mono-label text-green text-[10px]">✓ Invitación enviada</span>
+                : <InviteButton teamId={teamId} inviteeId={p.id} />}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
