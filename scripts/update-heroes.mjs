@@ -16,7 +16,7 @@ const today = new Date().toISOString().slice(0, 10);
 // Héroe terminado: no deshabilitado ni en desarrollo. Los héroes anunciados en un parche
 // se liberan de a poco (por votación en el juego) y mientras tanto vienen sin
 // `player_selectable`: quedan como pendientes hasta que un admin los habilite.
-const finished = h => !h.disabled && !h.in_development && !/testhero/i.test(h.class_name ?? '') && !!h.images?.icon_hero_card;
+const finished = h => !h.disabled && !h.in_development && !/testhero/i.test(h.class_name ?? '');
 
 const map = {};
 for (const h of heroes.filter(finished).sort((a, b) => a.id - b.id)) {
@@ -30,9 +30,29 @@ for (const h of heroes.filter(finished).sort((a, b) => a.id - b.id)) {
     ...(previous[h.id] ? (previous[h.id].added ? { added: previous[h.id].added } : {}) : { added: today }),
   };
 }
-// Héroes que se jugaron y ya no vienen en la API: se mantienen para el historial
+// Las imágenes de los héroes recién anunciados a veces todavía no están publicadas (404):
+// en ese caso se dejan en null y el sitio muestra el nombre. Volver a correr el script
+// cuando la API las publique.
+const exists = async url => {
+  if (!url) return false;
+  try { return (await fetch(url, { method: 'HEAD', headers: { 'User-Agent': 'LaCantina/1.0' } })).ok; }
+  catch { return false; }
+};
+const missing = [];
+const ids = Object.keys(map);
+for (let i = 0; i < ids.length; i += 8) {
+  await Promise.all(ids.slice(i, i + 8).map(async id => {
+    const h = map[id];
+    const [imgOk, cardOk] = await Promise.all([exists(h.image), exists(h.card)]);
+    if (!imgOk) h.image = cardOk ? h.card : null;
+    if (!cardOk) h.card = imgOk ? h.image : null;
+    if (!imgOk && !cardOk) missing.push(h.name);
+  }));
+}
+
+// Héroes que se jugaron (o estaban pendientes) y ya no vienen en la API: se mantienen
 for (const [id, h] of Object.entries(previous)) {
-  if (!map[id] && h.active) map[id] = { ...h, active: false };
+  if (!map[id] && (h.active || h.pending)) map[id] = { ...h, active: false };
 }
 
 const sorted = Object.keys(map).map(Number).sort((a, b) => a - b);
@@ -68,3 +88,4 @@ writeFileSync(file, out);
 const added = sorted.filter(id => map[id].added === today && !previous[id]).map(id => map[id].name);
 console.log(`lib/heroes.js: ${sorted.length} héroes, ${sorted.filter(id => map[id].active).length} jugables, ${sorted.filter(id => map[id].pending).length} pendientes`);
 if (added.length) console.log(`Nuevos: ${added.join(', ')}`);
+if (missing.length) console.log(`Sin imagen publicada todavía: ${missing.join(', ')}`);
