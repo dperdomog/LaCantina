@@ -42,7 +42,7 @@ export async function POST(request) {
       nextDate.setDate(nextDate.getDate() + 30);
       const formatted = nextDate.toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' });
       return NextResponse.json(
-        { error: `Solo podés cambiar tu StatLocker una vez por mes. Próximo cambio disponible: ${formatted}.` },
+        { error: `Solo puedes cambiar tu StatLocker una vez por mes. Próximo cambio disponible: ${formatted}.` },
         { status: 429 }
       );
     }

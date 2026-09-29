@@ -31,7 +31,7 @@ export async function DELETE(request, { params }) {
       user_id: reg.user_id,
       type:    'registration_removed',
       title:   `⚠️ Inscripción de ${reg.team_name ?? 'tu equipo'} eliminada`,
-      body:    `Tu inscripción en ${torneoName} fue eliminada por un administrador. Contactanos por Discord si creés que es un error.`,
+      body:    `Tu inscripción en ${torneoName} fue eliminada por un administrador. Contáctanos por Discord si crees que es un error.`,
       data:    { tournament_id: reg.tournament_id },
     });
   }

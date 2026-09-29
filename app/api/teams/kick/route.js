@@ -14,11 +14,11 @@ export async function POST(request) {
     .from('teams').select('captain_id').eq('id', team_id).single();
   if (!team) return NextResponse.json({ error: 'Equipo no encontrado' }, { status: 404 });
   if (team.captain_id !== user.id)
-    return NextResponse.json({ error: 'No sos el capitán' }, { status: 403 });
+    return NextResponse.json({ error: 'No eres el capitán' }, { status: 403 });
 
   // No puede kickearse a sí mismo
   if (user_id === user.id)
-    return NextResponse.json({ error: 'No podés kickearte a vos mismo' }, { status: 400 });
+    return NextResponse.json({ error: 'No puedes expulsarte a ti mismo' }, { status: 400 });
 
   await supabase.from('team_members')
     .delete()

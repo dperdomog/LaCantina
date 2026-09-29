@@ -110,7 +110,7 @@ export default function TorneoModal({ torneo, onClose }) {
   async function handleSubmitTeam(e) {
     e.preventDefault();
     if (starters.length !== slots) {
-      setError(`Seleccioná exactamente ${slots} titulares.`);
+      setError(`Selecciona exactamente ${slots} titulares.`);
       return;
     }
     setLoading(true);
@@ -140,7 +140,7 @@ export default function TorneoModal({ torneo, onClose }) {
 
     setLoading(false);
     if (!res.ok) {
-      setError(json.error ?? 'Ocurrió un error. Intentá de nuevo o contactanos por Discord.');
+      setError(json.error ?? 'Ocurrió un error. Intenta de nuevo o contáctanos por Discord.');
       return;
     }
     setSubmitted(true);
@@ -171,7 +171,7 @@ export default function TorneoModal({ torneo, onClose }) {
       setError(
         dbError.code === '23505'
           ? 'Ya existe una inscripción con ese Discord para este torneo.'
-          : 'Ocurrió un error. Intentá de nuevo o contactanos por Discord.'
+          : 'Ocurrió un error. Intenta de nuevo o contáctanos por Discord.'
       );
       return;
     }
@@ -218,7 +218,7 @@ export default function TorneoModal({ torneo, onClose }) {
             <span className="mono-label text-yellow">INSCRIPCIÓN</span>
             <h3 className="font-display text-[26px] text-ink leading-none mt-2 mb-1">{torneo.name}</h3>
             <p className="text-ink-dim text-[13px] mb-6">
-              {isTeam ? 'Solo el capitán puede inscribir al equipo.' : 'Inscribite individualmente al torneo.'}
+              {isTeam ? 'Solo el capitán puede inscribir al equipo.' : 'Inscríbete individualmente al torneo.'}
             </p>
 
             {error && (
@@ -232,7 +232,7 @@ export default function TorneoModal({ torneo, onClose }) {
               <>
                 {!user && (
                   <div className="p-5 bg-[#141823] border border-[rgba(255,214,10,0.2)] rounded-xl flex flex-col items-center gap-4 text-center">
-                    <p className="text-ink-dim text-[13px]">Necesitás iniciar sesión con Discord para inscribir a tu equipo.</p>
+                    <p className="text-ink-dim text-[13px]">Necesitas iniciar sesión con Discord para inscribir a tu equipo.</p>
                     <button
                       onClick={loginWithDiscord}
                       className="px-6 py-2.5 rounded-full bg-yellow text-[#0a0a0a] font-bold text-[13px] hover:opacity-90 transition-opacity"
@@ -244,7 +244,7 @@ export default function TorneoModal({ torneo, onClose }) {
 
                 {user && !team && (
                   <div className="p-5 bg-[#141823] border border-[rgba(241,237,229,0.08)] rounded-xl text-center">
-                    <p className="text-ink-dim text-[14px] mb-3">No pertenecés a ningún equipo.</p>
+                    <p className="text-ink-dim text-[14px] mb-3">No perteneces a ningún equipo.</p>
                     <a href="/equipos" className="mono-label text-yellow text-[11px] hover:opacity-80 transition-opacity no-underline">
                       Ver equipos →
                     </a>
@@ -277,16 +277,16 @@ export default function TorneoModal({ torneo, onClose }) {
 
                       {/* Roster with selection */}
                       <span className="mono-label text-[10px] block mb-1">
-                        SELECCIONÁ LOS JUGADORES ({members.length} disponibles)
+                        SELECCIONA LOS JUGADORES ({members.length} disponibles)
                       </span>
                       <p className="mono-label text-[9px] normal-case text-ink-faint mb-3">
-                        Elegí {slots} titulares (TIT) y hasta 2 suplentes (SUP).
+                        Elige {slots} titulares (TIT) y hasta 2 suplentes (SUP).
                       </p>
 
                       {members.length < slots + 1 && (
                         <div className="mb-3 px-3 py-2 bg-pink/10 border border-pink/30 rounded-lg">
                           <span className="mono-label text-pink text-[10px]">
-                            Necesitás al menos {slots + 1} miembros en el equipo para participar.
+                            Necesitas al menos {slots + 1} miembros en el equipo para participar.
                           </span>
                         </div>
                       )}
@@ -386,7 +386,7 @@ export default function TorneoModal({ torneo, onClose }) {
                 {!user && (
                   <div className="mb-5 p-4 bg-[#141823] border border-[rgba(255,214,10,0.2)] rounded-xl flex items-center justify-between gap-4">
                     <p className="text-ink-dim text-[13px] leading-snug">
-                      Conectá tu Discord para inscribirte más rápido.
+                      Conecta tu Discord para inscribirte más rápido.
                     </p>
                     <button
                       onClick={loginWithDiscord}

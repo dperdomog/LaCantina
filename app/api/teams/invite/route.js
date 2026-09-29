@@ -13,7 +13,7 @@ export async function POST(request) {
   // Verificar que el usuario sea capitán de un equipo
   const { data: team } = await supabase
     .from('teams').select('id, name').eq('captain_id', user.id).single();
-  if (!team) return NextResponse.json({ error: 'No sos capitán de ningún equipo' }, { status: 403 });
+  if (!team) return NextResponse.json({ error: 'No eres capitán de ningún equipo' }, { status: 403 });
 
   // Verificar que el invitado no esté ya en un equipo
   const { data: member } = await supabase
@@ -36,7 +36,7 @@ export async function POST(request) {
     user_id: invitee_id,
     type:    'team_invite',
     title:   `${team.name} te invitó a su equipo`,
-    body:    'Entrá a tu perfil para aceptar o rechazar la invitación.',
+    body:    'Entra a tu perfil para aceptar o rechazar la invitación.',
     data:    { team_id: team.id },
   });
 

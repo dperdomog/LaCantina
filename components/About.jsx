@@ -6,17 +6,17 @@ const FEATURES = [
   {
     icon: '✦',
     title: 'Torneos Regulares',
-    body: 'Competencias semanales y mensuales para todos los niveles. Tanto si sos nuevo como si ya sos veterano, hay un torneo para vos.',
+    body: 'Competencias semanales y mensuales para todos los niveles. Tanto si eres nuevo como si ya eres veterano, hay un torneo para ti.',
   },
   {
     icon: '◆',
     title: 'Discord 24/7',
-    body: 'Chat activo todos los días. Encontrá compañeros de equipo, analizá partidas y mejorá tu juego con la comunidad.',
+    body: 'Chat activo todos los días. Encuentra compañeros de equipo, analiza partidas y mejora tu juego con la comunidad.',
   },
   {
     icon: '◇',
     title: 'Inscripciones Fáciles',
-    body: 'Conectá tu Discord, elegí el torneo y listo. Sin formularios, sin burocracia. Todo integrado con tu perfil de jugador.',
+    body: 'Conecta tu Discord, elige el torneo y listo. Sin formularios, sin burocracia. Todo integrado con tu perfil de jugador.',
   },
   {
     icon: '✱',
@@ -50,7 +50,7 @@ export default function About() {
             LA <span className="gradient-text">CANTINA</span><br />ES TU CASA.
           </h2>
           <p className="text-ink-dim mt-4 text-[16px] leading-relaxed">
-            Una comunidad construida por jugadores, para jugadores. Si jugás Deadlock en LATAM, este es tu lugar.
+            Una comunidad construida por jugadores, para jugadores. Si juegas Deadlock en LATAM, este es tu lugar.
           </p>
         </div>
 

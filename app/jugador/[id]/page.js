@@ -142,7 +142,7 @@ export default async function JugadorPage({ params }) {
                 <div>
                   <p className="mono-label text-[10px] mb-1">Discord</p>
                   <p className="text-ink text-[18px] font-semibold">@{profile.discord_username}</p>
-                  <p className="text-ink-dim text-[12px] mt-0.5">Buscá este usuario en Discord para contactarlo</p>
+                  <p className="text-ink-dim text-[12px] mt-0.5">Busca este usuario en Discord para contactarlo</p>
                 </div>
                 <CopyButton text={profile.discord_username} />
               </div>

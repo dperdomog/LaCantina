@@ -31,7 +31,7 @@ export default function OnboardingPage() {
     setLoading(false);
 
     if (!res.ok) {
-      setError(data.error ?? 'Ocurrió un error. Revisá la URL e intentá de nuevo.');
+      setError(data.error ?? 'Ocurrió un error. Revisa la URL e intenta de nuevo.');
       return;
     }
 
@@ -53,10 +53,10 @@ export default function OnboardingPage() {
           </div>
           <span className="mono-label text-yellow">// SETUP DE PERFIL</span>
           <h1 className="font-display text-[clamp(36px,6vw,56px)] leading-none text-ink mt-4">
-            VINCULÁ<br />TU <span className="gradient-text">RANGO.</span>
+            VINCULA<br />TU <span className="gradient-text">RANGO.</span>
           </h1>
           <p className="text-ink-dim text-[14px] mt-4 leading-relaxed">
-            Pegá la URL de tu perfil en StatLocker para vincularlo a tu cuenta en La Cantina.
+            Pega la URL de tu perfil en StatLocker para vincularlo a tu cuenta en La Cantina.
           </p>
         </div>
 
@@ -67,9 +67,9 @@ export default function OnboardingPage() {
           <div className="mb-6 p-4 bg-[#141823] rounded-[12px]">
             <span className="mono-label text-yellow block mb-2">¿Cómo encontrar tu URL?</span>
             <ol className="text-ink-dim text-[13px] flex flex-col gap-1.5 list-none">
-              <li><span className="text-yellow font-bold">1.</span> Entrá a <a href="https://statlocker.gg" target="_blank" rel="noopener noreferrer" className="text-yellow hover:opacity-80 transition-opacity">statlocker.gg</a></li>
-              <li><span className="text-yellow font-bold">2.</span> Buscá tu perfil por nombre de Steam</li>
-              <li><span className="text-yellow font-bold">3.</span> Copiá la URL de la barra del navegador</li>
+              <li><span className="text-yellow font-bold">1.</span> Entra a <a href="https://statlocker.gg" target="_blank" rel="noopener noreferrer" className="text-yellow hover:opacity-80 transition-opacity">statlocker.gg</a></li>
+              <li><span className="text-yellow font-bold">2.</span> Busca tu perfil por nombre de Steam</li>
+              <li><span className="text-yellow font-bold">3.</span> Copia la URL de la barra del navegador</li>
             </ol>
             <div className="mt-3 px-3 py-2 bg-[#06070a] rounded-[8px] font-mono text-[11px] text-ink-faint">
               https://statlocker.gg/profile/161957659
@@ -115,7 +115,7 @@ export default function OnboardingPage() {
         </div>
 
         <p className="text-center mono-label text-[10px] normal-case mt-5 text-ink-faint">
-          Podés vincular o cambiar tu StatLocker en cualquier momento desde tu perfil.
+          Puedes vincular o cambiar tu StatLocker en cualquier momento desde tu perfil.
         </p>
       </div>
     </main>

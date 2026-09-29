@@ -66,7 +66,7 @@ export async function POST(request) {
     const { data: team } = await supabase
       .from('teams').select('captain_id, name').eq('id', app.team_id).single();
     if (team?.captain_id !== user.id)
-      return NextResponse.json({ error: 'No sos el capitán' }, { status: 403 });
+      return NextResponse.json({ error: 'No eres el capitán' }, { status: 403 });
 
     await supabase.from('team_applications').update({ status }).eq('id', id);
 

@@ -34,7 +34,7 @@ export default function TeamActions({ teamId, isMember, isCaptain, canApply, has
 
   if (!isLoggedIn) return (
     <div className="mt-6 pt-6 border-t border-[rgba(241,237,229,0.08)]">
-      <p className="mono-label text-ink-dim text-[11px]">Conectá Discord para aplicar a este equipo.</p>
+      <p className="mono-label text-ink-dim text-[11px]">Conecta Discord para aplicar a este equipo.</p>
     </div>
   );
 

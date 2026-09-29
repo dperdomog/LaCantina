@@ -82,14 +82,14 @@ export default function DiscordCTA() {
 
           {/* Left */}
           <div className="reveal">
-            <span className="mono-label text-yellow">// UNITE A LA COMUNIDAD</span>
+            <span className="mono-label text-yellow">// ÚNETE A LA COMUNIDAD</span>
             <h2 className="font-display text-[clamp(48px,6vw,80px)] leading-[0.9] mt-3 text-ink">
               PASA,<br /><span className="gradient-text">ESTAMOS</span><br />EN ALGO.
             </h2>
             <p className="text-ink-dim text-[16px] mt-5 mb-7 max-w-[480px] leading-relaxed">
               <span className="text-ink font-semibold">{membersStr} jugadores</span>, con{' '}
               <span className="text-green font-semibold">{onlineStr} en línea ahora mismo</span>.
-              Conectá tu Discord y armá equipo en menos de 5 minutos.
+              Conecta tu Discord y arma equipo en menos de 5 minutos.
             </p>
             {/* Botones auth */}
             {user ? (

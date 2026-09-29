@@ -42,7 +42,7 @@ export async function POST(request) {
     user_id: team.captain_id,
     type:    'team_apply',
     title:   `${applicantName} quiere unirse a ${team.name}`,
-    body:    'Revisá las solicitudes en la página de tu equipo o en tu perfil.',
+    body:    'Revisa las solicitudes en la página de tu equipo o en tu perfil.',
     data:    { team_id, applicant_id: user.id },
   });
 

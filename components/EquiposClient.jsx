@@ -116,7 +116,7 @@ function CreateTeamModal({ onClose, onCreated }) {
           <label className="flex flex-col gap-1.5">
             <span className="mono-label text-[10px]">Descripción <span className="text-ink-faint">(opcional)</span></span>
             <textarea value={description} onChange={e => setDesc(e.target.value)}
-              placeholder="Contá un poco de qué se trata el equipo…"
+              placeholder="Cuenta un poco de qué se trata el equipo…"
               maxLength={200} rows={3}
               className="field resize-none" />
           </label>
@@ -265,7 +265,7 @@ export default function EquiposClient({ teams, currentUserId, userTeamId, applie
           </button>
         )}
         {!currentUserId && (
-          <p className="mono-label text-ink-dim text-[11px]">Conectá Discord para crear un equipo</p>
+          <p className="mono-label text-ink-dim text-[11px]">Conecta Discord para crear un equipo</p>
         )}
       </div>
 

@@ -40,7 +40,7 @@ export async function POST(request) {
 
   if (error) {
     const msg = error.code === '23505'
-      ? 'Ya existe un torneo con ese ID. Cambiá el nombre o el ID.'
+      ? 'Ya existe un torneo con ese ID. Cambia el nombre o el ID.'
       : error.message;
     return NextResponse.json({ error: msg }, { status: 500 });
   }
