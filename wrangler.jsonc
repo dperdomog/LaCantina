@@ -4,8 +4,10 @@
   "name": "lacantina",
   "compatibility_date": "2026-08-01",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
-  // Las variables se configuran en el dashboard; sin esto el deploy las borra
-  "keep_vars": true,
+  // Los secretos (SUPABASE_SERVICE_ROLE_KEY, TWITCH_CLIENT_SECRET) van como Secrets en el dashboard
+  "vars": {
+    "TWITCH_CLIENT_ID": "n7mb5m5f2asvw2amhrkpvkhm3u8hji"
+  },
   "routes": [
     { "pattern": "lacantina.club", "custom_domain": true },
     { "pattern": "www.lacantina.club", "custom_domain": true }

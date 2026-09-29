@@ -63,9 +63,9 @@ Se deploya con [OpenNext](https://opennext.js.org/cloudflare) (config en `wrangl
    - **Project name:** `lacantina` (tiene que coincidir con `name` en `wrangler.jsonc`).
    - **Build command:** `npx opennextjs-cloudflare build`
    - **Deploy command:** `npx opennextjs-cloudflare deploy`
-2. Variables — van en **dos lugares**:
-   - **Settings → Build → Variables and secrets:** las `NEXT_PUBLIC_*` (se inyectan en el build).
-   - **Settings → Variables and Secrets:** todas las del `.env.local` (runtime). `SUPABASE_SERVICE_ROLE_KEY` y las de Twitch como *Secret*.
+2. Variables:
+   - Las `NEXT_PUBLIC_*` están en `.env.production` (son públicas) y `TWITCH_CLIENT_ID` en `vars` de `wrangler.jsonc`.
+   - En **Settings → Variables and Secrets**, agregá `SUPABASE_SERVICE_ROLE_KEY` y `TWITCH_CLIENT_SECRET` como *Secret*.
 3. En Supabase → **Authentication → URL Configuration**, agregá `https://lacantina.TU_SUBDOMINIO.workers.dev/**` (y tu dominio propio si tenés) a Redirect URLs.
 4. Deploy automático con cada push a `main`.
 
