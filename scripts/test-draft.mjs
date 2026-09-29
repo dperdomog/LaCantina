@@ -74,7 +74,24 @@ for (const [msg, fn] of [
 assert(D.autoAction({ format: '6v6', bans_per_team: 2, actions: [] }).hero_id === null, 'ban por tiempo debería perderse');
 for (let i = 0; i < 200; i++) assert(/^[A-HJ-NP-Z2-9]{6}$/.test(D.roomCode()), 'código de sala inválido');
 
-// 5) Bans fijos por formato
+// 5) Héroes pendientes: fuera del draft hasta que el admin los habilite
+const { PENDING_HERO_IDS } = await import(pathToFileURL(join(dir, 'heroes.js')).href);
+if (PENDING_HERO_IDS.length) {
+  const pend = PENDING_HERO_IDS[0];
+  const fresh = () => ({ format: '2v2', bans_per_team: 1, actions: [] });
+  assert(!ACTIVE_HERO_IDS.includes(pend), 'un pendiente no debería estar entre los jugables');
+  let threw = false;
+  try { D.makeAction(fresh(), 'A', pend); } catch { threw = true; }
+  assert(threw, 'aceptó un héroe pendiente sin habilitar');
+  const pool = [...ACTIVE_HERO_IDS, pend];
+  assert(D.makeAction(fresh(), 'A', pend, pool).hero_id === pend, 'no aceptó un pendiente habilitado');
+  assert(!D.availableHeroes([], ACTIVE_HERO_IDS).includes(pend), 'pendiente en disponibles por defecto');
+  assert(D.availableHeroes([], pool).includes(pend), 'pendiente habilitado no aparece en disponibles');
+  const d2 = { format: '2v2', bans_per_team: 1, actions: [{ type: 'ban', side: 'A', hero_id: null }, { type: 'ban', side: 'B', hero_id: null }] };
+  for (let i = 0; i < 50; i++) assert(pool.includes(D.autoAction(d2, Math.random, pool).hero_id), 'pick al azar fuera del pool');
+}
+
+// 6) Bans fijos por formato
 const expected = {
   '6v6': 'bA bB pA pB pB pA pA pB bB bA pB pA pA pB pB pA',
   '4v4': 'bA bB pA pB pB pA pA pB pB pA',

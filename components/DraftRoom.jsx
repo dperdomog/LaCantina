@@ -155,7 +155,7 @@ function LobbySide({ side, draft, profile, viewerId, mySide, linked, busy, onJoi
 }
 
 // ── Sala de draft ────────────────────────────────────────────────────────────
-export default function DraftRoom({ initialDraft, initialProfiles, viewerId, isAdmin }) {
+export default function DraftRoom({ initialDraft, initialProfiles, viewerId, isAdmin, pool = ACTIVE_HERO_IDS }) {
   const id = initialDraft.id;
   const sbRef = useRef(null);
   const getSb = () => (sbRef.current ??= createClient());
@@ -300,8 +300,8 @@ export default function DraftRoom({ initialDraft, initialProfiles, viewerId, isA
 
   const heroes = useMemo(() => {
     const q = norm(search.trim());
-    return q ? ACTIVE_HERO_IDS.filter(h => norm(heroInfo(h).name).includes(q)) : ACTIVE_HERO_IDS;
-  }, [search]);
+    return q ? pool.filter(h => norm(heroInfo(h).name).includes(q)) : pool;
+  }, [search, pool]);
 
   const sum = summary({ ...draft, actions });
   const resultText = [

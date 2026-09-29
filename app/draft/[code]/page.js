@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import DraftRoom from '@/components/DraftRoom';
+import { getHeroPool } from '@/lib/heroPool';
 
 const normalize = code => String(code ?? '').toUpperCase();
 const validCode = code => /^[A-Z0-9]{6}$/.test(code);
@@ -28,13 +29,14 @@ export default async function DraftRoomPage({ params }) {
   if (!draft) notFound();
 
   const ids = [draft.captain_a, draft.captain_b].filter(Boolean);
-  const [{ data: profiles }, { data: me }] = await Promise.all([
+  const [{ data: profiles }, { data: me }, pool] = await Promise.all([
     ids.length
       ? supabase.from('profiles').select('id, display_name, discord_username, avatar_url').in('id', ids)
       : Promise.resolve({ data: [] }),
     user
       ? supabase.from('profiles').select('is_admin').eq('id', user.id).maybeSingle()
       : Promise.resolve({ data: null }),
+    getHeroPool(supabase),
   ]);
 
   return (
@@ -44,6 +46,7 @@ export default async function DraftRoomPage({ params }) {
         initialProfiles={profiles ?? []}
         viewerId={user?.id ?? null}
         isAdmin={!!me?.is_admin}
+        pool={pool}
       />
     </main>
   );

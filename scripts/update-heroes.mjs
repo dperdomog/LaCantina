@@ -13,31 +13,34 @@ const file = new URL('../lib/heroes.js', import.meta.url);
 const previous = existsSync(file) ? (await import(`${file.href}?t=${Date.now()}`)).HEROES : {};
 const today = new Date().toISOString().slice(0, 10);
 
-// Jugable hoy: no deshabilitado ni en desarrollo. Los héroes recién lanzados pueden
-// venir sin `player_selectable` en la API, por eso no alcanza con ese campo.
-const playable = h => !h.disabled && !h.in_development && !/testhero/i.test(h.class_name ?? '') && !!h.images?.icon_hero_card;
+// Héroe terminado: no deshabilitado ni en desarrollo. Los héroes anunciados en un parche
+// se liberan de a poco (por votación en el juego) y mientras tanto vienen sin
+// `player_selectable`: quedan como pendientes hasta que un admin los habilite.
+const finished = h => !h.disabled && !h.in_development && !/testhero/i.test(h.class_name ?? '') && !!h.images?.icon_hero_card;
 
 const map = {};
-for (const h of heroes.filter(h => h.player_selectable || playable(h)).sort((a, b) => a.id - b.id)) {
+for (const h of heroes.filter(finished).sort((a, b) => a.id - b.id)) {
   const img = h.images ?? {};
   map[h.id] = {
     name:   h.name,
     image:  img.icon_image_small_webp ?? img.icon_image_small ?? img.icon_hero_card_webp ?? null,
     card:   img.icon_hero_card_webp ?? img.icon_hero_card ?? null,
-    active: playable(h),                                     // elegible en el draft
+    active: !!h.player_selectable,                           // ya está en el juego
+    ...(h.player_selectable ? {} : { pending: true }),       // anunciado, todavía no liberado
     ...(previous[h.id] ? (previous[h.id].added ? { added: previous[h.id].added } : {}) : { added: today }),
   };
 }
-// Héroes que ya no vienen en la API: se mantienen, pero no jugables
+// Héroes que se jugaron y ya no vienen en la API: se mantienen para el historial
 for (const [id, h] of Object.entries(previous)) {
-  if (!map[id]) map[id] = { ...h, active: false };
+  if (!map[id] && h.active) map[id] = { ...h, active: false };
 }
 
 const sorted = Object.keys(map).map(Number).sort((a, b) => a - b);
 const lines = sorted.map(id => `  ${id}: ${JSON.stringify(map[id])},`).join('\n');
 const out = `// Generado por scripts/update-heroes.mjs (npm run update:heroes). No editar a mano.
-// Héroes de Deadlock: id → { name, image, card, active, added? } (deadlock-api.com)
-// added = fecha en que el héroe apareció en el sitio (para marcarlo como nuevo)
+// Héroes de Deadlock: id → { name, image, card, active, pending?, added? } (deadlock-api.com)
+// active  = ya se puede jugar; pending = anunciado, se habilita desde Admin → Héroes
+// added   = fecha en que el héroe apareció en el sitio (para marcarlo como nuevo)
 export const HEROES = {
 ${lines}
 };
@@ -52,12 +55,16 @@ export function isNewHero(id, days = 30, now = Date.now()) {
   return !!added && now - new Date(added).getTime() < days * 86400e3;
 }
 
+const byName = (a, b) => HEROES[a].name.localeCompare(HEROES[b].name, 'es');
+
 // Héroes jugables hoy, ordenados por nombre (para el draft)
-export const ACTIVE_HERO_IDS = Object.keys(HEROES).map(Number).filter(id => HEROES[id].active)
-  .sort((a, b) => HEROES[a].name.localeCompare(HEROES[b].name, 'es'));
+export const ACTIVE_HERO_IDS = Object.keys(HEROES).map(Number).filter(id => HEROES[id].active).sort(byName);
+
+// Anunciados pero todavía no liberados (se habilitan desde el admin)
+export const PENDING_HERO_IDS = Object.keys(HEROES).map(Number).filter(id => HEROES[id].pending).sort(byName);
 `;
 
 writeFileSync(file, out);
 const added = sorted.filter(id => map[id].added === today && !previous[id]).map(id => map[id].name);
-console.log(`lib/heroes.js: ${sorted.length} héroes, ${sorted.filter(id => map[id].active).length} jugables`);
+console.log(`lib/heroes.js: ${sorted.length} héroes, ${sorted.filter(id => map[id].active).length} jugables, ${sorted.filter(id => map[id].pending).length} pendientes`);
 if (added.length) console.log(`Nuevos: ${added.join(', ')}`);

@@ -3,6 +3,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { NextResponse } from 'next/server';
 import { bannedResponse } from '@/lib/moderation';
 import { currentTurn, makeAction, autoAction, isDone } from '@/lib/draft';
+import { getHeroPool } from '@/lib/heroPool';
 
 const fail = (error, status = 400) => NextResponse.json({ error }, { status });
 
@@ -46,7 +47,8 @@ export async function PATCH(request, { params }) {
     if (draft.status !== 'drafting' || !draft.timer_s || !draft.turn_started_at) return fail('No hay tiempo corriendo', 409);
     const deadline = new Date(draft.turn_started_at).getTime() + draft.timer_s * 1000;
     if (Date.now() < deadline) return fail('Todavía queda tiempo', 409);
-    const res = await commit(admin, draft, advance(draft, autoAction(draft)));
+    const pool = await getHeroPool(admin);
+    const res = await commit(admin, draft, advance(draft, autoAction(draft, Math.random, pool)));
     return res.error ?? NextResponse.json({ draft: res.draft });
   }
 
@@ -94,7 +96,8 @@ export async function PATCH(request, { params }) {
       if (!turn) return fail('El draft ya terminó');
       if (mySide !== turn.side) return fail(mySide ? 'No es tu turno' : 'No eres capitán en esta sala', 403);
       let action;
-      try { action = makeAction(draft, mySide, body.hero_id); }
+      const pool = await getHeroPool(admin);
+      try { action = makeAction(draft, mySide, body.hero_id, pool); }
       catch (e) { return fail(e.message); }
       const res = await commit(admin, draft, advance(draft, action));
       return res.error ?? NextResponse.json({ draft: res.draft });

@@ -16,6 +16,7 @@ export default async function AdminLayout({ children }) {
         <a href="/admin" className="pill bg-surface text-ink no-underline hover:bg-surface-2 transition-colors">Dashboard</a>
         <a href="/admin/torneos/nuevo" className="pill bg-surface text-ink no-underline hover:bg-surface-2 transition-colors">+ Nuevo torneo</a>
         <a href="/admin/eventos" className="pill bg-surface text-ink no-underline hover:bg-surface-2 transition-colors">📅 Eventos</a>
+        <a href="/admin/heroes" className="pill bg-surface text-ink no-underline hover:bg-surface-2 transition-colors">🦸 Héroes</a>
         <a href="/admin/reportes" className={`pill no-underline transition-colors ${openReports ? 'bg-pink text-on-color' : 'bg-surface text-ink hover:bg-surface-2'}`}>
           🚩 Reportes{openReports ? ` (${openReports})` : ''}
         </a>
