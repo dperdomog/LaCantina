@@ -45,6 +45,9 @@ async function fromMatch(admin, matchId, userId, isAdmin) {
   const b = side(match.reg_b);
   if (!isAdmin && userId !== a.captain_id && userId !== b.captain_id)
     return { error: 'Solo los capitanes de la partida pueden crear el draft', status: 403 };
+  // Sin capitán en un lado la sala no podría empezar nunca
+  if (!a.captain_id || !b.captain_id || a.captain_id === b.captain_id)
+    return { error: 'A uno de los equipos le falta capitán en el sitio. Crea un draft normal desde /draft.' };
   return { a, b, link: { match_id: match.id } };
 }
 
