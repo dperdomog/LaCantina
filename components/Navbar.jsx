@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import NotificationBell from '@/components/NotificationBell';
@@ -9,14 +9,18 @@ import ThemeToggle from '@/components/ThemeToggle';
 const DISCORD_INVITE = process.env.NEXT_PUBLIC_DISCORD_INVITE ?? '#discord';
 
 const LINKS = [
-  ['/torneos',     'Torneos',    false],
-  ['/calendario',  'Calendario', false],
-  ['/equipos',     'Equipos',    false],
-  ['/jugadores',   'Jugadores',  false],
-  ['/tablon',      'Tablón',     false],
-  ['/ranking',     'Ranking',    false],
-  ['/draft',       'Draft',      false],
-  [DISCORD_INVITE, 'Discord',    true],
+  ['/torneos',   'Torneos'],
+  ['/equipos',   'Equipos'],
+  ['/jugadores', 'Jugadores'],
+  ['/tablon',    'Tablón'],
+  ['/ranking',   'Ranking'],
+];
+
+// Agrupadas en "Herramientas" para que la barra entre en pantallas de 1280 px
+const TOOLS = [
+  ['/draft',      '🎯 Draft'],
+  ['/mapa',       '🗺️ Mapa de coaching'],
+  ['/calendario', '📅 Calendario'],
 ];
 
 async function loginWithDiscord() {
@@ -36,6 +40,18 @@ export default function Navbar() {
   const [user,        setUser]        = useState(null);
   const [isAdmin,     setIsAdmin]     = useState(false);
   const [displayName, setDisplayName] = useState(null);
+  const [toolsOpen,   setToolsOpen]   = useState(false);
+  const toolsRef = useRef(null);
+
+  // Cerrar el menú de herramientas al hacer clic afuera o con Escape
+  useEffect(() => {
+    if (!toolsOpen) return;
+    const onClick = e => { if (!toolsRef.current?.contains(e.target)) setToolsOpen(false); };
+    const onKey   = e => { if (e.key === 'Escape') setToolsOpen(false); };
+    document.addEventListener('pointerdown', onClick);
+    document.addEventListener('keydown', onKey);
+    return () => { document.removeEventListener('pointerdown', onClick); document.removeEventListener('keydown', onKey); };
+  }, [toolsOpen]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -65,8 +81,12 @@ export default function Navbar() {
     setUser(null);
   }
 
-  const linkProps = external => (external ? { target: '_blank', rel: 'noopener noreferrer' } : {});
-  const isActive  = href => href.startsWith('/') && pathname.startsWith(href);
+  const isActive  = href => pathname.startsWith(href);
+  const toolActive = TOOLS.some(([href]) => isActive(href));
+  const pillClass = active => `font-display text-[16px] px-3 py-1.5 rounded-full no-underline transition-colors ${
+    active ? 'bg-ink text-bg' : 'text-ink hover:bg-ink hover:text-bg'
+  }`;
+  const external = { target: '_blank', rel: 'noopener noreferrer' };
 
   return (
     <nav className="sticky top-0 z-[100] bg-bg/95 backdrop-blur-[10px] border-b-[3px] border-line">
@@ -79,16 +99,28 @@ export default function Navbar() {
 
         {/* Links (escritorio) */}
         <ul className="hidden xl:flex items-center gap-0.5 list-none ml-5">
-          {LINKS.map(([href, label, external]) => (
-            <li key={label}>
-              <a href={href} {...linkProps(external)}
-                className={`font-display text-[16px] px-3 py-1.5 rounded-full no-underline transition-colors ${
-                  isActive(href) ? 'bg-ink text-bg' : 'text-ink hover:bg-ink hover:text-bg'
-                }`}>
-                {label}{external ? ' ↗' : ''}
-              </a>
-            </li>
+          {LINKS.map(([href, label]) => (
+            <li key={href}><a href={href} className={pillClass(isActive(href))}>{label}</a></li>
           ))}
+          <li ref={toolsRef} className="relative">
+            <button type="button" onClick={() => setToolsOpen(o => !o)} aria-expanded={toolsOpen} aria-haspopup="true"
+              className={`${pillClass(toolActive || toolsOpen)} inline-flex items-center gap-1`}>
+              Herramientas <span className={`text-[11px] transition-transform ${toolsOpen ? 'rotate-180' : ''}`}>▾</span>
+            </button>
+            {toolsOpen && (
+              <div className="sticker absolute left-0 top-[calc(100%+10px)] p-2 min-w-[230px] flex flex-col gap-1 z-[200]">
+                {TOOLS.map(([href, label]) => (
+                  <a key={href} href={href} onClick={() => setToolsOpen(false)}
+                    className={`font-display text-[16px] px-3 py-2 rounded-xl no-underline transition-colors ${
+                      isActive(href) ? 'bg-ink text-bg' : 'text-ink hover:bg-surface-2'
+                    }`}>
+                    {label}
+                  </a>
+                ))}
+              </div>
+            )}
+          </li>
+          <li><a href={DISCORD_INVITE} {...external} className={pillClass(false)}>Discord ↗</a></li>
         </ul>
 
         {/* Acciones */}
@@ -135,14 +167,18 @@ export default function Navbar() {
 
       {mobileOpen && (
         <div className="xl:hidden border-t-[3px] border-line bg-bg px-5 pt-8 pb-5 flex flex-col gap-2">
-          {LINKS.map(([href, label, external]) => (
-            <a key={label} href={href} onClick={() => setMobileOpen(false)} {...linkProps(external)}
+          {[...LINKS, ...TOOLS].map(([href, label]) => (
+            <a key={href} href={href} onClick={() => setMobileOpen(false)}
               className={`font-display text-[22px] px-4 py-2 rounded-2xl no-underline border-[3px] ${
                 isActive(href) ? 'bg-ink text-bg border-line' : 'text-ink border-transparent hover:border-line'
               }`}>
-              {label}{external ? ' ↗' : ''}
+              {label}
             </a>
           ))}
+          <a href={DISCORD_INVITE} {...external} onClick={() => setMobileOpen(false)}
+            className="font-display text-[22px] px-4 py-2 rounded-2xl no-underline border-[3px] text-ink border-transparent hover:border-line">
+            Discord ↗
+          </a>
           {user && (
             <button onClick={handleSignOut} className="btn btn-secondary btn-sm self-start mt-2 sm:hidden">Salir</button>
           )}
