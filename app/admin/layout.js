@@ -8,6 +8,7 @@ export default function AdminLayout({ children }) {
         <span className="pill bg-yellow text-on-color">⚡ Panel admin</span>
         <a href="/admin" className="pill bg-surface text-ink no-underline hover:bg-surface-2 transition-colors">Dashboard</a>
         <a href="/admin/torneos/nuevo" className="pill bg-surface text-ink no-underline hover:bg-surface-2 transition-colors">+ Nuevo torneo</a>
+        <a href="/admin/eventos" className="pill bg-surface text-ink no-underline hover:bg-surface-2 transition-colors">📅 Eventos</a>
         <a href="/" className="ml-auto text-[13px] font-bold text-ink-dim hover:text-ink transition-colors no-underline">← Sitio público</a>
       </div>
       {children}
