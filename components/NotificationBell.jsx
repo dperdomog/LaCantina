@@ -19,6 +19,7 @@ const TYPE_ICON = {
   scrim_accepted:       '✅',
   scrim_declined:       '❌',
   scrim_cancelled:      '🚫',
+  report_new:           '🚩',
   default:              '🔔',
 };
 
