@@ -42,3 +42,28 @@ export async function POST(request) {
 
   return NextResponse.json({ team });
 }
+
+// PATCH /api/teams — el capitán cambia el logo del equipo
+export async function PATCH(request) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+
+  const { team_id, logo_url } = await request.json();
+
+  // Solo imágenes subidas a nuestro Storage
+  const allowedPrefix = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/team-logos/`;
+  if (typeof logo_url !== 'string' || !logo_url.startsWith(allowedPrefix))
+    return NextResponse.json({ error: 'URL de logo inválida' }, { status: 400 });
+
+  const { data: team } = await supabase
+    .from('teams').select('captain_id').eq('id', team_id).single();
+  if (!team) return NextResponse.json({ error: 'Equipo no encontrado' }, { status: 404 });
+  if (team.captain_id !== user.id)
+    return NextResponse.json({ error: 'Solo el capitán puede cambiar el logo' }, { status: 403 });
+
+  const { error } = await supabase.from('teams').update({ logo_url }).eq('id', team_id);
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  return NextResponse.json({ ok: true, logo_url });
+}

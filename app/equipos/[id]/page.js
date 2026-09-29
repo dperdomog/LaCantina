@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import TeamActions from '@/components/TeamActions';
 import { TeamApplicationsSection, PendingInvitationBanner, InvitePlayersSection } from '@/components/TeamPageActions';
 import TeamRoster from '@/components/TeamRoster';
+import TeamLogo from '@/components/TeamLogo';
 
 export async function generateMetadata({ params }) {
   const { id } = await params;
@@ -105,14 +106,8 @@ export default async function TeamPage({ params }) {
         <div className="sticker p-6 md:p-8 mb-8">
           <div className="flex items-start gap-6 flex-wrap">
 
-            {/* Logo */}
-            {team.logo_url
-              ? <img src={team.logo_url} alt={team.name}
-                  className="w-24 h-24 rounded-2xl object-cover border-[3px] border-line shadow-sticker-sm shrink-0 -rotate-3" />
-              : <div className="w-24 h-24 rounded-2xl bg-yellow border-[3px] border-line shadow-sticker-sm flex items-center justify-center font-display text-[44px] text-on-color shrink-0 -rotate-3">
-                  {team.name[0].toUpperCase()}
-                </div>
-            }
+            {/* Logo (el capitán puede cambiarlo) */}
+            <TeamLogo teamId={team.id} name={team.name} logoUrl={team.logo_url} canEdit={isCaptain} />
 
             <div className="flex-1 min-w-0">
               <span className="mono-label">🛡️ Equipo</span>
