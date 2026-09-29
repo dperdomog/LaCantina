@@ -19,16 +19,20 @@ export default async function AdminTorneoPage({ params }) {
 
   if (!tournament) notFound();
 
-  const { data: registrations } = await supabase
-    .from('registrations')
-    .select('id, team_name, captain_nick, captain_discord, region, members, experience, created_at')
-    .eq('tournament_id', id)
-    .order('created_at', { ascending: true });
+  const [{ data: registrations }, { data: matches }] = await Promise.all([
+    supabase
+      .from('registrations')
+      .select('id, team_name, captain_nick, captain_discord, region, members, experience, created_at, checked_in_at, seed')
+      .eq('tournament_id', id)
+      .order('created_at', { ascending: true }),
+    supabase.from('matches').select('*').eq('tournament_id', id),
+  ]);
 
   return (
     <TorneoAdmin
       tournament={tournament}
       registrations={registrations ?? []}
+      matches={matches ?? []}
     />
   );
 }

@@ -29,6 +29,19 @@ const STATUSES = [
   { value: 'closed', label: 'Cerrado' },
 ];
 
+const BRACKETS = [
+  { value: 'single', label: 'Eliminación simple' },
+  { value: 'double', label: 'Eliminación doble' },
+];
+
+// ISO (UTC) ↔ valor de <input type="datetime-local"> en la hora local del admin
+function isoToLocal(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 const EMPTY = {
   name:         '',
   id:           '',
@@ -41,6 +54,9 @@ const EMPTY = {
   region:       'LATAM',
   featured:     false,
   description:  '',
+  starts_local: '',
+  checkin_minutes: 60,
+  bracket_type: 'single',
 };
 
 export default function TorneoForm({ tournament, onSaved }) {
@@ -53,6 +69,9 @@ export default function TorneoForm({ tournament, onSaved }) {
     date_display: tournament.date_display ?? '',
     time_display: tournament.time_display ?? '',
     prize:        tournament.prize        ?? 'Por definir',
+    starts_local: isoToLocal(tournament.starts_at),
+    checkin_minutes: tournament.checkin_minutes ?? 60,
+    bracket_type: tournament.bracket_type ?? 'single',
   } : EMPTY);
 
   const [loading, setLoading] = useState(false);
@@ -77,7 +96,10 @@ export default function TorneoForm({ tournament, onSaved }) {
     const res  = await fetch(url, {
       method,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
+      body: JSON.stringify((({ starts_local, ...rest }) => ({
+        ...rest,
+        starts_at: starts_local ? new Date(starts_local).toISOString() : null,
+      }))(form)),
     });
     const data = await res.json();
     setLoading(false);
@@ -144,8 +166,39 @@ export default function TorneoForm({ tournament, onSaved }) {
           />
         </Field>
 
+        {/* Inicio real (para cuenta regresiva y check-in) */}
+        <Field label="Fecha y hora de inicio" note="(tu hora local)">
+          <input
+            type="datetime-local"
+            value={form.starts_local}
+            onChange={e => set('starts_local', e.target.value)}
+            className="field"
+          />
+        </Field>
+
+        {/* Check-in */}
+        <Field label="Check-in" note="(minutos antes del inicio)">
+          <input
+            type="number"
+            value={form.checkin_minutes}
+            onChange={e => set('checkin_minutes', parseInt(e.target.value) || 0)}
+            min={0}
+            max={1440}
+            className="field"
+          />
+        </Field>
+
+        {/* Tipo de llave */}
+        <Field label="Tipo de llave">
+          <select value={form.bracket_type} onChange={e => set('bracket_type', e.target.value)} className="field">
+            {BRACKETS.map(b => <option key={b.value} value={b.value}>{b.label}</option>)}
+          </select>
+        </Field>
+
+        <div className="hidden sm:block" />
+
         {/* Fecha */}
-        <Field label="Fecha">
+        <Field label="Fecha a mostrar" note="(opcional, si no hay fecha de inicio)">
           <input
             type="date"
             value={form.date_display}
@@ -155,7 +208,7 @@ export default function TorneoForm({ tournament, onSaved }) {
         </Field>
 
         {/* Hora */}
-        <Field label="Hora">
+        <Field label="Hora a mostrar" note="(opcional)">
           <input
             type="time"
             value={form.time_display}

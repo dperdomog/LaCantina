@@ -2,6 +2,26 @@ import { createClient } from '@/lib/supabase/server';
 import { requireAdmin, slugify } from '@/lib/admin';
 import { NextResponse } from 'next/server';
 
+// Campos nuevos de llave/check-in: valida y normaliza (null si viene vacío)
+function bracketFields(body) {
+  const out = {};
+  if (body.starts_at !== undefined) {
+    const d = body.starts_at ? new Date(body.starts_at) : null;
+    if (d && isNaN(d)) return { error: 'Fecha de inicio inválida' };
+    out.starts_at = d ? d.toISOString() : null;
+  }
+  if (body.checkin_minutes !== undefined) {
+    const n = Number(body.checkin_minutes);
+    if (!Number.isInteger(n) || n < 0 || n > 1440) return { error: 'Los minutos de check-in deben ser entre 0 y 1440' };
+    out.checkin_minutes = n;
+  }
+  if (body.bracket_type !== undefined) {
+    if (!['single', 'double'].includes(body.bracket_type)) return { error: 'Tipo de llave inválido' };
+    out.bracket_type = body.bracket_type;
+  }
+  return { fields: out };
+}
+
 // POST /api/admin/tournaments — crear torneo
 export async function POST(request) {
   const supabase = await createClient();
@@ -14,6 +34,9 @@ export async function POST(request) {
   if (!name?.trim()) {
     return NextResponse.json({ error: 'El nombre es requerido' }, { status: 400 });
   }
+
+  const extra = bracketFields(body);
+  if (extra.error) return NextResponse.json({ error: extra.error }, { status: 400 });
 
   const slug = id?.trim() || slugify(name.trim());
   if (!slug) {
@@ -34,6 +57,7 @@ export async function POST(request) {
       region:       region       || 'LATAM',
       featured:     featured     ?? false,
       description:  description?.trim() || null,
+      ...extra.fields,
     })
     .select()
     .single();

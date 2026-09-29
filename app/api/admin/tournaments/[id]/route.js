@@ -1,7 +1,28 @@
 import { createClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/lib/admin';
 import { notifyMany } from '@/lib/notify';
+import { announce, COLORS } from '@/lib/discord';
 import { NextResponse } from 'next/server';
+
+// Campos nuevos de llave/check-in: valida y normaliza (null si viene vacío)
+function bracketFields(body) {
+  const out = {};
+  if (body.starts_at !== undefined) {
+    const d = body.starts_at ? new Date(body.starts_at) : null;
+    if (d && isNaN(d)) return { error: 'Fecha de inicio inválida' };
+    out.starts_at = d ? d.toISOString() : null;
+  }
+  if (body.checkin_minutes !== undefined) {
+    const n = Number(body.checkin_minutes);
+    if (!Number.isInteger(n) || n < 0 || n > 1440) return { error: 'Los minutos de check-in deben ser entre 0 y 1440' };
+    out.checkin_minutes = n;
+  }
+  if (body.bracket_type !== undefined) {
+    if (!['single', 'double'].includes(body.bracket_type)) return { error: 'Tipo de llave inválido' };
+    out.bracket_type = body.bracket_type;
+  }
+  return { fields: out };
+}
 
 const STATUS_LABELS = {
   open:   'Las inscripciones ya están disponibles.',
@@ -23,6 +44,9 @@ export async function PATCH(request, { params }) {
   for (const key of allowed) {
     if (body[key] !== undefined) updates[key] = body[key];
   }
+  const extra = bracketFields(body);
+  if (extra.error) return NextResponse.json({ error: extra.error }, { status: 400 });
+  Object.assign(updates, extra.fields);
 
   if (Object.keys(updates).length === 0) {
     return NextResponse.json({ error: 'Nada que actualizar' }, { status: 400 });
@@ -52,6 +76,13 @@ export async function PATCH(request, { params }) {
     const statusBody = STATUS_LABELS[newStatus];
 
     if (newStatus === 'open') {
+      await announce({
+        title:       `🏆 ${tournament.name} abrió inscripciones`,
+        description: `${tournament.format} · ${tournament.region}${tournament.prize ? ` · Premio: ${tournament.prize}` : ''}`,
+        path:        `/torneos/${id}`,
+        color:       COLORS.green,
+      });
+
       // Notificar a todos los usuarios registrados
       const { data: profiles } = await supabase.from('profiles').select('id');
       const ids = (profiles ?? []).map(p => p.id);

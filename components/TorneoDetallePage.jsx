@@ -2,6 +2,9 @@
 
 import dynamic from 'next/dynamic';
 import { useState } from 'react';
+import Bracket from './Bracket';
+import Countdown, { LocalTime } from './Countdown';
+import CheckInButton from './CheckInButton';
 
 const TorneoModal = dynamic(() => import('./TorneoModal'), { ssr: false });
 
@@ -20,8 +23,11 @@ function formatDate(iso) {
   });
 }
 
-export default function TorneoDetallePage({ torneo, registrations }) {
+export default function TorneoDetallePage({ torneo, registrations, matches = [], myRegistration = null }) {
   const [showModal, setShowModal] = useState(false);
+
+  const names    = Object.fromEntries(registrations.map(r => [r.id, (isTeamFormat(torneo.format) ? r.team_name : r.captain_nick) ?? r.captain_nick ?? '—']));
+  const champion = torneo.winner_registration_id ? names[torneo.winner_registration_id] : null;
 
   const isTeam = isTeamFormat(torneo.format);
   const s      = STATUS[torneo.status] ?? STATUS.closed;
@@ -55,8 +61,8 @@ export default function TorneoDetallePage({ torneo, registrations }) {
         {/* Info grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
           {[
-            { icon: '📅', label: 'Fecha',   value: torneo.date },
-            { icon: '⏰', label: 'Hora',    value: torneo.time },
+            { icon: '📅', label: 'Fecha',   value: torneo.starts_at ? <LocalTime iso={torneo.starts_at} part="date" fallback={torneo.date} /> : torneo.date },
+            { icon: '⏰', label: 'Hora',    value: torneo.starts_at ? <LocalTime iso={torneo.starts_at} part="time" fallback={torneo.time} /> : torneo.time },
             { icon: '🏆', label: 'Premio',  value: torneo.prize, accent: true },
             { icon: '👥', label: 'Formato', value: `${torneo.format} · Máx ${torneo.maxSlots}` },
           ].map(({ icon, label, value, accent }) => (
@@ -88,7 +94,44 @@ export default function TorneoDetallePage({ torneo, registrations }) {
             Inscribirse →
           </button>
         )}
+
+        <div className="flex flex-col gap-5 mt-8">
+          {/* Campeón */}
+          {champion && (
+            <div className="sticker bg-yellow text-on-color p-6 flex items-center gap-4 flex-wrap">
+              <span className="text-[44px] leading-none">🏆</span>
+              <div>
+                <span className="font-display text-[15px] uppercase tracking-wider">Campeón</span>
+                <p className="font-display text-[clamp(26px,4vw,36px)] leading-tight">{champion}</p>
+              </div>
+            </div>
+          )}
+
+          {/* Cuenta regresiva (solo si falta para empezar) */}
+          {torneo.starts_at && !champion && <Countdown startsAt={torneo.starts_at} />}
+
+          {/* Check-in del capitán inscrito */}
+          {torneo.starts_at && myRegistration && !champion && (
+            <CheckInButton
+              registrationId={myRegistration.id}
+              startsAt={torneo.starts_at}
+              checkinMinutes={torneo.checkin_minutes ?? 60}
+              checkedInAt={myRegistration.checked_in_at}
+              bracketReady={matches.length > 0}
+            />
+          )}
+        </div>
       </div>
+
+      {/* ── Llave ── */}
+      {matches.length > 0 && (
+        <div className="mb-12">
+          <h2 className="font-display text-[clamp(26px,4vw,34px)] text-ink mb-5">
+            Llave <span className="text-ink-dim text-[0.6em]">· {torneo.bracket_type === 'double' ? 'Doble eliminación' : 'Eliminación simple'}</span>
+          </h2>
+          <Bracket matches={matches} names={names} />
+        </div>
+      )}
 
       {/* ── Registered list ── */}
       <div>
@@ -133,6 +176,10 @@ export default function TorneoDetallePage({ torneo, registrations }) {
                       : r.captain_discord ? `@${r.captain_discord}` : ''}
                   </p>
                 </div>
+
+                {r.checked_in_at && (
+                  <span className="pill bg-green text-on-color shrink-0">✓ Check-in</span>
+                )}
 
                 {/* Region pill */}
                 {r.region && (

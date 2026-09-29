@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import TorneoForm from './TorneoForm';
+import BracketAdmin from './BracketAdmin';
 
 const STATUS_STYLE = {
   open:   'bg-green text-on-color',
@@ -18,9 +19,9 @@ function formatDate(iso) {
   });
 }
 
-export default function TorneoAdmin({ tournament, registrations }) {
+export default function TorneoAdmin({ tournament, registrations, matches = [] }) {
   const router = useRouter();
-  const [activeTab,  setActiveTab]  = useState('inscriptos'); // 'inscriptos' | 'editar'
+  const [activeTab,  setActiveTab]  = useState('inscriptos'); // 'inscriptos' | 'llave' | 'editar'
   const [removingId, setRemovingId] = useState(null);
   const [expandedId, setExpandedId] = useState(null);
 
@@ -95,6 +96,7 @@ export default function TorneoAdmin({ tournament, registrations }) {
       <div className="flex gap-2 mb-6 flex-wrap">
         {[
           { key: 'inscriptos', label: `Inscriptos (${registrations.length})` },
+          { key: 'llave',      label: matches.length ? 'Llave' : 'Llave (sin generar)' },
           { key: 'editar',     label: 'Editar torneo' },
         ].map(tab => (
           <button
@@ -143,6 +145,9 @@ export default function TorneoAdmin({ tournament, registrations }) {
                         {r.region && (
                           <span className="pill bg-surface-2 text-ink text-[11px]">{r.region}</span>
                         )}
+                        {r.checked_in_at && (
+                          <span className="pill bg-green text-on-color text-[11px]">✓ Check-in</span>
+                        )}
                       </div>
                     </div>
 
@@ -187,6 +192,11 @@ export default function TorneoAdmin({ tournament, registrations }) {
             </div>
           )}
         </div>
+      )}
+
+      {/* Tab: Llave */}
+      {activeTab === 'llave' && (
+        <BracketAdmin tournament={tournament} matches={matches} registrations={registrations} />
       )}
 
       {/* Tab: Editar */}

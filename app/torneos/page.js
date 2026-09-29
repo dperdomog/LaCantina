@@ -8,7 +8,7 @@ export default async function TorneosPage() {
 
   const { data: torneos } = await supabase
     .from('tournaments')
-    .select('id, name, format, date_display, time_display, status, max_slots, prize, region, featured')
+    .select('id, name, format, date_display, time_display, starts_at, status, max_slots, prize, region, featured, winner:registrations!tournaments_winner_registration_id_fkey(team_name, captain_nick)')
     .order('featured', { ascending: false })
     .order('created_at', { ascending: false });
 

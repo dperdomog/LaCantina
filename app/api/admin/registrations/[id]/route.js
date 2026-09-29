@@ -13,7 +13,7 @@ export async function DELETE(request, { params }) {
   // Obtener datos antes de borrar para poder notificar
   const { data: reg } = await supabase
     .from('registrations')
-    .select('user_id, team_name, tournament_id, tournaments(name)')
+    .select('user_id, team_name, tournament_id, tournaments!registrations_tournament_id_fkey(name)')
     .eq('id', id)
     .single();
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { LocalTime } from './Countdown';
 
 const DISCORD_INVITE = process.env.NEXT_PUBLIC_DISCORD_INVITE ?? '#discord';
 
@@ -38,9 +39,9 @@ function TorneoCard({ t }) {
 
       <div className="grid grid-cols-2 gap-3 mb-5">
         {[
-          ['📅', 'Fecha',   date],
+          ['📅', 'Fecha',   t.starts_at ? <LocalTime iso={t.starts_at} part="date" fallback={date} /> : date],
           ['👥', 'Formato', `${t.format} — ${t.region}`],
-          ['⏰', 'Hora',    time],
+          ['⏰', 'Hora',    t.starts_at ? <LocalTime iso={t.starts_at} part="time" fallback={time} /> : time],
         ].map(([icon, label, value]) => (
           <div key={label} className="bg-surface-2 border-[3px] border-line rounded-2xl px-3 py-2.5 flex items-start gap-2">
             <span className="text-[18px] shrink-0">{icon}</span>
@@ -72,17 +73,23 @@ function TorneoCard({ t }) {
         </div>
       </div>
 
+      {t.winner && (
+        <p className="font-display text-[17px] text-ink mb-4">
+          🏆 Campeón: {t.winner.team_name ?? t.winner.captain_nick}
+        </p>
+      )}
+
       <a
         href={`/torneos/${t.id}`}
         className={`btn w-full ${
           t.featured
             ? 'btn-primary'
-            : t.status === 'open'
-              ? 'btn-secondary'
-              : 'btn-secondary opacity-50 pointer-events-none'
+            : t.status === 'soon'
+              ? 'btn-secondary opacity-50 pointer-events-none'
+              : 'btn-secondary'
         }`}
       >
-        {t.status === 'open' ? 'Ver torneo →' : 'Próximamente'}
+        {{ open: 'Ver torneo →', live: 'Ver llave →', closed: 'Ver resultados →' }[t.status] ?? 'Próximamente'}
       </a>
     </div>
   );
