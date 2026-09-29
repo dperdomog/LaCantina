@@ -42,13 +42,15 @@ export async function GET() {
     const token = await getAppToken();
     if (!token) throw new Error('No token');
 
-    const params = STREAMERS.map(u => `user_login=${u}`).join('&');
+    const params      = STREAMERS.map(u => `user_login=${u}`).join('&');
+    // /helix/users filtra con login=, no con user_login=
+    const usersParams = STREAMERS.map(u => `login=${u}`).join('&');
     const [streamsRes, usersRes] = await Promise.all([
       fetch(`https://api.twitch.tv/helix/streams?${params}&first=20`, {
         headers: { 'Client-ID': clientId, Authorization: `Bearer ${token}` },
         next: { revalidate: 30 },
       }),
-      fetch(`https://api.twitch.tv/helix/users?${params}`, {
+      fetch(`https://api.twitch.tv/helix/users?${usersParams}`, {
         headers: { 'Client-ID': clientId, Authorization: `Bearer ${token}` },
         next: { revalidate: 3600 },
       }),

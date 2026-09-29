@@ -18,6 +18,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata = {
+  metadataBase: new URL('https://lacantina.club'),
   title: 'La Cantina — Comunidad Deadlock LATAM',
   description:
     'Discord activo 24/7, consigue gente con quien jugar. Gratis y en Español.',
@@ -25,6 +26,7 @@ export const metadata = {
     title: 'La Cantina — Comunidad Deadlock LATAM',
     description: 'Discord activo 24/7, consigue gente con quien jugar. Gratis y en Español.',
     type: 'website',
+    images: ['/og.png'],
   },
 };
 

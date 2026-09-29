@@ -8,8 +8,20 @@ import TeamLogo from '@/components/TeamLogo';
 export async function generateMetadata({ params }) {
   const { id } = await params;
   const supabase = await createClient();
-  const { data: team } = await supabase.from('teams').select('name').eq('id', id).single();
-  return { title: team ? `${team.name} — La Cantina` : 'Equipo — La Cantina' };
+  const isUuid = /^[0-9a-f-]{36}$/i.test(id);
+  const { data: team } = await supabase.from('teams')
+    .select('name, description, logo_url')
+    .eq(isUuid ? 'id' : 'slug', id)
+    .single();
+  if (!team) return { title: 'Equipo — La Cantina' };
+
+  const title       = `${team.name} — La Cantina`;
+  const description = team.description ?? `Equipo de Deadlock en La Cantina. Mira su roster y postula.`;
+  return {
+    title,
+    description,
+    openGraph: { title, description, images: [team.logo_url ?? '/og.png'] },
+  };
 }
 
 

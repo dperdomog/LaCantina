@@ -134,6 +134,7 @@ export default function TorneoModal({ torneo, onClose }) {
         team_name:     team.name,
         region:        team.region ?? 'LATAM',
         members:       `Titulares: ${starterNames}${subNames ? `\nSuplentes: ${subNames}` : ''}`,
+        player_ids:    [...starters, ...subs],
       }),
     });
     const json = await res.json();
@@ -164,6 +165,7 @@ export default function TorneoModal({ torneo, onClose }) {
       captain_discord: fd.get('captain_discord') || user?.user_metadata?.user_name || '',
       region:          fd.get('region'),
       experience:      fd.get('experience') || null,
+      player_ids:      user ? [user.id] : [],
     });
 
     setLoading(false);

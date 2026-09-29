@@ -9,10 +9,13 @@ import ThemeToggle from '@/components/ThemeToggle';
 const DISCORD_INVITE = process.env.NEXT_PUBLIC_DISCORD_INVITE ?? '#discord';
 
 const LINKS = [
-  ['/torneos',     'Torneos',   false],
-  ['/equipos',     'Equipos',   false],
-  ['/jugadores',   'Jugadores', false],
-  [DISCORD_INVITE, 'Discord',   true],
+  ['/torneos',     'Torneos',    false],
+  ['/calendario',  'Calendario', false],
+  ['/equipos',     'Equipos',    false],
+  ['/jugadores',   'Jugadores',  false],
+  ['/tablon',      'Tablón',     false],
+  ['/ranking',     'Ranking',    false],
+  [DISCORD_INVITE, 'Discord',    true],
 ];
 
 async function loginWithDiscord() {
@@ -74,11 +77,11 @@ export default function Navbar() {
         </a>
 
         {/* Links (escritorio) */}
-        <ul className="hidden lg:flex items-center gap-1 list-none ml-6">
+        <ul className="hidden xl:flex items-center gap-0.5 list-none ml-5">
           {LINKS.map(([href, label, external]) => (
             <li key={label}>
               <a href={href} {...linkProps(external)}
-                className={`font-display text-[17px] px-4 py-1.5 rounded-full no-underline transition-colors ${
+                className={`font-display text-[16px] px-3 py-1.5 rounded-full no-underline transition-colors ${
                   isActive(href) ? 'bg-ink text-bg' : 'text-ink hover:bg-ink hover:text-bg'
                 }`}>
                 {label}{external ? ' ↗' : ''}
@@ -119,7 +122,7 @@ export default function Navbar() {
 
           {/* Menú móvil */}
           <button
-            className="lg:hidden w-10 h-10 rounded-full border-[3px] border-line bg-surface shadow-sticker-sm flex flex-col items-center justify-center gap-[4px]"
+            className="xl:hidden w-10 h-10 rounded-full border-[3px] border-line bg-surface shadow-sticker-sm flex flex-col items-center justify-center gap-[4px]"
             onClick={() => setMobileOpen(o => !o)}
             aria-label="Menú"
             aria-expanded={mobileOpen}
@@ -130,7 +133,7 @@ export default function Navbar() {
       </div>
 
       {mobileOpen && (
-        <div className="lg:hidden border-t-[3px] border-line bg-bg px-5 pt-8 pb-5 flex flex-col gap-2">
+        <div className="xl:hidden border-t-[3px] border-line bg-bg px-5 pt-8 pb-5 flex flex-col gap-2">
           {LINKS.map(([href, label, external]) => (
             <a key={label} href={href} onClick={() => setMobileOpen(false)} {...linkProps(external)}
               className={`font-display text-[22px] px-4 py-2 rounded-2xl no-underline border-[3px] ${

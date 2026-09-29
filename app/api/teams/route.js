@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { slugify } from '@/lib/admin';
 import { NextResponse } from 'next/server';
+import { announce, COLORS } from '@/lib/discord';
 
 // POST /api/teams — crear equipo
 export async function POST(request) {
@@ -39,6 +40,13 @@ export async function POST(request) {
 
   // Agregar al capitán como miembro
   await supabase.from('team_members').insert({ team_id: team.id, user_id: user.id });
+
+  await announce({
+    title:       `🛡️ Nuevo equipo: ${team.name}`,
+    description: `${team.region ?? 'LATAM'}${team.commitment ? ` · ${team.commitment}` : ''} — ¿buscas equipo? Postula en la página.`,
+    path:        `/equipos/${team.slug ?? team.id}`,
+    color:       COLORS.cyan,
+  });
 
   return NextResponse.json({ team });
 }

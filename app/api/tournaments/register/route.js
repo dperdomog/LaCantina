@@ -8,7 +8,7 @@ export async function POST(request) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
 
-  const { tournament_id, team_name, region, members } = await request.json();
+  const { tournament_id, team_name, region, members, player_ids } = await request.json();
   if (!tournament_id) return NextResponse.json({ error: 'Falta tournament_id' }, { status: 400 });
 
   // Verificar que el torneo esté abierto
@@ -16,6 +16,17 @@ export async function POST(request) {
     .from('tournaments').select('id, name, status').eq('id', tournament_id).single();
   if (!torneo || torneo.status !== 'open')
     return NextResponse.json({ error: 'El torneo no está abierto' }, { status: 400 });
+
+  // Equipo del capitán y jugadores elegidos (solo si son miembros del equipo)
+  const { data: captainTeam } = await supabase
+    .from('team_members').select('team_id').eq('user_id', user.id).maybeSingle();
+  let teamPlayerIds = [];
+  if (captainTeam && Array.isArray(player_ids)) {
+    const { data: roster } = await supabase
+      .from('team_members').select('user_id').eq('team_id', captainTeam.team_id);
+    const rosterIds = new Set((roster ?? []).map(m => m.user_id));
+    teamPlayerIds = player_ids.filter(id => rosterIds.has(id));
+  }
 
   // Insertar inscripción
   const { data: reg, error: regErr } = await supabase.from('registrations').insert({
@@ -26,6 +37,8 @@ export async function POST(request) {
     team_name,
     region:          region ?? 'LATAM',
     members,
+    team_id:         captainTeam?.team_id ?? null,
+    player_ids:      teamPlayerIds,
   }).select().single();
 
   if (regErr) {
