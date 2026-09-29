@@ -6,6 +6,7 @@ import { FORMATS, currentTurn, summary } from '@/lib/draft';
 import { ACTIVE_HERO_IDS, heroInfo, isNewHero } from '@/lib/heroes';
 import DraftOrderStrip, { SIDE_STYLE } from '@/components/DraftOrderStrip';
 import HeroPortrait from '@/components/HeroPortrait';
+import PlanOnMapButton from '@/components/map/PlanOnMapButton';
 
 const STATUS = {
   lobby:     ['Sala de espera', 'bg-surface text-ink'],
@@ -477,6 +478,7 @@ export default function DraftRoom({ initialDraft, initialProfiles, viewerId, isA
           <button type="button" onClick={() => copy(resultText, 'result')} className="btn btn-primary">
             {copied === 'result' ? '✓ Resultado copiado' : '📋 Copiar resultado'}
           </button>
+          {viewerId && <PlanOnMapButton draftId={draft.id} />}
           <a href="/draft" className="btn btn-secondary">Nuevo draft</a>
         </div>
       )}
