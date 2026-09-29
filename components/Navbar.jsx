@@ -15,6 +15,7 @@ const LINKS = [
   ['/jugadores',   'Jugadores',  false],
   ['/tablon',      'Tablón',     false],
   ['/ranking',     'Ranking',    false],
+  ['/draft',       'Draft',      false],
   [DISCORD_INVITE, 'Discord',    true],
 ];
 

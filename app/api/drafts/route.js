@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { NextResponse } from 'next/server';
 import { bannedResponse } from '@/lib/moderation';
-import { notify } from '@/lib/notify';
+import { notifyMany } from '@/lib/notify';
 import { FORMATS, TIMERS, MAX_BANS, roomCode } from '@/lib/draft';
 
 const DAILY_LIMIT = 20;
@@ -85,6 +85,14 @@ export async function POST(request) {
       ? await fromScrim(admin, body.scrim_id, user.id)
       : await fromMatch(admin, body.match_id, user.id, !!me?.is_admin);
     if (linked.error) return NextResponse.json({ error: linked.error }, { status: linked.status ?? 400 });
+
+    // Si ya hay un draft activo para ese scrim o partida, usar ese
+    const [col, val] = Object.entries(linked.link)[0];
+    const { data: existing } = await admin.from('drafts')
+      .select('*').eq(col, val).in('status', ['lobby', 'drafting'])
+      .order('created_at', { ascending: false }).limit(1).maybeSingle();
+    if (existing) return NextResponse.json({ draft: existing, existing: true });
+
     Object.assign(row, linked.link, {
       name_a: linked.a.name.slice(0, 40), name_b: linked.b.name.slice(0, 40),
       team_a: linked.a.id, team_b: linked.b.id,
@@ -104,18 +112,15 @@ export async function POST(request) {
   }
   if (!draft) return NextResponse.json({ error: 'No se pudo crear la sala, intenta de nuevo' }, { status: 500 });
 
-  // Avisar al otro capitán si el draft está vinculado
+  // Avisar a los capitanes (menos a quien lo creó) si el draft está vinculado
   if (linked) {
-    const other = [draft.captain_a, draft.captain_b].find(id => id && id !== user.id);
-    if (other) {
-      await notify(null, {
-        user_id: other,
-        type:    'draft_invite',
-        title:   `🎯 Draft listo: ${draft.name_a} vs ${draft.name_b}`,
-        body:    'Entra a la sala para hacer los picks y bans.',
-        data:    { draft_id: draft.id },
-      });
-    }
+    const others = [draft.captain_a, draft.captain_b].filter(id => id && id !== user.id);
+    await notifyMany(null, others, {
+      type:  'draft_invite',
+      title: `🎯 Draft listo: ${draft.name_a} vs ${draft.name_b}`,
+      body:  `Entra a la sala ${draft.id} para hacer los picks y bans.`,
+      data:  { draft_id: draft.id },
+    });
   }
 
   return NextResponse.json({ draft });

@@ -22,6 +22,7 @@ const TYPE_ICON = {
   report_new:           '🚩',
   account_banned:       '⛔',
   account_unbanned:     '✅',
+  draft_invite:         '🎯',
   default:              '🔔',
 };
 
