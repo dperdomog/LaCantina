@@ -102,6 +102,19 @@ export default function ScrimsSection({ teamId, isCaptain, scrims, rivals }) {
     router.refresh();
   }
 
+  // Abre (o crea) la sala de draft del scrim
+  async function openDraft(scrimId) {
+    setBusy(scrimId); setError('');
+    const res = await fetch('/api/drafts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ scrim_id: scrimId, format: '6v6', bans_per_team: 2, timer_s: 30 }),
+    }).catch(() => null);
+    const data = res ? await res.json().catch(() => ({})) : {};
+    if (!res?.ok) { setBusy(null); setError(data.error ?? 'No se pudo abrir el draft.'); return; }
+    router.push(`/draft/${data.draft.id}`);
+  }
+
   return (
     <div className="sticker p-6 md:p-8 mb-8">
       <div className="flex items-start justify-between gap-4 flex-wrap mb-5">
@@ -154,6 +167,9 @@ export default function ScrimsSection({ teamId, isCaptain, scrims, rivals }) {
                         <button type="button" disabled={busy === s.id} onClick={() => setStatus(s.id, 'accepted')} className="btn btn-primary btn-sm">Aceptar</button>
                         <button type="button" disabled={busy === s.id} onClick={() => setStatus(s.id, 'declined')} className="btn btn-secondary btn-sm">Rechazar</button>
                       </>
+                    )}
+                    {s.status === 'accepted' && (
+                      <button type="button" disabled={busy === s.id} onClick={() => openDraft(s.id)} className="btn btn-primary btn-sm">🎯 Draft</button>
                     )}
                     {((s.status === 'pending' && !received) || s.status === 'accepted') && (
                       <button type="button" disabled={busy === s.id} onClick={() => setStatus(s.id, 'cancelled')} className="btn btn-sm bg-red text-white">Cancelar</button>

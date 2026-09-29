@@ -10,7 +10,7 @@ function sideText(m, side, names) {
   return m[`bye_${side}`] ? 'Pase libre' : 'Por definir';
 }
 
-function MatchRow({ m, all, names, onSave, onRevert, busy }) {
+function MatchRow({ m, all, names, onSave, onRevert, onDraft, busy }) {
   const [a, setA] = useState('');
   const [b, setB] = useState('');
   const played = m.status === 'done' && m.score_a != null;
@@ -45,6 +45,9 @@ function MatchRow({ m, all, names, onSave, onRevert, busy }) {
       {played && canRevert(all, m.id) && (
         <button onClick={() => onRevert(m.id)} disabled={busy} className="btn btn-secondary btn-sm">Corregir</button>
       )}
+      {m.reg_a && m.reg_b && m.status !== 'done' && m.status !== 'skipped' && (
+        <button type="button" onClick={() => onDraft(m.id)} disabled={busy} className="btn btn-secondary btn-sm" title="Abrir la sala de draft de esta partida">🎯 Draft</button>
+      )}
       {m.status === 'done' && m.score_a == null && <span className="pill bg-surface-2 text-ink-dim">Pase libre</span>}
       {m.status === 'pending' && <span className="text-[13px] text-ink-dim">Esperando rivales</span>}
     </div>
@@ -77,6 +80,24 @@ export default function BracketAdmin({ tournament, matches, registrations }) {
   const reset    = () => confirm('¿Borrar la llave? Se puede volver a generar.') && call(`/api/admin/tournaments/${tournament.id}/bracket`, 'DELETE');
   const save     = (id, score_a, score_b) => call(`/api/admin/matches/${id}`, 'PATCH', { score_a, score_b });
   const revert   = id => call(`/api/admin/matches/${id}`, 'PATCH', { revert: true });
+
+  // Abre (o crea) la sala de draft de la partida en otra pestaña.
+  // La pestaña se abre antes del fetch para que el navegador no la bloquee.
+  async function openDraft(matchId) {
+    const tab = window.open('', '_blank');
+    setBusy(true); setError('');
+    const res  = await fetch('/api/drafts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ match_id: matchId, format: '6v6', bans_per_team: 2, timer_s: 30 }),
+    }).catch(() => null);
+    const data = res ? await res.json().catch(() => ({})) : {};
+    setBusy(false);
+    if (!res?.ok) { tab?.close(); setError(data.error ?? 'No se pudo abrir el draft.'); return; }
+    const url = `/draft/${data.draft.id}`;
+    if (tab) tab.location.href = url;
+    else window.location.href = url;
+  }
 
   const champion = tournament.winner_registration_id ? names[tournament.winner_registration_id] : null;
   const sections = [
@@ -141,7 +162,7 @@ export default function BracketAdmin({ tournament, matches, registrations }) {
                       <div className="px-5 py-2 bg-surface-2 border-b-[3px] border-line mono-label">{roundLabel(matches, key, r)}</div>
                       <div className="divide-y-2 divide-rule">
                         {ms.filter(m => m.round === r).sort((x, y) => x.position - y.position).map(m => (
-                          <MatchRow key={m.id} m={m} all={matches} names={names} onSave={save} onRevert={revert} busy={busy} />
+                          <MatchRow key={m.id} m={m} all={matches} names={names} onSave={save} onRevert={revert} onDraft={openDraft} busy={busy} />
                         ))}
                       </div>
                     </div>
