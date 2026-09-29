@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { FORMATS, currentTurn, summary } from '@/lib/draft';
-import { ACTIVE_HERO_IDS, heroInfo } from '@/lib/heroes';
+import { ACTIVE_HERO_IDS, heroInfo, isNewHero } from '@/lib/heroes';
 import DraftOrderStrip, { SIDE_STYLE } from '@/components/DraftOrderStrip';
 import HeroPortrait from '@/components/HeroPortrait';
 
@@ -444,6 +444,9 @@ export default function DraftRoom({ initialDraft, initialProfiles, viewerId, isA
                     <HeroPortrait heroId={hid} variant="icon" crossed={u?.type === 'ban'} />
                     {u?.type === 'pick' && (
                       <span className={`absolute top-1 left-1 pill ${SIDE_STYLE[u.side].bg} text-on-color !text-[9px] !px-1.5 !py-0.5`}>{u.side}</span>
+                    )}
+                    {!u && isNewHero(hid) && (
+                      <span className="absolute top-1 right-1 pill bg-green text-on-color !text-[9px] !px-1.5 !py-0.5">Nuevo</span>
                     )}
                     <span className="block text-[11px] font-bold text-ink truncate mt-1">{heroInfo(hid).name}</span>
                   </button>
