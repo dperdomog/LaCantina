@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { averageBadge, RankChip } from '@/components/TeamRank';
 
 const REGIONS = ['LATAM', 'Argentina', 'México', 'Chile', 'Colombia', 'Brasil', 'Otra'];
 const COMMITMENT = ['Serio', 'Por diversión'];
@@ -158,8 +159,9 @@ function CreateTeamModal({ onClose, onCreated }) {
   );
 }
 
-function TeamCard({ team, currentUserId }) {
+function TeamCard({ team, currentUserId, rankById }) {
   const isMine      = team.team_members?.some(m => m.user_id === currentUserId);
+  const avgBadge    = averageBadge((team.team_members ?? []).map(m => rankById[m.user_id]));
   const isCaptain   = team.captain_id === currentUserId;
   const memberCount = team.team_members?.length ?? 0;
 
@@ -203,6 +205,12 @@ function TeamCard({ team, currentUserId }) {
         </div>
       )}
 
+      {avgBadge && (
+        <div className="flex items-center gap-2 mb-4 text-[13px] text-ink-dim">
+          Rango promedio <RankChip badge={avgBadge} />
+        </div>
+      )}
+
       {team.description && (
         <p className="text-ink-dim text-[14px] leading-relaxed mb-4">{team.description}</p>
       )}
@@ -235,7 +243,7 @@ function TeamCard({ team, currentUserId }) {
   );
 }
 
-export default function EquiposClient({ teams, currentUserId, userTeamId, appliedTeamIds }) {
+export default function EquiposClient({ teams, currentUserId, userTeamId, appliedTeamIds, rankById = {} }) {
   const router = useRouter();
   const [showCreate, setShowCreate] = useState(false);
   const [search, setSearch] = useState('');
@@ -310,6 +318,7 @@ export default function EquiposClient({ teams, currentUserId, userTeamId, applie
               key={team.id}
               team={team}
               currentUserId={currentUserId}
+              rankById={rankById}
             />
           ))}
         </div>

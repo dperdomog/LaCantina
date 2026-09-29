@@ -51,27 +51,58 @@ export async function POST(request) {
   return NextResponse.json({ team });
 }
 
-// PATCH /api/teams — el capitán cambia el logo del equipo
+const COMMITMENTS = ['Serio', 'Por diversión'];
+
+// PATCH /api/teams — el capitán edita logo, descripción, región o compromiso.
+// Solo se validan y actualizan los campos presentes en el body.
 export async function PATCH(request) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
 
-  const { team_id, logo_url } = await request.json();
+  const body = await request.json();
+  const { team_id } = body;
+  const updates = {};
 
-  // Solo imágenes subidas a nuestro Storage
-  const allowedPrefix = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/team-logos/`;
-  if (typeof logo_url !== 'string' || !logo_url.startsWith(allowedPrefix))
-    return NextResponse.json({ error: 'URL de logo inválida' }, { status: 400 });
+  if ('logo_url' in body) {
+    // Solo imágenes subidas a nuestro Storage
+    const allowedPrefix = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/team-logos/`;
+    if (typeof body.logo_url !== 'string' || !body.logo_url.startsWith(allowedPrefix))
+      return NextResponse.json({ error: 'URL de logo inválida' }, { status: 400 });
+    updates.logo_url = body.logo_url;
+  }
+
+  if ('description' in body) {
+    const description = typeof body.description === 'string' ? body.description.trim() : '';
+    if (description.length > 300)
+      return NextResponse.json({ error: 'La descripción no puede superar los 300 caracteres' }, { status: 400 });
+    updates.description = description || null;
+  }
+
+  if ('region' in body) {
+    const region = typeof body.region === 'string' ? body.region.trim() : '';
+    if (region.length > 40)
+      return NextResponse.json({ error: 'Región inválida' }, { status: 400 });
+    updates.region = region || null;
+  }
+
+  if ('commitment' in body) {
+    if (body.commitment !== null && !COMMITMENTS.includes(body.commitment))
+      return NextResponse.json({ error: 'Compromiso inválido' }, { status: 400 });
+    updates.commitment = body.commitment;
+  }
+
+  if (Object.keys(updates).length === 0)
+    return NextResponse.json({ error: 'No hay cambios para guardar' }, { status: 400 });
 
   const { data: team } = await supabase
     .from('teams').select('captain_id').eq('id', team_id).single();
   if (!team) return NextResponse.json({ error: 'Equipo no encontrado' }, { status: 404 });
   if (team.captain_id !== user.id)
-    return NextResponse.json({ error: 'Solo el capitán puede cambiar el logo' }, { status: 403 });
+    return NextResponse.json({ error: 'Solo el capitán puede editar el equipo' }, { status: 403 });
 
-  const { error } = await supabase.from('teams').update({ logo_url }).eq('id', team_id);
+  const { error } = await supabase.from('teams').update(updates).eq('id', team_id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  return NextResponse.json({ ok: true, logo_url });
+  return NextResponse.json({ ok: true, ...updates });
 }

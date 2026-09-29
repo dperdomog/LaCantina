@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { RankChip } from '@/components/TeamRank';
 
 const ROLE_COLORS = {
   Carry:     'bg-yellow',
@@ -11,7 +12,7 @@ const ROLE_COLORS = {
   Roamer:    'bg-pink',
 };
 
-export default function TeamRoster({ members, captainId, teamId, isCaptain }) {
+export default function TeamRoster({ members, captainId, teamId, isCaptain, rankById = {} }) {
   const router = useRouter();
 
   async function handleKick(userId, name) {
@@ -54,6 +55,7 @@ export default function TeamRoster({ members, captainId, teamId, isCaptain }) {
                       {m.profiles.player_role}
                     </span>
                   )}
+                  <RankChip badge={rankById[m.user_id]} className="text-[11px]" />
                   {m.profiles?.statlocker_url && (
                     <span className="text-[12px] font-bold text-ink-dim">StatLocker ↗</span>
                   )}

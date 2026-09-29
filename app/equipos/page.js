@@ -20,6 +20,16 @@ export default async function EquiposPage() {
     `)
     .order('created_at', { ascending: false });
 
+  // Rango guardado de cada miembro (sin refrescar aquí, para no gastar la API).
+  // Consulta aparte: si falla, las tarjetas simplemente no muestran el rango.
+  const memberIds = (teams ?? []).flatMap(t => (t.team_members ?? []).map(m => m.user_id));
+  let rankById = {};
+  if (memberIds.length) {
+    const { data: ranked, error: rankErr } = await supabase
+      .from('profiles').select('id, rank_badge').in('id', memberIds);
+    if (!rankErr) rankById = Object.fromEntries((ranked ?? []).map(p => [p.id, p.rank_badge]));
+  }
+
   // Equipo actual del usuario
   let userTeamId = null;
   let appliedTeamIds = [];
@@ -45,6 +55,7 @@ export default async function EquiposPage() {
           currentUserId={user?.id ?? null}
           userTeamId={userTeamId}
           appliedTeamIds={appliedTeamIds}
+          rankById={rankById}
         />
       </div>
     </main>

@@ -4,6 +4,13 @@ import TeamActions from '@/components/TeamActions';
 import { TeamApplicationsSection, PendingInvitationBanner, InvitePlayersSection } from '@/components/TeamPageActions';
 import TeamRoster from '@/components/TeamRoster';
 import TeamLogo from '@/components/TeamLogo';
+import TeamEditPanel from '@/components/TeamEditPanel';
+import TransferCaptain from '@/components/TransferCaptain';
+import ScrimsSection from '@/components/ScrimsSection';
+import TeamTrophies from '@/components/TeamTrophies';
+import { averageBadge, RankChip } from '@/components/TeamRank';
+import { refreshStaleRanks } from '@/lib/ranks';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 export async function generateMetadata({ params }) {
   const { id } = await params;
@@ -104,6 +111,61 @@ export default async function TeamPage({ params }) {
   const isCaptain = team.captain_id === user?.id;
   const canApply  = user && !userTeamId && !hasApplied;
   const memberCount = team.team_members?.length ?? 0;
+  const memberIds   = (team.team_members ?? []).map(m => m.user_id);
+
+  // Rangos del roster (se refrescan si tienen más de 6 h). Si la consulta o la
+  // API fallan, simplemente no se muestran.
+  let rankById = {};
+  if (memberIds.length) {
+    const { data: rankProfiles, error: rankErr } = await supabase
+      .from('profiles').select('id, statlocker_url, rank_badge, rank_updated_at').in('id', memberIds);
+    if (!rankErr && rankProfiles) {
+      let fresh = rankProfiles;
+      try { fresh = await refreshStaleRanks(createAdminClient(), rankProfiles); } catch {}
+      rankById = Object.fromEntries(fresh.map(p => [p.id, p.rank_badge]));
+    }
+  }
+  const teamAvg = averageBadge(Object.values(rankById));
+
+  // Trofeos: torneos cuyo campeón es una inscripción de este equipo
+  let trophies = [];
+  const { data: teamRegs } = await supabase.from('registrations').select('id').eq('team_id', team.id);
+  if (teamRegs?.length) {
+    const { data: won } = await supabase.from('tournaments')
+      .select('id, name, starts_at, date_display')
+      .in('winner_registration_id', teamRegs.map(r => r.id));
+    trophies = won ?? [];
+  }
+
+  // Scrims (solo miembros): pendientes y confirmados que no pasaron hace más de 3 h
+  let scrims = [];
+  let rivals = [];
+  if (isMember) {
+    const [{ data: scrimRows }, { data: otherTeams }] = await Promise.all([
+      supabase.from('scrims')
+        .select('id, from_team, to_team, proposed_at, message, status')
+        .or(`from_team.eq.${team.id},to_team.eq.${team.id}`)
+        .in('status', ['pending', 'accepted'])
+        .gte('proposed_at', new Date(Date.now() - 3 * 3600e3).toISOString())
+        .order('proposed_at'),
+      supabase.from('teams').select('id, name, slug').neq('id', team.id).order('name'),
+    ]);
+    const teamsById = Object.fromEntries((otherTeams ?? []).map(t => [t.id, t]));
+    scrims = (scrimRows ?? []).map(s => {
+      const otherId = s.from_team === team.id ? s.to_team : s.from_team;
+      return {
+        ...s,
+        direction: s.from_team === team.id ? 'sent' : 'received',
+        other:     teamsById[otherId] ?? { id: otherId, name: 'Equipo' },
+      };
+    });
+    if (isCaptain) rivals = (otherTeams ?? []).map(t => ({ id: t.id, name: t.name }));
+  }
+
+  // Miembros a los que el capitán puede pasar la capitanía
+  const transferable = (team.team_members ?? [])
+    .filter(m => m.user_id !== team.captain_id)
+    .map(m => ({ id: m.user_id, name: m.profiles?.display_name ?? m.profiles?.discord_username ?? 'Jugador' }));
 
   return (
     <main className="min-h-screen bg-bg">
@@ -161,6 +223,9 @@ export default async function TeamPage({ params }) {
                   </span>
                 </div>
                 <span>{memberCount}/9 miembros</span>
+                {teamAvg && (
+                  <span className="flex items-center gap-2">Rango promedio: <RankChip badge={teamAvg} /></span>
+                )}
                 <span>
                   Creado el {new Date(team.created_at).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </span>
@@ -190,6 +255,9 @@ export default async function TeamPage({ params }) {
           />
         </div>
 
+        {/* Trofeos */}
+        <TeamTrophies trophies={trophies} />
+
         {/* Solicitudes pendientes — solo capitán */}
         <TeamApplicationsSection applications={applications} teamId={team.id} />
 
@@ -198,6 +266,27 @@ export default async function TeamPage({ params }) {
 
         {/* Invitación pendiente — solo para el invitado */}
         <PendingInvitationBanner invitation={pendingInvitation} />
+
+        {/* Ajustes — solo capitán */}
+        {isCaptain && (
+          <details className="sticker p-6 md:p-8 mb-8 group">
+            <summary className="font-display text-[24px] text-ink cursor-pointer list-none [&::-webkit-details-marker]:hidden flex items-center justify-between gap-3">
+              ⚙️ Ajustes del equipo
+              <span className="text-[20px] transition-transform group-open:rotate-180">▾</span>
+            </summary>
+            <div className="mt-6 flex flex-col gap-8">
+              <TeamEditPanel team={{ id: team.id, description: team.description, region: team.region, commitment: team.commitment }} />
+              <div className="border-t-[3px] border-line pt-6">
+                <h3 className="font-display text-[20px] text-ink">Pasar la capitanía</h3>
+                <p className="text-[14px] text-ink-dim mt-1 mb-4">El nuevo capitán podrá gestionar el equipo y tú quedarás como miembro.</p>
+                <TransferCaptain teamId={team.id} members={transferable} />
+              </div>
+            </div>
+          </details>
+        )}
+
+        {/* Scrims — solo miembros */}
+        {isMember && <ScrimsSection teamId={team.id} isCaptain={isCaptain} scrims={scrims} rivals={rivals} />}
 
         {/* Miembros */}
         <div className="sticker p-6 md:p-8">
@@ -210,6 +299,7 @@ export default async function TeamPage({ params }) {
             captainId={team.captain_id}
             teamId={team.id}
             isCaptain={isCaptain}
+            rankById={rankById}
           />
         </div>
 
