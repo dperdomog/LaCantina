@@ -12,19 +12,28 @@ const heroes = await res.json();
 const map = {};
 for (const h of heroes.filter(h => h.player_selectable).sort((a, b) => a.id - b.id)) {
   const img = h.images ?? {};
-  map[h.id] = { name: h.name, image: img.icon_image_small_webp ?? img.icon_image_small ?? img.icon_hero_card_webp ?? null };
+  map[h.id] = {
+    name:   h.name,
+    image:  img.icon_image_small_webp ?? img.icon_image_small ?? img.icon_hero_card_webp ?? null,
+    card:   img.icon_hero_card_webp ?? img.icon_hero_card ?? null,
+    active: !h.disabled && !h.in_development,  // jugable hoy (para el draft)
+  };
 }
 
 const lines = Object.entries(map).map(([id, h]) => `  ${id}: ${JSON.stringify(h)},`).join('\n');
 const out = `// Generado por scripts/update-heroes.mjs (npm run update:heroes). No editar a mano.
-// Héroes de Deadlock: id → { name, image } (deadlock-api.com)
+// Héroes de Deadlock: id → { name, image, card, active } (deadlock-api.com)
 export const HEROES = {
 ${lines}
 };
 
 export function heroInfo(id) {
-  return HEROES[id] ?? { name: \`Héroe #\${id}\`, image: null };
+  return HEROES[id] ?? { name: \`Héroe #\${id}\`, image: null, card: null, active: false };
 }
+
+// Héroes jugables hoy, ordenados por nombre (para el draft)
+export const ACTIVE_HERO_IDS = Object.keys(HEROES).map(Number).filter(id => HEROES[id].active)
+  .sort((a, b) => HEROES[a].name.localeCompare(HEROES[b].name, 'es'));
 `;
 
 writeFileSync(new URL('../lib/heroes.js', import.meta.url), out);

@@ -10,7 +10,8 @@
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "test:bracket": "node scripts/test-bracket.mjs",
-    "update:heroes": "node scripts/update-heroes.mjs"
+    "update:heroes": "node scripts/update-heroes.mjs",
+    "test:draft": "node scripts/test-draft.mjs"
   },
   "dependencies": {
     "@opennextjs/cloudflare": "^1.20.6",
