@@ -33,35 +33,32 @@ export default function TeamActions({ teamId, isMember, isCaptain, canApply, has
   }
 
   if (!isLoggedIn) return (
-    <div className="mt-6 pt-6 border-t border-rule">
-      <p className="mono-label text-ink-dim text-[11px]">Conecta Discord para aplicar a este equipo.</p>
+    <div className="mt-6 pt-6 border-t-[3px] border-line">
+      <p className="text-[15px] font-bold text-ink-dim">Conecta Discord para aplicar a este equipo.</p>
     </div>
   );
 
   return (
-    <div className="mt-6 pt-6 border-t border-rule flex items-center gap-3 flex-wrap">
+    <div className="mt-6 pt-6 border-t-[3px] border-line flex items-center gap-3 flex-wrap">
       {canApply && !applied && (
-        <button onClick={handleApply} disabled={applying}
-          className="px-6 py-3 rounded-full bg-yellow text-on-color font-bold text-[14px] shadow-yellow-btn hover:opacity-90 transition-all disabled:opacity-50">
+        <button onClick={handleApply} disabled={applying} className="btn btn-primary">
           {applying ? 'Enviando…' : 'Aplicar al equipo →'}
         </button>
       )}
       {applied && !isMember && (
-        <span className="mono-label text-green-ink text-[11px]">✓ Solicitud enviada — el capitán la revisará pronto.</span>
+        <span className="pill bg-green text-on-color">✓ Solicitud enviada — el capitán la revisará pronto.</span>
       )}
       {isMember && !isCaptain && (
-        <button onClick={handleLeave}
-          className="px-5 py-2.5 rounded-full border border-pink/40 text-pink-ink text-[13px] font-semibold hover:bg-pink/10 transition-colors">
+        <button onClick={handleLeave} className="btn btn-sm bg-red text-white">
           Salir del equipo
         </button>
       )}
       {isCaptain && (
-        <button onClick={handleLeave}
-          className="px-5 py-2.5 rounded-full border border-pink/40 text-pink-ink text-[13px] font-semibold hover:bg-pink/10 transition-colors">
+        <button onClick={handleLeave} className="btn btn-sm bg-red text-white">
           Disolver equipo
         </button>
       )}
-      {error && <p className="text-pink-ink text-[12px]">{error}</p>}
+      {error && <p className="text-pink-ink text-[14px] font-bold">{error}</p>}
     </div>
   );
 }

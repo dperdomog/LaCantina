@@ -19,16 +19,15 @@ export default function InviteButton({ teamId, inviteeId }) {
   }
 
   if (state === 'done') return (
-    <span className="mono-label text-green-ink text-[10px]">✓ Invitación enviada</span>
+    <span className="pill bg-green text-on-color">✓ Invitación enviada</span>
   );
 
   return (
-    <div className="flex flex-col items-end gap-1">
-      <button onClick={handleInvite} disabled={state === 'loading'}
-        className="px-5 py-2.5 rounded-full border border-yellow text-yellow-ink font-bold text-[13px] hover:bg-yellow/10 transition-all disabled:opacity-50">
+    <div className="flex flex-col items-end gap-1.5">
+      <button onClick={handleInvite} disabled={state === 'loading'} className="btn btn-primary btn-sm whitespace-nowrap">
         {state === 'loading' ? 'Enviando…' : 'Invitar al equipo →'}
       </button>
-      {state === 'error' && <p className="text-pink-ink text-[11px]">{msg}</p>}
+      {state === 'error' && <p className="text-pink-ink text-[13px] font-bold text-right">{msg}</p>}
     </div>
   );
 }

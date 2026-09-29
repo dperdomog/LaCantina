@@ -93,89 +93,82 @@ export default async function TeamPage({ params }) {
   const memberCount = team.team_members?.length ?? 0;
 
   return (
-    <main className="min-h-screen bg-bg py-16 px-6 md:px-14">
-      <div className="max-w-[860px] mx-auto">
+    <main className="min-h-screen bg-bg">
+      <div className="max-w-[960px] mx-auto px-5 py-14 md:py-20">
 
         {/* Back */}
-        <a href="/equipos" className="mono-label text-ink-dim hover:text-yellow-ink transition-colors no-underline mb-10 block">
+        <a href="/equipos" className="font-display text-[17px] text-ink hover:underline underline-offset-4 no-underline mb-8 inline-block">
           ← Todos los equipos
         </a>
 
         {/* Header del equipo */}
-        <div className="bg-surface border border-yellow/[0.2] rounded-[20px] p-8 mb-6 glow-yellow">
+        <div className="sticker p-6 md:p-8 mb-8">
           <div className="flex items-start gap-6 flex-wrap">
 
             {/* Logo */}
             {team.logo_url
               ? <img src={team.logo_url} alt={team.name}
-                  className="w-24 h-24 rounded-[16px] object-cover border border-yellow/[0.2] shrink-0" />
-              : <div className="w-24 h-24 rounded-[16px] bg-yellow/10 border border-yellow/20 flex items-center justify-center font-display text-[40px] text-yellow-ink shrink-0">
+                  className="w-24 h-24 rounded-2xl object-cover border-[3px] border-line shadow-sticker-sm shrink-0 -rotate-3" />
+              : <div className="w-24 h-24 rounded-2xl bg-yellow border-[3px] border-line shadow-sticker-sm flex items-center justify-center font-display text-[44px] text-on-color shrink-0 -rotate-3">
                   {team.name[0].toUpperCase()}
                 </div>
             }
 
             <div className="flex-1 min-w-0">
-              <div className="flex items-start justify-between gap-4 flex-wrap mb-2">
-                <div>
-                  <span className="mono-label text-yellow-ink">EQUIPO</span>
-                  <h1 className="font-display text-[clamp(36px,6vw,64px)] leading-none text-ink mt-1">
-                    {team.name}
-                  </h1>
-                </div>
-                <div className="flex items-center gap-2 flex-wrap">
+              <span className="mono-label">🛡️ Equipo</span>
+              <h1 className="font-display text-[clamp(36px,6vw,60px)] leading-[1] tracking-[-0.02em] text-ink mt-1 break-words">
+                {team.name}
+              </h1>
+
+              {(team.commitment || team.region) && (
+                <div className="flex items-center gap-2 flex-wrap mt-3">
                   {team.commitment && (
-                    <span className={`pill border text-[11px] font-semibold ${
-                      team.commitment === 'Serio'
-                        ? 'border-yellow/40 bg-yellow/10 text-yellow-ink'
-                        : 'border-cyan/40 bg-cyan/10 text-cyan-ink'
-                    }`}>
+                    <span className={`pill text-on-color ${team.commitment === 'Serio' ? 'bg-yellow' : 'bg-cyan'}`}>
                       {team.commitment === 'Serio' ? '⚡ Serio' : '🎮 Por diversión'}
                     </span>
                   )}
                   {team.region && (
-                    <span className="pill border border-ink/[0.12] text-ink-dim text-[11px]">
-                      {team.region}
-                    </span>
+                    <span className="pill bg-surface text-ink">{team.region}</span>
                   )}
                 </div>
-              </div>
+              )}
 
               {team.description && (
-                <p className="text-ink-dim text-[14px] leading-relaxed mt-2 max-w-[540px]">
+                <p className="text-ink-dim text-[16px] leading-relaxed mt-4 max-w-[560px]">
                   {team.description}
                 </p>
               )}
 
-              <div className="flex items-center gap-4 mt-4 flex-wrap">
+              <div className="flex items-center gap-x-5 gap-y-2 mt-5 flex-wrap text-[14px] text-ink-dim">
                 <div className="flex items-center gap-2">
                   {team.profiles?.avatar_url
-                    ? <img src={team.profiles.avatar_url} alt="" className="w-6 h-6 rounded-full" />
-                    : <div className="w-6 h-6 rounded-full bg-yellow/20 flex items-center justify-center mono-label text-[9px] text-yellow-ink">
+                    ? <img src={team.profiles.avatar_url} alt="" className="w-7 h-7 rounded-full border-2 border-line" />
+                    : <div className="w-7 h-7 rounded-full bg-green border-2 border-line flex items-center justify-center font-display text-[12px] text-on-color">
                         {(team.profiles?.display_name ?? '?')[0]}
                       </div>
                   }
-                  <span className="mono-label text-[10px]">
-                    Capitán: <a href={`/jugador/${team.captain_id}`} className="text-ink hover:text-yellow-ink transition-colors no-underline">
+                  <span>
+                    Capitán: <a href={`/jugador/${team.captain_id}`} className="text-ink font-bold hover:underline underline-offset-2 no-underline">
                       {team.profiles?.display_name ?? team.profiles?.discord_username ?? '—'}
                     </a>
                   </span>
                 </div>
-                <span className="mono-label text-[10px] text-ink-dim">{memberCount}/9 miembros</span>
-                <span className="mono-label text-[10px] text-ink-dim">
-                  Creado {new Date(team.created_at).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' })}
+                <span>{memberCount}/9 miembros</span>
+                <span>
+                  Creado el {new Date(team.created_at).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </span>
               </div>
             </div>
           </div>
 
           {/* Barra de ocupación */}
-          <div className="mt-6">
-            <div className="flex justify-between mono-label mb-2">
+          <div className="mt-7">
+            <div className="flex justify-between text-[14px] font-bold mb-2">
               <span>Cupos</span><span>{memberCount} / 9</span>
             </div>
-            <div className="h-[4px] bg-ink/[0.07] rounded-full overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-yellow to-yellow rounded-full transition-all"
-                style={{ width: `${(memberCount / 9) * 100}%` }} />
+            <div className="h-4 bg-surface-2 border-[3px] border-line rounded-full overflow-hidden">
+              <div className="h-full bg-orange transition-all"
+                style={{ width: `${Math.min(100, (memberCount / 9) * 100)}%` }} />
             </div>
           </div>
 
@@ -200,8 +193,11 @@ export default async function TeamPage({ params }) {
         <PendingInvitationBanner invitation={pendingInvitation} />
 
         {/* Miembros */}
-        <div className="bg-surface border border-rule rounded-[20px] p-8">
-          <span className="mono-label text-yellow-ink block mb-6">ROSTER</span>
+        <div className="sticker p-6 md:p-8">
+          <div className="flex items-baseline justify-between gap-4 mb-6">
+            <h2 className="font-display text-[30px] leading-none text-ink">Roster</h2>
+            <span className="mono-label">{memberCount} {memberCount === 1 ? 'jugador' : 'jugadores'}</span>
+          </div>
           <TeamRoster
             members={team.team_members}
             captainId={team.captain_id}

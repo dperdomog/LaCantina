@@ -70,51 +70,50 @@ function CreateTeamModal({ onClose, onCreated }) {
   }
 
   return (
-    <div className="fixed inset-0 z-[300] bg-black/75 backdrop-blur-[6px] flex items-center justify-center p-6"
+    <div className="fixed inset-0 z-[300] bg-black/50 flex items-center justify-center p-5"
       onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="bg-surface border border-yellow/[0.35] rounded-[20px] p-8 w-full max-w-[480px] relative glow-yellow max-h-[90vh] overflow-y-auto">
-        <button onClick={onClose}
-          className="absolute top-4 right-4 bg-white/[.06] border-none text-ink-dim w-8 h-8 rounded-[8px] cursor-pointer flex items-center justify-center hover:bg-white/[.12] transition-colors">✕</button>
+      <div className="sticker p-7 md:p-8 w-full max-w-[480px] relative max-h-[90vh] overflow-y-auto">
+        <button onClick={onClose} aria-label="Cerrar"
+          className="absolute top-4 right-4 w-9 h-9 rounded-full border-[3px] border-line bg-surface text-ink font-bold flex items-center justify-center hover:bg-surface-2 transition-colors">✕</button>
 
-        <span className="mono-label text-yellow-ink">NUEVO EQUIPO</span>
-        <h2 className="font-display text-[28px] text-ink leading-none mt-2 mb-6">CREAR EQUIPO</h2>
+        <span className="mono-label">🛡️ Nuevo equipo</span>
+        <h2 className="font-display text-[32px] text-ink leading-none mt-2 mb-6">Crea tu equipo</h2>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
 
           {/* Imagen */}
-          <div className="flex flex-col gap-1.5">
-            <span className="mono-label text-[10px]">Imagen del equipo <span className="text-ink-faint">(opcional)</span></span>
+          <div className="flex flex-col gap-2">
+            <span className="text-[14px] font-bold text-ink">Imagen del equipo <span className="font-normal text-ink-dim">(opcional)</span></span>
             <div className="flex items-center gap-4">
               <div
                 onClick={() => fileRef.current?.click()}
-                className="w-20 h-20 rounded-[12px] border-2 border-dashed border-yellow/[0.3] flex items-center justify-center cursor-pointer hover:border-yellow transition-colors overflow-hidden shrink-0 bg-bg"
+                className="w-20 h-20 rounded-2xl border-[3px] border-dashed border-line flex items-center justify-center cursor-pointer hover:bg-surface-2 transition-colors overflow-hidden shrink-0 bg-surface-2"
               >
                 {preview
                   ? <img src={preview} alt="" className="w-full h-full object-cover" />
-                  : <span className="text-[24px] text-ink-faint">+</span>
+                  : <span className="font-display text-[28px] text-ink-dim">+</span>
                 }
               </div>
-              <div className="flex flex-col gap-1">
-                <button type="button" onClick={() => fileRef.current?.click()}
-                  className="mono-label text-yellow-ink text-[10px] hover:opacity-80 transition-opacity text-left">
+              <div className="flex flex-col gap-1.5 items-start">
+                <button type="button" onClick={() => fileRef.current?.click()} className="btn btn-secondary btn-sm">
                   {preview ? 'Cambiar imagen' : 'Subir imagen'}
                 </button>
-                <p className="mono-label text-[9px] normal-case text-ink-faint">PNG, JPG · Máx 2MB</p>
+                <p className="text-[12px] text-ink-dim">PNG o JPG · Máx. 2 MB</p>
               </div>
               <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImg} />
             </div>
           </div>
 
           {/* Nombre */}
-          <label className="flex flex-col gap-1.5">
-            <span className="mono-label text-[10px]">Nombre del equipo *</span>
+          <label className="flex flex-col gap-2">
+            <span className="text-[14px] font-bold text-ink">Nombre del equipo *</span>
             <input type="text" value={name} onChange={e => setName(e.target.value)}
               placeholder="Ej: Los Cuervos" maxLength={30} required className="field" />
           </label>
 
           {/* Descripción */}
-          <label className="flex flex-col gap-1.5">
-            <span className="mono-label text-[10px]">Descripción <span className="text-ink-faint">(opcional)</span></span>
+          <label className="flex flex-col gap-2">
+            <span className="text-[14px] font-bold text-ink">Descripción <span className="font-normal text-ink-dim">(opcional)</span></span>
             <textarea value={description} onChange={e => setDesc(e.target.value)}
               placeholder="Cuenta un poco de qué se trata el equipo…"
               maxLength={200} rows={3}
@@ -122,8 +121,8 @@ function CreateTeamModal({ onClose, onCreated }) {
           </label>
 
           {/* Región */}
-          <label className="flex flex-col gap-1.5">
-            <span className="mono-label text-[10px]">Región</span>
+          <label className="flex flex-col gap-2">
+            <span className="text-[14px] font-bold text-ink">Región</span>
             <select value={region} onChange={e => setRegion(e.target.value)} className="field">
               {REGIONS.map(r => <option key={r}>{r}</option>)}
             </select>
@@ -131,16 +130,16 @@ function CreateTeamModal({ onClose, onCreated }) {
 
           {/* Compromiso */}
           <div className="flex flex-col gap-2">
-            <span className="mono-label text-[10px]">Nivel de compromiso</span>
+            <span className="text-[14px] font-bold text-ink">Nivel de compromiso</span>
             <div className="grid grid-cols-2 gap-3">
               {COMMITMENT.map(c => (
                 <button key={c} type="button" onClick={() => setCommit(commitment === c ? '' : c)}
-                  className={`py-3 rounded-[12px] border text-[13px] font-semibold transition-all ${
+                  className={`font-display py-3 rounded-2xl border-[3px] border-line text-[16px] transition-all ${
                     commitment === c
                       ? c === 'Serio'
-                        ? 'border-yellow bg-yellow/10 text-yellow-ink'
-                        : 'border-cyan bg-cyan/10 text-cyan-ink'
-                      : 'border-ink/[0.1] text-ink-dim hover:border-ink-dim'
+                        ? 'bg-yellow text-on-color shadow-sticker-sm'
+                        : 'bg-cyan text-on-color shadow-sticker-sm'
+                      : 'bg-surface text-ink-dim hover:text-ink hover:bg-surface-2'
                   }`}>
                   {c === 'Serio' ? '⚡ Serio' : '🎮 Por diversión'}
                 </button>
@@ -148,10 +147,9 @@ function CreateTeamModal({ onClose, onCreated }) {
             </div>
           </div>
 
-          {error && <p className="text-pink-ink text-[13px]">{error}</p>}
+          {error && <p className="text-pink-ink text-[14px] font-bold">{error}</p>}
 
-          <button type="submit" disabled={loading || !name}
-            className="w-full py-4 rounded-full bg-yellow text-on-color font-bold text-[15px] shadow-yellow-btn hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+          <button type="submit" disabled={loading || !name} className="btn btn-primary w-full text-[17px]">
             {loading ? 'Creando…' : 'Crear equipo →'}
           </button>
         </form>
@@ -166,66 +164,71 @@ function TeamCard({ team, currentUserId }) {
   const memberCount = team.team_members?.length ?? 0;
 
   return (
-    <a href={`/equipos/${team.slug ?? team.id}`} className="no-underline block">
-    <div className={`bg-surface rounded-[16px] p-6 border transition-all cursor-pointer ${
-      isMine ? 'border-yellow/[0.4] shadow-[0_0_30px_rgba(255,214,10,0.06)]'
-             : 'border-rule hover:border-yellow/[0.35] hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,.4)]'
+    <a href={`/equipos/${team.slug ?? team.id}`} className="no-underline block h-full text-ink">
+    <div className={`sticker p-6 h-full flex flex-col hover:-translate-y-1 transition-transform cursor-pointer ${
+      isMine ? 'bg-yellow/[0.18]' : ''
     }`}>
       {isMine && (
-        <div className="mono-label text-yellow-ink text-[10px] mb-3">
-          {isCaptain ? '⚡ Tu equipo (capitán)' : '✓ Tu equipo'}
-        </div>
+        <span className="pill bg-yellow text-on-color self-start mb-4">
+          {isCaptain ? '⚡ Tu equipo · capitán' : '✓ Tu equipo'}
+        </span>
       )}
 
       <div className="flex items-start gap-3 mb-4">
         {/* Logo */}
         {team.logo_url
-          ? <img src={team.logo_url} alt={team.name} className="w-12 h-12 rounded-[10px] object-cover shrink-0 border border-rule" />
-          : <div className="w-12 h-12 rounded-[10px] bg-yellow/10 border border-yellow/20 flex items-center justify-center font-display text-[18px] text-yellow-ink shrink-0">
+          ? <img src={team.logo_url} alt={team.name} className="w-14 h-14 rounded-2xl object-cover shrink-0 border-[3px] border-line" />
+          : <div className="w-14 h-14 rounded-2xl bg-yellow border-[3px] border-line flex items-center justify-center font-display text-[24px] text-on-color shrink-0">
               {team.name[0].toUpperCase()}
             </div>
         }
         <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-2 flex-wrap">
-            <h3 className="font-display text-[22px] text-ink leading-none">{team.name}</h3>
-            <div className="flex items-center gap-1.5 flex-wrap shrink-0">
-              {team.commitment && (
-                <span className={`pill border text-[10px] ${team.commitment === 'Serio' ? 'border-yellow/40 bg-yellow/10 text-yellow-ink' : 'border-cyan/40 bg-cyan/10 text-cyan-ink'}`}>
-                  {team.commitment === 'Serio' ? '⚡ Serio' : '🎮 Por diversión'}
-                </span>
-              )}
-              {team.region && (
-                <span className="pill border border-ink/[0.12] text-ink-dim text-[10px]">{team.region}</span>
-              )}
-            </div>
-          </div>
-          <p className="mono-label text-[10px] mt-0.5">
-            Cap: <span className="text-ink">{team.profiles?.display_name ?? team.profiles?.discord_username ?? '—'}</span>
+          <h3 className="font-display text-[24px] text-ink leading-tight break-words">{team.name}</h3>
+          <p className="text-[13px] text-ink-dim mt-0.5 truncate">
+            Capitán: <span className="text-ink font-bold">{team.profiles?.display_name ?? team.profiles?.discord_username ?? '—'}</span>
           </p>
         </div>
       </div>
-      {team.description && (
-        <p className="text-ink-dim text-[13px] leading-relaxed mb-4 -mt-1">{team.description}</p>
+
+      {(team.commitment || team.region) && (
+        <div className="flex items-center gap-1.5 flex-wrap mb-4">
+          {team.commitment && (
+            <span className={`pill text-on-color ${team.commitment === 'Serio' ? 'bg-yellow' : 'bg-cyan'}`}>
+              {team.commitment === 'Serio' ? '⚡ Serio' : '🎮 Por diversión'}
+            </span>
+          )}
+          {team.region && (
+            <span className="pill bg-surface text-ink">{team.region}</span>
+          )}
+        </div>
       )}
 
-      <div className="flex items-center gap-2 mb-5">
-        <span className="mono-label text-[10px]">{memberCount}/6 miembros</span>
-        <div className="flex-1 h-[3px] bg-ink/[0.07] rounded-full">
-          <div className="h-full bg-yellow rounded-full" style={{ width: `${(memberCount / 6) * 100}%` }} />
-        </div>
-      </div>
+      {team.description && (
+        <p className="text-ink-dim text-[14px] leading-relaxed mb-4">{team.description}</p>
+      )}
 
-      {/* Avatares de miembros */}
-      <div className="flex items-center gap-1.5 mt-1">
-        {team.team_members?.slice(0, 6).map(m => (
-          m.profiles?.avatar_url
-            ? <img key={m.user_id} src={m.profiles.avatar_url} alt=""
-                className="w-7 h-7 rounded-full border-2 border-surface" />
-            : <div key={m.user_id} className="w-7 h-7 rounded-full bg-yellow/20 border-2 border-surface flex items-center justify-center mono-label text-[9px] text-yellow-ink">
-                {(m.profiles?.display_name ?? '?')[0]}
-              </div>
-        ))}
-        <span className="mono-label text-[10px] ml-1">Ver equipo →</span>
+      <div className="mt-auto">
+        <div className="flex justify-between text-[13px] font-bold mb-1.5">
+          <span>Miembros</span><span>{memberCount}/6</span>
+        </div>
+        <div className="h-4 bg-surface-2 border-[3px] border-line rounded-full overflow-hidden">
+          <div className="h-full bg-orange" style={{ width: `${Math.min(100, (memberCount / 6) * 100)}%` }} />
+        </div>
+
+        {/* Avatares de miembros */}
+        <div className="flex items-center justify-between gap-2 mt-4">
+          <div className="flex -space-x-2">
+            {team.team_members?.slice(0, 6).map(m => (
+              m.profiles?.avatar_url
+                ? <img key={m.user_id} src={m.profiles.avatar_url} alt=""
+                    className="w-8 h-8 rounded-full border-[3px] border-line bg-surface object-cover" />
+                : <div key={m.user_id} className="w-8 h-8 rounded-full bg-green border-[3px] border-line flex items-center justify-center font-display text-[13px] text-on-color">
+                    {(m.profiles?.display_name ?? '?')[0]}
+                  </div>
+            ))}
+          </div>
+          <span className="font-display text-[15px] text-ink whitespace-nowrap">Ver equipo →</span>
+        </div>
       </div>
     </div>
     </a>
@@ -251,53 +254,57 @@ export default function EquiposClient({ teams, currentUserId, userTeamId, applie
   return (
     <>
       {/* Header */}
-      <div className="flex items-end justify-between mb-8 flex-wrap gap-4">
+      <div className="flex items-end justify-between mb-10 flex-wrap gap-6">
         <div>
-          <span className="mono-label text-yellow-ink">COMPETENCIA</span>
-          <h1 className="font-display text-[clamp(48px,6vw,80px)] leading-[0.9] mt-3 text-ink">
-            EQUIPOS <span className="gradient-text">ACTIVOS.</span>
+          <span className="mono-label">🛡️ Equipos</span>
+          <h1 className="font-display text-[clamp(40px,6vw,68px)] leading-[1] tracking-[-0.02em] mt-2 text-ink">
+            Equipos{' '}
+            <mark className="bg-yellow text-on-color px-3 rounded-2xl border-[3px] border-line inline-block -rotate-2">activos</mark>
           </h1>
+          <p className="text-[18px] text-ink-dim mt-4 max-w-[520px]">
+            Encuentra un equipo que busque jugadores o arma el tuyo e invita a la comunidad.
+          </p>
         </div>
         {canCreate && (
-          <button onClick={() => setShowCreate(true)}
-            className="px-6 py-3 rounded-full bg-yellow text-on-color font-bold text-[14px] shadow-yellow-btn hover:opacity-90 transition-opacity">
+          <button onClick={() => setShowCreate(true)} className="btn btn-primary text-[17px]">
             + Crear equipo
           </button>
         )}
         {!currentUserId && (
-          <p className="mono-label text-ink-dim text-[11px]">Conecta Discord para crear un equipo</p>
+          <p className="text-[14px] font-bold text-ink-dim">Conecta Discord para crear un equipo.</p>
         )}
       </div>
 
       {/* Barra de búsqueda */}
-      <div className="relative mb-8">
-        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-ink-faint text-[14px] pointer-events-none">⌕</span>
+      <div className="relative mb-10 w-full max-w-[380px]">
+        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-ink-dim text-[16px] pointer-events-none">⌕</span>
         <input
           type="text"
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Buscar equipo…"
-          className="w-full max-w-[360px] bg-surface border border-rule rounded-full pl-9 pr-4 py-2.5 text-ink text-[14px] placeholder:text-ink-faint focus:outline-none focus:border-yellow/[0.4] transition-colors"
+          className="field rounded-full pl-10"
         />
       </div>
 
       {/* Grid */}
       {teams.length === 0 ? (
-        <div className="text-center py-24">
-          <p className="font-display text-[32px] text-ink-dim">No hay equipos aún.</p>
+        <div className="sticker p-10 text-center max-w-[560px] mx-auto">
+          <p className="font-display text-[30px] text-ink leading-tight">Todavía no hay equipos.</p>
+          <p className="text-[16px] text-ink-dim mt-2">Arma el primero y empieza a invitar gente de la comunidad.</p>
           {canCreate && (
-            <button onClick={() => setShowCreate(true)}
-              className="mt-6 px-6 py-3 rounded-full border border-yellow text-yellow-ink font-bold text-[14px] hover:bg-yellow/10 transition-colors">
-              Sé el primero en crear uno →
+            <button onClick={() => setShowCreate(true)} className="btn btn-primary mt-6">
+              Crear el primer equipo →
             </button>
           )}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-24">
-          <p className="font-display text-[32px] text-ink-dim">Sin resultados.</p>
+        <div className="sticker p-10 text-center max-w-[560px] mx-auto">
+          <p className="font-display text-[28px] text-ink leading-tight">Sin resultados.</p>
+          <p className="text-[16px] text-ink-dim mt-2">Ningún equipo coincide con “{search}”.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map(team => (
             <TeamCard
               key={team.id}
