@@ -38,7 +38,7 @@ export default async function EquiposPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#06070a] py-24 px-6 md:px-14">
+    <main className="min-h-screen bg-bg py-24 px-6 md:px-14">
       <div className="max-w-[1160px] mx-auto">
         <EquiposClient
           teams={teams ?? []}

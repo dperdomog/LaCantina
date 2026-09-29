@@ -43,15 +43,15 @@ export default function OnboardingPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#06070a] flex items-center justify-center px-6">
+    <main className="min-h-screen bg-bg flex items-center justify-center px-6">
       <div className="w-full max-w-[480px]">
 
         {/* Header */}
         <div className="text-center mb-10">
           <div className="font-display text-[28px] text-ink mb-1">
-            LA<span className="text-yellow">·</span>CANTINA
+            LA<span className="text-yellow-ink">·</span>CANTINA
           </div>
-          <span className="mono-label text-yellow">// SETUP DE PERFIL</span>
+          <span className="mono-label text-yellow-ink">SETUP DE PERFIL</span>
           <h1 className="font-display text-[clamp(36px,6vw,56px)] leading-none text-ink mt-4">
             VINCULA<br />TU <span className="gradient-text">RANGO.</span>
           </h1>
@@ -61,17 +61,17 @@ export default function OnboardingPage() {
         </div>
 
         {/* Card */}
-        <div className="bg-[#0d0f15] border border-[rgba(255,214,10,0.2)] rounded-[20px] p-7 glow-yellow">
+        <div className="bg-surface border border-yellow/[0.2] rounded-[20px] p-7 glow-yellow">
 
           {/* Cómo encontrar la URL */}
-          <div className="mb-6 p-4 bg-[#141823] rounded-[12px]">
-            <span className="mono-label text-yellow block mb-2">¿Cómo encontrar tu URL?</span>
+          <div className="mb-6 p-4 bg-surface-2 rounded-[12px]">
+            <span className="mono-label text-yellow-ink block mb-2">¿Cómo encontrar tu URL?</span>
             <ol className="text-ink-dim text-[13px] flex flex-col gap-1.5 list-none">
-              <li><span className="text-yellow font-bold">1.</span> Entra a <a href="https://statlocker.gg" target="_blank" rel="noopener noreferrer" className="text-yellow hover:opacity-80 transition-opacity">statlocker.gg</a></li>
-              <li><span className="text-yellow font-bold">2.</span> Busca tu perfil por nombre de Steam</li>
-              <li><span className="text-yellow font-bold">3.</span> Copia la URL de la barra del navegador</li>
+              <li><span className="text-yellow-ink font-bold">1.</span> Entra a <a href="https://statlocker.gg" target="_blank" rel="noopener noreferrer" className="text-yellow-ink hover:opacity-80 transition-opacity">statlocker.gg</a></li>
+              <li><span className="text-yellow-ink font-bold">2.</span> Busca tu perfil por nombre de Steam</li>
+              <li><span className="text-yellow-ink font-bold">3.</span> Copia la URL de la barra del navegador</li>
             </ol>
-            <div className="mt-3 px-3 py-2 bg-[#06070a] rounded-[8px] font-mono text-[11px] text-ink-faint">
+            <div className="mt-3 px-3 py-2 bg-bg rounded-[8px] font-mono text-[11px] text-ink-faint">
               https://statlocker.gg/profile/161957659
             </div>
           </div>
@@ -90,7 +90,7 @@ export default function OnboardingPage() {
             </label>
 
             {error && (
-              <div className="px-4 py-3 bg-pink/10 border border-pink/30 rounded-xl text-pink text-[13px]">
+              <div className="px-4 py-3 bg-pink/10 border border-pink/30 rounded-xl text-pink-ink text-[13px]">
                 {error}
               </div>
             )}
@@ -98,7 +98,7 @@ export default function OnboardingPage() {
             <button
               type="submit"
               disabled={loading || !url}
-              className="flex items-center justify-center gap-2 w-full py-4 rounded-full bg-yellow text-[#0a0a0a] font-bold text-[15px] shadow-yellow-btn hover:opacity-90 hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              className="flex items-center justify-center gap-2 w-full py-4 rounded-full bg-yellow text-on-color font-bold text-[15px] shadow-yellow-btn hover:opacity-90 hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               {STATLOCKER_ICON}
               {loading ? 'Vinculando…' : 'Vincular perfil →'}
@@ -107,7 +107,7 @@ export default function OnboardingPage() {
             <button
               type="button"
               onClick={handleSkip}
-              className="w-full py-3 rounded-full bg-transparent border border-[rgba(241,237,229,0.08)] text-ink-dim text-[13px] font-medium hover:border-ink-dim transition-colors"
+              className="w-full py-3 rounded-full bg-transparent border border-rule text-ink-dim text-[13px] font-medium hover:border-ink-dim transition-colors"
             >
               Saltar por ahora
             </button>

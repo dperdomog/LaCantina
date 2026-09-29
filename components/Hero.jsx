@@ -103,7 +103,7 @@ export default function Hero() {
         {/* Left */}
         <div>
           <div className="flex items-center gap-3 animate-fade-up">
-            <span className="pill bg-green text-[#0a0a0a]">
+            <span className="pill bg-green text-on-color">
               <span className="dot-live" style={{ background: '#fff' }} />
               COMUNIDAD ACTIVA
             </span>
@@ -112,7 +112,7 @@ export default function Hero() {
           <h1 className="font-display text-[clamp(48px,7.5vw,108px)] leading-[0.88] tracking-[-0.01em] mt-6 mb-0 animate-fade-up-1">
             <span className="block text-ink">EL HOGAR</span>
             <span className="block text-ink">DEL DEADLOCK</span>
-            <span className="block text-yellow" style={{ textShadow: '0 0 32px rgba(255,214,10,0.4)' }}>
+            <span className="block text-yellow-ink" style={{ textShadow: '0 0 32px rgba(255,214,10,0.4)' }}>
               EN ESPAÑOL.
             </span>
           </h1>
@@ -126,14 +126,14 @@ export default function Hero() {
               href={DISCORD_INVITE}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-4 rounded-full bg-yellow text-[#0a0a0a] font-bold text-[15px] shadow-yellow-btn hover:opacity-90 hover:-translate-y-0.5 transition-all no-underline"
+              className="inline-flex items-center gap-2 px-6 py-4 rounded-full bg-yellow text-on-color font-bold text-[15px] shadow-yellow-btn hover:opacity-90 hover:-translate-y-0.5 transition-all no-underline"
             >
               {DISCORD_ICON}
               Unirse al Discord ↗
             </a>
             <a
               href="/torneos"
-              className="inline-flex items-center gap-2 px-6 py-4 rounded-full bg-white/[.04] border border-[rgba(241,237,229,0.08)] text-ink text-[15px] font-medium hover:bg-white/[.08] transition-all no-underline"
+              className="inline-flex items-center gap-2 px-6 py-4 rounded-full bg-white/[.04] border border-rule text-ink text-[15px] font-medium hover:bg-white/[.08] transition-all no-underline"
             >
               Ver Torneos
             </a>
@@ -147,7 +147,7 @@ export default function Hero() {
       {/* Stat bar */}
       <div
         id="hero-statbar"
-        className="relative z-10 mt-16 max-w-[1160px] mx-auto w-full grid grid-cols-2 border-t border-b border-[rgba(241,237,229,0.08)]"
+        className="relative z-10 mt-16 max-w-[1160px] mx-auto w-full grid grid-cols-2 border-t border-b border-rule"
       >
         <div className="py-7 px-6">
           <div ref={memberRef} className="font-display text-[clamp(36px,4.5vw,60px)] leading-none text-ink">
@@ -155,8 +155,8 @@ export default function Hero() {
           </div>
           <span className="mono-label mt-2 block">miembros</span>
         </div>
-        <div className="py-7 px-6 border-l border-[rgba(241,237,229,0.08)]">
-          <div ref={onlineRef} className="font-display text-[clamp(36px,4.5vw,60px)] leading-none text-green">
+        <div className="py-7 px-6 border-l border-rule">
+          <div ref={onlineRef} className="font-display text-[clamp(36px,4.5vw,60px)] leading-none text-green-ink">
             {discord.online ? discord.online.toLocaleString('es-MX') : '—'}
           </div>
           <span className="mono-label mt-2 block flex items-center gap-1.5">

@@ -1,25 +1,18 @@
-import { Anton, Manrope, IBM_Plex_Mono } from 'next/font/google';
+import { Fredoka, DM_Sans } from 'next/font/google';
 import Navbar from '@/components/Navbar';
 import './globals.css';
 
-const anton = Anton({
+const fredoka = Fredoka({
   subsets: ['latin'],
-  weight: ['400'],
-  variable: '--font-anton',
+  weight: ['500', '600', '700'],
+  variable: '--font-display',
   display: 'swap',
 });
 
-const manrope = Manrope({
+const dmSans = DM_Sans({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700', '800'],
-  variable: '--font-manrope',
-  display: 'swap',
-});
-
-const ibmPlexMono = IBM_Plex_Mono({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600'],
-  variable: '--font-mono',
+  weight: ['400', '500', '700'],
+  variable: '--font-body',
   display: 'swap',
 });
 
@@ -34,10 +27,16 @@ export const metadata = {
   },
 };
 
+// Aplica el tema guardado antes de pintar, para evitar un parpadeo
+const themeScript = `try{var t=localStorage.getItem('theme');if(t==='dark'||t==='light')document.documentElement.dataset.theme=t}catch(e){}`;
+
 export default function RootLayout({ children }) {
   return (
-    <html lang="es" className={`${anton.variable} ${manrope.variable} ${ibmPlexMono.variable}`}>
-      <body className="bg-[#06070a] text-[#f1ede5] font-manrope overflow-x-hidden">
+    <html lang="es" className={`${fredoka.variable} ${dmSans.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
+      <body className="bg-bg text-ink font-body overflow-x-hidden">
         <Navbar />
         {children}
       </body>

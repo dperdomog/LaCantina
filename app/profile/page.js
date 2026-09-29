@@ -55,15 +55,15 @@ export default async function ProfilePage() {
     .eq('status', 'pending');
 
   return (
-    <main className="min-h-screen bg-[#06070a]">
+    <main className="min-h-screen bg-bg">
 
       {/* Banner */}
-      <div className="relative w-full h-[200px] md:h-[260px] bg-[#0d0f15] overflow-hidden">
+      <div className="relative w-full h-[200px] md:h-[260px] bg-surface overflow-hidden">
         {bannerUrl
           ? <img src={bannerUrl} alt="Banner de Discord" className="w-full h-full object-cover" />
           : <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,214,10,0.12)_0%,transparent_70%)]" />
         }
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#06070a]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-bg" />
       </div>
 
       <div className="max-w-[760px] mx-auto px-6 md:px-14 -mt-16 relative z-10 pb-24">
@@ -72,8 +72,8 @@ export default async function ProfilePage() {
         <div className="flex items-end gap-5 mb-8">
           {avatarUrl
             ? <img src={avatarUrl} alt={displayName ?? 'Avatar'}
-                className="w-28 h-28 rounded-full border-4 border-[#06070a] shadow-[0_0_0_2px_rgba(255,214,10,0.3)] shrink-0" />
-            : <div className="w-28 h-28 rounded-full border-4 border-[#06070a] bg-yellow flex items-center justify-center font-display text-[48px] text-[#0a0a0a] shrink-0">
+                className="w-28 h-28 rounded-full border-4 border-bg shadow-[0_0_0_2px_rgba(255,214,10,0.3)] shrink-0" />
+            : <div className="w-28 h-28 rounded-full border-4 border-bg bg-yellow flex items-center justify-center font-display text-[48px] text-on-color shrink-0">
                 {(displayName ?? email ?? '?')[0].toUpperCase()}
               </div>
           }
@@ -81,7 +81,7 @@ export default async function ProfilePage() {
             <h1 className="font-display text-[clamp(28px,5vw,48px)] leading-none text-ink">
               {displayName ?? username ?? 'Jugador'}
             </h1>
-            {username && <p className="mono-label text-yellow mt-1.5">@{username}</p>}
+            {username && <p className="mono-label text-yellow-ink mt-1.5">@{username}</p>}
           </div>
         </div>
 
@@ -95,13 +95,13 @@ export default async function ProfilePage() {
           {team
             ? <TeamSection team={team} isCaptain={isCaptain} applications={applications} />
             : (
-              <div className="bg-[#0d0f15] border border-[rgba(241,237,229,0.08)] rounded-[16px] p-5 col-span-full flex items-center justify-between gap-4">
+              <div className="bg-surface border border-rule rounded-[16px] p-5 col-span-full flex items-center justify-between gap-4">
                 <div>
-                  <span className="mono-label text-yellow block mb-1">// MI EQUIPO</span>
+                  <span className="mono-label text-yellow-ink block mb-1">MI EQUIPO</span>
                   <p className="text-ink-dim text-[13px]">Sin equipo — Free Agent</p>
                 </div>
                 <a href="/equipos"
-                  className="px-4 py-2 rounded-full border border-yellow text-yellow font-bold text-[13px] no-underline hover:bg-yellow/10 transition-colors">
+                  className="px-4 py-2 rounded-full border border-yellow text-yellow-ink font-bold text-[13px] no-underline hover:bg-yellow/10 transition-colors">
                   Ver equipos →
                 </a>
               </div>
@@ -117,8 +117,8 @@ export default async function ProfilePage() {
             discordUsername={username ?? null}
           />
 
-          <div className="bg-[#0d0f15] border border-[rgba(241,237,229,0.08)] rounded-[16px] p-5">
-            <span className="mono-label text-yellow block mb-3">// CONTACTO</span>
+          <div className="bg-surface border border-rule rounded-[16px] p-5">
+            <span className="mono-label text-yellow-ink block mb-3">CONTACTO</span>
             <dl className="flex flex-col gap-3">
               <div>
                 <dt className="mono-label text-[10px] mb-0.5">Email</dt>
@@ -144,10 +144,10 @@ export default async function ProfilePage() {
         </div>
 
         <div className="mt-6 flex items-center justify-between">
-          <a href="/" className="mono-label text-ink-dim hover:text-yellow transition-colors no-underline">
+          <a href="/" className="mono-label text-ink-dim hover:text-yellow-ink transition-colors no-underline">
             ← Volver al inicio
           </a>
-          <a href={`/jugador/${user.id}`} className="mono-label text-ink-dim hover:text-yellow transition-colors no-underline text-[10px]">
+          <a href={`/jugador/${user.id}`} className="mono-label text-ink-dim hover:text-yellow-ink transition-colors no-underline text-[10px]">
             Ver perfil público →
           </a>
         </div>

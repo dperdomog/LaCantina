@@ -45,7 +45,7 @@ export default function About() {
         {/* Header */}
         <div className="text-center max-w-[640px] mx-auto mb-16 reveal">
           <img src="/logo.png" alt="La Cantina" className="h-20 w-auto mx-auto mb-6" />
-          <span className="mono-label text-yellow">// QUIÉNES SOMOS</span>
+          <span className="mono-label text-yellow-ink">QUIÉNES SOMOS</span>
           <h2 className="font-display text-[clamp(48px,6vw,80px)] leading-[0.9] mt-3 text-ink">
             LA <span className="gradient-text">CANTINA</span><br />ES TU CASA.
           </h2>
@@ -59,9 +59,9 @@ export default function About() {
           {FEATURES.map(({ icon, title, body }) => (
             <div
               key={title}
-              className="reveal bg-[#0d0f15] border border-[rgba(241,237,229,0.08)] rounded-[16px] p-7 transition-all duration-[250ms] hover:-translate-y-1.5 hover:border-[rgba(255,214,10,0.35)] hover:shadow-[0_12px_40px_rgba(255,214,10,0.08)]"
+              className="reveal bg-surface border border-rule rounded-[16px] p-7 transition-all duration-[250ms] hover:-translate-y-1.5 hover:border-yellow/[0.35] hover:shadow-[0_12px_40px_rgba(255,214,10,0.08)]"
             >
-              <div className="font-display text-[32px] text-yellow mb-5">{icon}</div>
+              <div className="font-display text-[32px] text-yellow-ink mb-5">{icon}</div>
               <h3 className="font-display text-[26px] text-ink leading-none mb-3">{title}</h3>
               <p className="text-ink-dim text-[13px] leading-relaxed">{body}</p>
             </div>

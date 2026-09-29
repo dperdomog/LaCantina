@@ -20,9 +20,9 @@ export function TeamApplicationsSection({ applications, teamId }) {
   if (!applications?.length) return null;
 
   return (
-    <div className="bg-[#0d0f15] border border-[rgba(255,214,10,0.25)] rounded-[20px] p-8 mt-6">
-      <span className="mono-label text-yellow block mb-5">
-        // SOLICITUDES PENDIENTES ({applications.length})
+    <div className="bg-surface border border-yellow/[0.25] rounded-[20px] p-8 mt-6">
+      <span className="mono-label text-yellow-ink block mb-5">
+        SOLICITUDES PENDIENTES ({applications.length})
       </span>
       <div className="flex flex-col gap-4">
         {applications.map(app => (
@@ -30,12 +30,12 @@ export function TeamApplicationsSection({ applications, teamId }) {
             <a href={`/jugador/${app.applicant_id}`} className="flex items-center gap-3 no-underline group">
               {app.profiles?.avatar_url
                 ? <img src={app.profiles.avatar_url} alt="" className="w-9 h-9 rounded-full" />
-                : <div className="w-9 h-9 rounded-full bg-yellow/20 flex items-center justify-center mono-label text-[11px] text-yellow">
+                : <div className="w-9 h-9 rounded-full bg-yellow/20 flex items-center justify-center mono-label text-[11px] text-yellow-ink">
                     {(app.profiles?.display_name ?? '?')[0]}
                   </div>
               }
               <div>
-                <span className="text-ink text-[14px] font-semibold group-hover:text-yellow transition-colors">
+                <span className="text-ink text-[14px] font-semibold group-hover:text-yellow-ink transition-colors">
                   {app.profiles?.display_name ?? app.profiles?.discord_username ?? 'Jugador'}
                 </span>
                 {app.profiles?.discord_username && (
@@ -45,11 +45,11 @@ export function TeamApplicationsSection({ applications, teamId }) {
             </a>
             <div className="flex gap-2">
               <button onClick={() => respond(app.id, true)}
-                className="px-4 py-2 rounded-full bg-yellow/10 border border-yellow/40 text-yellow mono-label text-[10px] hover:bg-yellow/20 transition-colors">
+                className="px-4 py-2 rounded-full bg-yellow/10 border border-yellow/40 text-yellow-ink mono-label text-[10px] hover:bg-yellow/20 transition-colors">
                 Aceptar
               </button>
               <button onClick={() => respond(app.id, false)}
-                className="px-4 py-2 rounded-full border border-[rgba(241,237,229,0.08)] text-ink-dim mono-label text-[10px] hover:border-ink-dim transition-colors">
+                className="px-4 py-2 rounded-full border border-rule text-ink-dim mono-label text-[10px] hover:border-ink-dim transition-colors">
                 Rechazar
               </button>
             </div>
@@ -72,15 +72,15 @@ export function InvitePlayersSection({ players, teamId }) {
   }, [players, search]);
 
   return (
-    <div className="bg-[#0d0f15] border border-[rgba(241,237,229,0.08)] rounded-[20px] p-8 mt-6 mb-6">
+    <div className="bg-surface border border-rule rounded-[20px] p-8 mt-6 mb-6">
       <div className="flex items-center justify-between gap-4 flex-wrap mb-5">
-        <span className="mono-label text-yellow">// INVITAR JUGADORES</span>
+        <span className="mono-label text-yellow-ink">INVITAR JUGADORES</span>
         <input
           type="text"
           placeholder="Buscar por nombre o @discord…"
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="bg-[#06070a] border border-[rgba(241,237,229,0.10)] rounded-full px-4 py-2 text-[13px] text-ink placeholder:text-ink-dim focus:outline-none focus:border-yellow/40 transition-colors w-full sm:w-[260px]"
+          className="bg-bg border border-ink/[0.10] rounded-full px-4 py-2 text-[13px] text-ink placeholder:text-ink-dim focus:outline-none focus:border-yellow/40 transition-colors w-full sm:w-[260px]"
         />
       </div>
       {filtered.length === 0 ? (
@@ -96,12 +96,12 @@ export function InvitePlayersSection({ players, teamId }) {
               <a href={`/jugador/${p.id}`} className="flex items-center gap-3 no-underline group">
                 {p.avatar_url
                   ? <img src={p.avatar_url} alt="" className="w-9 h-9 rounded-full" />
-                  : <div className="w-9 h-9 rounded-full bg-yellow/20 flex items-center justify-center mono-label text-[11px] text-yellow">
+                  : <div className="w-9 h-9 rounded-full bg-yellow/20 flex items-center justify-center mono-label text-[11px] text-yellow-ink">
                       {(p.display_name ?? '?')[0]}
                     </div>
                 }
                 <div>
-                  <span className="text-ink text-[14px] font-semibold group-hover:text-yellow transition-colors">
+                  <span className="text-ink text-[14px] font-semibold group-hover:text-yellow-ink transition-colors">
                     {p.display_name ?? p.discord_username ?? 'Jugador'}
                   </span>
                   <p className="mono-label text-[10px] text-ink-dim">
@@ -110,7 +110,7 @@ export function InvitePlayersSection({ players, teamId }) {
                 </div>
               </a>
               {p.invited
-                ? <span className="mono-label text-green text-[10px]">✓ Invitación enviada</span>
+                ? <span className="mono-label text-green-ink text-[10px]">✓ Invitación enviada</span>
                 : <InviteButton teamId={teamId} inviteeId={p.id} />}
             </div>
           ))}
@@ -136,18 +136,18 @@ export function PendingInvitationBanner({ invitation }) {
   if (!invitation) return null;
 
   return (
-    <div className="bg-[#0d0f15] border border-[rgba(127,227,255,0.35)] rounded-[20px] p-6 mt-6 flex items-center justify-between gap-4 flex-wrap">
+    <div className="bg-surface border border-[rgba(127,227,255,0.35)] rounded-[20px] p-6 mt-6 flex items-center justify-between gap-4 flex-wrap">
       <div>
-        <span className="mono-label text-cyan block mb-1">// INVITACIÓN PENDIENTE</span>
+        <span className="mono-label text-cyan-ink block mb-1">INVITACIÓN PENDIENTE</span>
         <p className="text-ink text-[14px]">Este equipo te invitó a unirte</p>
       </div>
       <div className="flex gap-2">
         <button onClick={() => respond(true)}
-          className="px-5 py-2.5 rounded-full bg-yellow text-[#0a0a0a] font-bold text-[13px] hover:opacity-90 transition-opacity">
+          className="px-5 py-2.5 rounded-full bg-yellow text-on-color font-bold text-[13px] hover:opacity-90 transition-opacity">
           Aceptar →
         </button>
         <button onClick={() => respond(false)}
-          className="px-5 py-2.5 rounded-full border border-[rgba(241,237,229,0.08)] text-ink-dim text-[13px] hover:border-ink-dim transition-colors">
+          className="px-5 py-2.5 rounded-full border border-rule text-ink-dim text-[13px] hover:border-ink-dim transition-colors">
           Rechazar
         </button>
       </div>

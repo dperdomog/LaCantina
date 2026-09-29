@@ -70,7 +70,7 @@ export default function DiscordCTA() {
   const onlineStr  = discord.online  ? discord.online.toLocaleString('es-MX')  : '…';
 
   return (
-    <section id="discord" className="relative py-24 px-6 md:px-14 overflow-hidden bg-[#0d0f15]">
+    <section id="discord" className="relative py-24 px-6 md:px-14 overflow-hidden bg-surface">
       {/* Glows */}
       <div className="absolute inset-0 z-0 pointer-events-none opacity-50">
         <div className="absolute -top-48 left-1/2 -translate-x-1/2 w-[700px] h-[700px] rounded-full bg-[radial-gradient(circle,rgba(255,214,10,0.14),transparent_60%)]" />
@@ -82,20 +82,20 @@ export default function DiscordCTA() {
 
           {/* Left */}
           <div className="reveal">
-            <span className="mono-label text-yellow">// ÚNETE A LA COMUNIDAD</span>
+            <span className="mono-label text-yellow-ink">ÚNETE A LA COMUNIDAD</span>
             <h2 className="font-display text-[clamp(48px,6vw,80px)] leading-[0.9] mt-3 text-ink">
               PASA,<br /><span className="gradient-text">ESTAMOS</span><br />EN ALGO.
             </h2>
             <p className="text-ink-dim text-[16px] mt-5 mb-7 max-w-[480px] leading-relaxed">
               <span className="text-ink font-semibold">{membersStr} jugadores</span>, con{' '}
-              <span className="text-green font-semibold">{onlineStr} en línea ahora mismo</span>.
+              <span className="text-green-ink font-semibold">{onlineStr} en línea ahora mismo</span>.
               Conecta tu Discord y arma equipo en menos de 5 minutos.
             </p>
             {/* Botones auth */}
             {user ? (
               <div className="flex flex-col gap-3 max-w-[360px]">
                 <div className="p-3 bg-green/10 border border-green/30 rounded-xl">
-                  <span className="mono-label text-green">
+                  <span className="mono-label text-green-ink">
                     ✓ Conectado como {user.user_metadata?.full_name ?? user.email}
                   </span>
                 </div>
@@ -109,7 +109,7 @@ export default function DiscordCTA() {
                 </a>
                 <button
                   onClick={handleSignOut}
-                  className="w-full py-3 rounded-full border border-[rgba(241,237,229,0.08)] text-ink-dim text-[13px] hover:border-ink-dim transition-colors"
+                  className="w-full py-3 rounded-full border border-rule text-ink-dim text-[13px] hover:border-ink-dim transition-colors"
                 >
                   Desconectar cuenta
                 </button>
@@ -119,7 +119,7 @@ export default function DiscordCTA() {
                 <button
                   onClick={handleConnect}
                   disabled={loading}
-                  className="flex items-center justify-center gap-2.5 w-full px-5 py-4 rounded-full bg-yellow text-[#0a0a0a] font-bold text-[15px] shadow-yellow-btn hover:-translate-y-0.5 transition-all disabled:opacity-60"
+                  className="flex items-center justify-center gap-2.5 w-full px-5 py-4 rounded-full bg-yellow text-on-color font-bold text-[15px] shadow-yellow-btn hover:-translate-y-0.5 transition-all disabled:opacity-60"
                 >
                   {DISCORD_ICON}
                   {loading ? 'Conectando…' : 'Conectar con Discord →'}

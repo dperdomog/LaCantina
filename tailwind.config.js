@@ -1,5 +1,9 @@
 /** @type {import('tailwindcss').Config} */
+// Colores de tema como variables CSS (ver app/globals.css): cambian entre claro y nocturno.
+const themed = v => `rgb(var(--${v}) / <alpha-value>)`;
+
 module.exports = {
+  darkMode: ['selector', '[data-theme="dark"]'],
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -8,24 +12,39 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        bg:        '#06070a',
-        'bg-panel':'#0d0f15',
-        'bg-raise':'#141823',
-        ink:       '#f1ede5',
-        'ink-dim': 'rgba(241,237,229,0.55)',
-        'ink-faint':'rgba(241,237,229,0.22)',
-        rule:      'rgba(241,237,229,0.08)',
-        'rule-hi': 'rgba(255,214,10,0.35)',
-        yellow:    '#ffd60a',
-        cyan:      '#7fe3ff',
-        pink:      '#ff5e8a',
-        green:     '#3ddc84',
-        discord:   '#5865f2',
+        // Tema
+        bg:          themed('bg'),
+        surface:     themed('surface'),
+        'surface-2': themed('surface-2'),
+        'bg-panel':  themed('surface'),
+        'bg-raise':  themed('surface-2'),
+        ink:         themed('ink'),
+        'ink-dim':   'rgb(var(--ink) / 0.64)',
+        'ink-faint': 'rgb(var(--ink) / 0.32)',
+        rule:        'rgb(var(--ink) / 0.12)',
+        'rule-hi':   themed('line'),
+        line:        themed('line'),
+        // Texto de color legible en ambos temas
+        'yellow-ink': themed('yellow-ink'),
+        'cyan-ink':   themed('cyan-ink'),
+        'green-ink':  themed('green-ink'),
+        'pink-ink':   themed('pink-ink'),
+        // Marca (fijos): las franjas del logo
+        yellow:     '#ffd400',
+        cyan:       '#00c8f0',
+        green:      '#00d97e',
+        orange:     '#ff7043',
+        red:        '#ff2d2d',
+        pink:       '#ff5e8a',
+        discord:    '#5865f2',
+        'on-color': '#1c1c1c',
       },
       fontFamily: {
-        anton:  ['var(--font-anton)', 'Impact', 'sans-serif'],
-        manrope:['var(--font-manrope)', '-apple-system', 'sans-serif'],
-        mono:   ['var(--font-mono)', 'monospace'],
+        display: ['var(--font-display)', 'sans-serif'],
+        body:    ['var(--font-body)', '-apple-system', 'sans-serif'],
+        anton:   ['var(--font-display)', 'sans-serif'],
+        manrope: ['var(--font-body)', '-apple-system', 'sans-serif'],
+        mono:    ['ui-monospace', 'SFMono-Regular', 'monospace'],
       },
       keyframes: {
         fadeUp: {
@@ -56,8 +75,11 @@ module.exports = {
         'ticker':     'ticker 30s linear infinite',
       },
       boxShadow: {
-        yellow: '0 0 0 1px rgba(255,214,10,0.35), 0 0 28px rgba(255,214,10,0.22), inset 0 0 20px rgba(255,214,10,0.04)',
-        'yellow-btn': '0 12px 32px rgba(255,214,10,0.32)',
+        // Sombra sólida estilo sticker
+        sticker:      '6px 6px 0 rgb(var(--shadow))',
+        'sticker-sm': '4px 4px 0 rgb(var(--shadow))',
+        yellow:       '6px 6px 0 rgb(var(--shadow))',
+        'yellow-btn': '4px 4px 0 rgb(var(--shadow))',
       },
     },
   },

@@ -186,7 +186,7 @@ export default function TorneoModal({ torneo, onClose }) {
       className="fixed inset-0 z-[200] bg-black/75 backdrop-blur-[6px] flex items-center justify-center p-6"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="bg-[#0d0f15] border border-[rgba(255,214,10,0.35)] rounded-[20px] p-8 w-full max-w-[520px] relative max-h-[90vh] overflow-y-auto glow-yellow">
+      <div className="bg-surface border border-yellow/[0.35] rounded-[20px] p-8 w-full max-w-[520px] relative max-h-[90vh] overflow-y-auto glow-yellow">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 bg-white/[.06] border-none text-ink-dim w-8 h-8 rounded-[8px] cursor-pointer text-base flex items-center justify-center hover:bg-white/[.12] transition-colors"
@@ -196,7 +196,7 @@ export default function TorneoModal({ torneo, onClose }) {
         {submitted ? (
           <div className="text-center py-6">
             <div className="text-[3rem] mb-4">🎉</div>
-            <h3 className="font-display text-[28px] text-green mb-2">¡Inscripción recibida!</h3>
+            <h3 className="font-display text-[28px] text-green-ink mb-2">¡Inscripción recibida!</h3>
             <p className="text-ink-dim text-[14px]">
               Te contactaremos por Discord con los detalles del torneo.
             </p>
@@ -215,14 +215,14 @@ export default function TorneoModal({ torneo, onClose }) {
 
         ) : (
           <>
-            <span className="mono-label text-yellow">INSCRIPCIÓN</span>
+            <span className="mono-label text-yellow-ink">INSCRIPCIÓN</span>
             <h3 className="font-display text-[26px] text-ink leading-none mt-2 mb-1">{torneo.name}</h3>
             <p className="text-ink-dim text-[13px] mb-6">
               {isTeam ? 'Solo el capitán puede inscribir al equipo.' : 'Inscríbete individualmente al torneo.'}
             </p>
 
             {error && (
-              <div className="mb-5 px-4 py-3 bg-pink/10 border border-pink/30 rounded-xl text-pink text-[13px]">
+              <div className="mb-5 px-4 py-3 bg-pink/10 border border-pink/30 rounded-xl text-pink-ink text-[13px]">
                 {error}
               </div>
             )}
@@ -231,11 +231,11 @@ export default function TorneoModal({ torneo, onClose }) {
             {isTeam && (
               <>
                 {!user && (
-                  <div className="p-5 bg-[#141823] border border-[rgba(255,214,10,0.2)] rounded-xl flex flex-col items-center gap-4 text-center">
+                  <div className="p-5 bg-surface-2 border border-yellow/[0.2] rounded-xl flex flex-col items-center gap-4 text-center">
                     <p className="text-ink-dim text-[13px]">Necesitas iniciar sesión con Discord para inscribir a tu equipo.</p>
                     <button
                       onClick={loginWithDiscord}
-                      className="px-6 py-2.5 rounded-full bg-yellow text-[#0a0a0a] font-bold text-[13px] hover:opacity-90 transition-opacity"
+                      className="px-6 py-2.5 rounded-full bg-yellow text-on-color font-bold text-[13px] hover:opacity-90 transition-opacity"
                     >
                       Conectar Discord
                     </button>
@@ -243,16 +243,16 @@ export default function TorneoModal({ torneo, onClose }) {
                 )}
 
                 {user && !team && (
-                  <div className="p-5 bg-[#141823] border border-[rgba(241,237,229,0.08)] rounded-xl text-center">
+                  <div className="p-5 bg-surface-2 border border-rule rounded-xl text-center">
                     <p className="text-ink-dim text-[14px] mb-3">No perteneces a ningún equipo.</p>
-                    <a href="/equipos" className="mono-label text-yellow text-[11px] hover:opacity-80 transition-opacity no-underline">
+                    <a href="/equipos" className="mono-label text-yellow-ink text-[11px] hover:opacity-80 transition-opacity no-underline">
                       Ver equipos →
                     </a>
                   </div>
                 )}
 
                 {user && team && !isCaptain && (
-                  <div className="p-5 bg-[#141823] border border-[rgba(241,237,229,0.08)] rounded-xl text-center">
+                  <div className="p-5 bg-surface-2 border border-rule rounded-xl text-center">
                     <p className="text-ink-dim text-[14px]">Solo el <span className="text-ink font-semibold">capitán del equipo</span> puede inscribirse al torneo.</p>
                   </div>
                 )}
@@ -260,12 +260,12 @@ export default function TorneoModal({ torneo, onClose }) {
                 {user && team && isCaptain && (
                   <form onSubmit={handleSubmitTeam} className="flex flex-col gap-5">
                     {/* Team card + player selection */}
-                    <div className="p-4 bg-[#06070a] border border-[rgba(255,214,10,0.2)] rounded-[14px]">
-                      <span className="mono-label text-yellow text-[10px] block mb-3">// EQUIPO</span>
+                    <div className="p-4 bg-bg border border-yellow/[0.2] rounded-[14px]">
+                      <span className="mono-label text-yellow-ink text-[10px] block mb-3">EQUIPO</span>
                       <div className="flex items-center gap-3 mb-4">
                         {team.logo_url
-                          ? <img src={team.logo_url} alt={team.name} className="w-10 h-10 rounded-[8px] object-cover border border-[rgba(255,214,10,0.2)] shrink-0" />
-                          : <div className="w-10 h-10 rounded-[8px] bg-yellow/10 border border-yellow/20 flex items-center justify-center font-display text-[18px] text-yellow shrink-0">
+                          ? <img src={team.logo_url} alt={team.name} className="w-10 h-10 rounded-[8px] object-cover border border-yellow/[0.2] shrink-0" />
+                          : <div className="w-10 h-10 rounded-[8px] bg-yellow/10 border border-yellow/20 flex items-center justify-center font-display text-[18px] text-yellow-ink shrink-0">
                               {team.name[0].toUpperCase()}
                             </div>
                         }
@@ -285,7 +285,7 @@ export default function TorneoModal({ torneo, onClose }) {
 
                       {members.length < slots + 1 && (
                         <div className="mb-3 px-3 py-2 bg-pink/10 border border-pink/30 rounded-lg">
-                          <span className="mono-label text-pink text-[10px]">
+                          <span className="mono-label text-pink-ink text-[10px]">
                             Necesitas al menos {slots + 1} miembros en el equipo para participar.
                           </span>
                         </div>
@@ -301,17 +301,17 @@ export default function TorneoModal({ torneo, onClose }) {
                           return (
                             <div key={uid} className={`flex items-center gap-2 ${!hasLocker ? 'opacity-50' : ''}`}>
                               {m.profiles?.avatar_url
-                                ? <img src={m.profiles.avatar_url} alt="" className="w-7 h-7 rounded-full border border-[rgba(241,237,229,0.1)] shrink-0" />
-                                : <div className="w-7 h-7 rounded-full bg-yellow/10 flex items-center justify-center mono-label text-[10px] text-yellow shrink-0">
+                                ? <img src={m.profiles.avatar_url} alt="" className="w-7 h-7 rounded-full border border-ink/[0.1] shrink-0" />
+                                : <div className="w-7 h-7 rounded-full bg-yellow/10 flex items-center justify-center mono-label text-[10px] text-yellow-ink shrink-0">
                                     {(m.profiles?.display_name ?? '?')[0]}
                                   </div>
                               }
                               <span className="text-ink text-[13px] flex-1 min-w-0 truncate">{name}</span>
                               {uid === team.captain_id && (
-                                <span className="mono-label text-yellow text-[9px]">CAP</span>
+                                <span className="mono-label text-yellow-ink text-[9px]">CAP</span>
                               )}
                               {!hasLocker
-                                ? <span className="mono-label text-pink text-[9px]">SIN STAT</span>
+                                ? <span className="mono-label text-pink-ink text-[9px]">SIN STAT</span>
                                 : m.profiles?.player_role && (
                                     <span className="mono-label text-ink-faint text-[9px]">{m.profiles.player_role}</span>
                                   )
@@ -323,8 +323,8 @@ export default function TorneoModal({ torneo, onClose }) {
                                   disabled={!hasLocker || (!isStarter && starters.length >= slots)}
                                   className={`px-2 py-0.5 rounded-full mono-label text-[9px] border transition-colors ${
                                     isStarter
-                                      ? 'bg-yellow/20 border-yellow text-yellow'
-                                      : 'border-[rgba(241,237,229,0.15)] text-ink-faint hover:border-yellow/50 disabled:opacity-25 disabled:cursor-not-allowed'
+                                      ? 'bg-yellow/20 border-yellow text-yellow-ink'
+                                      : 'border-ink/[0.15] text-ink-faint hover:border-yellow/50 disabled:opacity-25 disabled:cursor-not-allowed'
                                   }`}
                                 >TIT</button>
                                 <button
@@ -333,8 +333,8 @@ export default function TorneoModal({ torneo, onClose }) {
                                   disabled={!hasLocker || (!isSub && subs.length >= 2)}
                                   className={`px-2 py-0.5 rounded-full mono-label text-[9px] border transition-colors ${
                                     isSub
-                                      ? 'bg-cyan/20 border-cyan text-cyan'
-                                      : 'border-[rgba(241,237,229,0.15)] text-ink-faint hover:border-cyan/50 disabled:opacity-25 disabled:cursor-not-allowed'
+                                      ? 'bg-cyan/20 border-cyan text-cyan-ink'
+                                      : 'border-ink/[0.15] text-ink-faint hover:border-cyan/50 disabled:opacity-25 disabled:cursor-not-allowed'
                                   }`}
                                 >SUP</button>
                               </div>
@@ -344,18 +344,18 @@ export default function TorneoModal({ torneo, onClose }) {
                       </div>
 
                       {/* Selection counter */}
-                      <div className="flex gap-4 mt-3 pt-3 border-t border-[rgba(241,237,229,0.08)]">
-                        <span className={`mono-label text-[10px] ${starters.length === slots ? 'text-yellow' : 'text-ink-dim'}`}>
+                      <div className="flex gap-4 mt-3 pt-3 border-t border-rule">
+                        <span className={`mono-label text-[10px] ${starters.length === slots ? 'text-yellow-ink' : 'text-ink-dim'}`}>
                           {starters.length}/{slots} titulares
                         </span>
-                        <span className={`mono-label text-[10px] ${subs.length > 0 ? 'text-cyan' : 'text-ink-dim'}`}>
+                        <span className={`mono-label text-[10px] ${subs.length > 0 ? 'text-cyan-ink' : 'text-ink-dim'}`}>
                           {subs.length}/2 suplentes
                         </span>
                       </div>
                     </div>
 
                     <div className="p-3 bg-green/10 border border-green/30 rounded-xl">
-                      <span className="mono-label text-green text-[11px]">
+                      <span className="mono-label text-green-ink text-[11px]">
                         ✓ Inscribiendo como capitán: {user.user_metadata?.full_name ?? user.email}
                       </span>
                     </div>
@@ -363,7 +363,7 @@ export default function TorneoModal({ torneo, onClose }) {
                     <button
                       type="submit"
                       disabled={loading || starters.length !== slots || members.length < slots + 1}
-                      className="w-full py-4 rounded-full bg-yellow text-[#0a0a0a] font-bold text-[15px] shadow-yellow-btn hover:opacity-90 hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                      className="w-full py-4 rounded-full bg-yellow text-on-color font-bold text-[15px] shadow-yellow-btn hover:opacity-90 hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                     >
                       {loading ? 'Enviando…' : 'Confirmar inscripción →'}
                     </button>
@@ -377,20 +377,20 @@ export default function TorneoModal({ torneo, onClose }) {
               <>
                 {user && (
                   <div className="mb-5 p-3 bg-green/10 border border-green/30 rounded-xl">
-                    <span className="mono-label text-green text-[11px]">
+                    <span className="mono-label text-green-ink text-[11px]">
                       ✓ Conectado como {user.user_metadata?.full_name ?? user.email}
                     </span>
                   </div>
                 )}
 
                 {!user && (
-                  <div className="mb-5 p-4 bg-[#141823] border border-[rgba(255,214,10,0.2)] rounded-xl flex items-center justify-between gap-4">
+                  <div className="mb-5 p-4 bg-surface-2 border border-yellow/[0.2] rounded-xl flex items-center justify-between gap-4">
                     <p className="text-ink-dim text-[13px] leading-snug">
                       Conecta tu Discord para inscribirte más rápido.
                     </p>
                     <button
                       onClick={loginWithDiscord}
-                      className="shrink-0 px-4 py-2 rounded-full bg-yellow text-[#0a0a0a] font-bold text-[12px] hover:opacity-90 transition-opacity"
+                      className="shrink-0 px-4 py-2 rounded-full bg-yellow text-on-color font-bold text-[12px] hover:opacity-90 transition-opacity"
                     >
                       Conectar Discord
                     </button>
@@ -427,7 +427,7 @@ export default function TorneoModal({ torneo, onClose }) {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="mt-2 w-full py-4 rounded-full bg-yellow text-[#0a0a0a] font-bold text-[15px] shadow-yellow-btn hover:opacity-90 hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                    className="mt-2 w-full py-4 rounded-full bg-yellow text-on-color font-bold text-[15px] shadow-yellow-btn hover:opacity-90 hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                   >
                     {loading ? 'Enviando…' : 'Confirmar inscripción →'}
                   </button>

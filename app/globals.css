@@ -2,60 +2,137 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Tema ──────────────────────────────────────────────────────────────────
+   Colores en canales RGB para poder usar opacidad (bg-ink/10).
+   Claro "cantina" por defecto; nocturno con data-theme="dark" en <html>. */
+:root {
+  color-scheme: light;
+  --bg:        246 239 226;   /* crema */
+  --surface:   255 252 245;
+  --surface-2: 239 230 213;
+  --ink:       28 28 28;
+  --line:      28 28 28;      /* contorno de stickers */
+  --shadow:    28 28 28;      /* sombra sólida */
+  --yellow-ink: 180 83 9;
+  --cyan-ink:   14 116 144;
+  --green-ink:  21 128 61;
+  --pink-ink:   190 18 60;
+  --hl-text:   28 28 28;
+  --hl-bg:     linear-gradient(transparent 60%, #ffd400 60%, #ffd400 92%, transparent 92%);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg:        21 17 14;      /* cantina de noche */
+  --surface:   33 28 23;
+  --surface-2: 46 39 32;
+  --ink:       246 239 226;
+  --line:      0 0 0;
+  --shadow:    0 0 0;
+  --yellow-ink: 255 212 0;
+  --cyan-ink:   0 200 240;
+  --green-ink:  0 217 126;
+  --pink-ink:   255 94 138;
+  --hl-text:   255 212 0;
+  --hl-bg:     none;
+}
+
 /* ── Scrollbar ── */
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: #0d0f15; }
-::-webkit-scrollbar-thumb { background: #ffd60a; border-radius: 3px; }
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: rgb(var(--bg)); }
+::-webkit-scrollbar-thumb { background: rgb(var(--ink) / 0.35); border-radius: 8px; }
 
-/* ── Display font helper ── */
+/* ── Tipografía display (Fredoka) ── */
 .font-display {
-  font-family: var(--font-anton), Impact, sans-serif;
-  font-weight: 400;
+  font-family: var(--font-display), sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
-/* ── Mono label ── */
+/* ── Etiqueta pequeña en mayúsculas ── */
 .mono-label {
-  font-family: var(--font-mono), monospace;
-  font-size: 11px;
-  letter-spacing: 0.14em;
+  font-family: var(--font-body), sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(241,237,229,0.55);
+  color: rgb(var(--ink) / 0.6);
 }
 
-/* ── Gradient text (amarillo → cyan) ── */
+/* ── Texto destacado: marcador amarillo (claro) / amarillo (nocturno) ── */
 .gradient-text {
-  background: linear-gradient(135deg, #ffd60a, #ffe566 60%, #7fe3ff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: rgb(var(--hl-text));
+  background: var(--hl-bg);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  padding: 0 0.06em;
 }
 
-/* ── Yellow glow box ── */
+/* ── Sticker: contorno grueso + sombra sólida ── */
+.sticker {
+  background: rgb(var(--surface));
+  border: 3px solid rgb(var(--line));
+  border-radius: 22px;
+  box-shadow: 6px 6px 0 rgb(var(--shadow));
+}
+.sticker-sm {
+  border: 3px solid rgb(var(--line));
+  border-radius: 16px;
+  box-shadow: 4px 4px 0 rgb(var(--shadow));
+}
+
+/* Compatibilidad: el antiguo recuadro con brillo ahora es un sticker */
 .glow-yellow {
-  box-shadow: 0 0 0 1px rgba(255,214,10,0.35),
-              0 0 28px rgba(255,214,10,0.22),
-              inset 0 0 20px rgba(255,214,10,0.04);
+  border: 3px solid rgb(var(--line)) !important;
+  box-shadow: 6px 6px 0 rgb(var(--shadow));
 }
 
-/* ── Pill base ── */
+/* ── Botones ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-display), sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1;
+  padding: 12px 22px;
+  border: 3px solid rgb(var(--line));
+  border-radius: 999px;
+  box-shadow: 4px 4px 0 rgb(var(--shadow));
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  cursor: pointer;
+}
+.btn:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0 rgb(var(--shadow)); }
+.btn:active { transform: translate(4px, 4px); box-shadow: 0 0 0 rgb(var(--shadow)); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.btn-primary   { background: #ffd400; color: #1c1c1c; }
+.btn-secondary { background: rgb(var(--surface)); color: rgb(var(--ink)); }
+.btn-dark      { background: rgb(var(--ink)); color: rgb(var(--bg)); }
+.btn-discord   { background: #5865f2; color: #fff; }
+.btn-sm        { font-size: 14px; padding: 8px 16px; box-shadow: 3px 3px 0 rgb(var(--shadow)); }
+
+/* ── Chip / pill ── */
 .pill {
-  font-family: var(--font-mono), monospace;
-  font-size: 10px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  padding: 5px 9px;
+  font-family: var(--font-body), sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 5px 11px;
   border-radius: 99px;
-  font-weight: 600;
+  border: 2px solid rgb(var(--line));
   display: inline-flex;
   align-items: center;
   gap: 6px;
   line-height: 1;
 }
 
-/* ── Dot indicator ── */
+/* ── Indicador en vivo ── */
 .dot-live {
   display: inline-block;
-  width: 6px; height: 6px;
+  width: 8px; height: 8px;
   border-radius: 50%;
   animation: pulse 1.8s ease-in-out infinite;
 }
@@ -71,31 +148,31 @@
   transform: translateY(0);
 }
 
-/* ── Progress bar fill ── */
+/* ── Barra de progreso ── */
 .bar-fill {
   height: 100%;
   width: 0;
-  background: linear-gradient(90deg, #ffd60a, #ffe566);
+  background: #ff7043;
   border-radius: 6px;
   transition: width 1.2s ease;
 }
 
-/* ── Form inputs ── */
+/* ── Campos de formulario ── */
 .field {
   width: 100%;
-  background: #141823;
-  border: 1px solid rgba(241,237,229,0.08);
-  border-radius: 8px;
-  padding: 14px 16px;
-  color: #f1ede5;
-  font-family: var(--font-mono), monospace;
-  font-size: 14px;
+  background: rgb(var(--surface));
+  border: 3px solid rgb(var(--line));
+  border-radius: 14px;
+  padding: 12px 14px;
+  color: rgb(var(--ink));
+  font-family: var(--font-body), sans-serif;
+  font-size: 15px;
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  box-shadow: 3px 3px 0 rgb(var(--shadow));
+  transition: box-shadow 0.15s, transform 0.15s;
 }
 .field:focus {
-  border-color: rgba(255,214,10,0.35);
-  box-shadow: 0 0 0 3px rgba(255,214,10,0.1);
+  box-shadow: 3px 3px 0 #ffd400, 0 0 0 3px #ffd400;
 }
-.field::placeholder { color: rgba(241,237,229,0.35); }
-.field option { background: #141823; }
+.field::placeholder { color: rgb(var(--ink) / 0.4); }
+.field option { background: rgb(var(--surface)); color: rgb(var(--ink)); }

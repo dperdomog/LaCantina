@@ -3,12 +3,12 @@
 import { useState, useMemo } from 'react';
 
 const ROLE_COLORS = {
-  Carry:     'text-yellow  border-yellow/40  bg-yellow/10',
-  Flex:      'text-green   border-green/40   bg-green/10',
+  Carry:     'text-yellow-ink  border-yellow/40  bg-yellow/10',
+  Flex:      'text-green-ink   border-green/40   bg-green/10',
   Frontline: 'text-[#f97316] border-[#f97316]/40 bg-[#f97316]/10',
-  Support:   'text-cyan    border-cyan/40    bg-cyan/10',
+  Support:   'text-cyan-ink    border-cyan/40    bg-cyan/10',
   Pick:      'text-[#a78bfa] border-[#a78bfa]/40 bg-[#a78bfa]/10',
-  Roamer:    'text-pink    border-pink/40    bg-pink/10',
+  Roamer:    'text-pink-ink    border-pink/40    bg-pink/10',
 };
 
 const ROLES = ['Carry', 'Flex', 'Frontline', 'Support', 'Pick', 'Roamer'];
@@ -20,7 +20,7 @@ function PlayerCard({ player, currentUserId, viewerTeamId }) {
   return (
     <a
       href={`/jugador/${player.id}`}
-      className="block bg-[#0d0f15] border border-[rgba(241,237,229,0.08)] rounded-[16px] p-5 no-underline hover:-translate-y-0.5 hover:border-[rgba(255,214,10,0.25)] transition-all duration-[200ms] group"
+      className="block bg-surface border border-rule rounded-[16px] p-5 no-underline hover:-translate-y-0.5 hover:border-yellow/[0.25] transition-all duration-[200ms] group"
     >
       {/* Avatar + nombre */}
       <div className="flex items-center gap-3 mb-4">
@@ -28,15 +28,15 @@ function PlayerCard({ player, currentUserId, viewerTeamId }) {
           <img
             src={player.avatar_url}
             alt={player.display_name ?? ''}
-            className="w-11 h-11 rounded-full border border-[rgba(241,237,229,0.15)] group-hover:border-yellow/40 transition-colors shrink-0"
+            className="w-11 h-11 rounded-full border border-ink/[0.15] group-hover:border-yellow/40 transition-colors shrink-0"
           />
         ) : (
-          <div className="w-11 h-11 rounded-full bg-yellow flex items-center justify-center font-display text-[18px] text-[#0a0a0a] shrink-0">
+          <div className="w-11 h-11 rounded-full bg-yellow flex items-center justify-center font-display text-[18px] text-on-color shrink-0">
             {(player.display_name ?? player.discord_username ?? '?')[0].toUpperCase()}
           </div>
         )}
         <div className="min-w-0">
-          <p className="text-ink text-[14px] font-semibold leading-tight truncate group-hover:text-yellow transition-colors">
+          <p className="text-ink text-[14px] font-semibold leading-tight truncate group-hover:text-yellow-ink transition-colors">
             {player.display_name ?? player.discord_username ?? 'Jugador'}
           </p>
           {player.discord_username && (
@@ -44,7 +44,7 @@ function PlayerCard({ player, currentUserId, viewerTeamId }) {
           )}
         </div>
         {isOwnProfile && (
-          <span className="ml-auto mono-label text-[9px] text-yellow/60 shrink-0">TÚ</span>
+          <span className="ml-auto mono-label text-[9px] text-yellow-ink/60 shrink-0">TÚ</span>
         )}
       </div>
 
@@ -56,7 +56,7 @@ function PlayerCard({ player, currentUserId, viewerTeamId }) {
             <span className="truncate max-w-[120px]">{teamName}</span>
           </span>
         ) : (
-          <span className="pill border border-cyan/30 text-cyan bg-cyan/10 text-[10px] font-bold tracking-wide">
+          <span className="pill border border-cyan/30 text-cyan-ink bg-cyan/10 text-[10px] font-bold tracking-wide">
             F/A
           </span>
         )}
@@ -98,7 +98,7 @@ export default function JugadoresPage({ players, currentUserId, viewerTeamId }) 
     <div>
       {/* Header */}
       <div className="mb-12">
-        <span className="mono-label text-yellow">// DIRECTORIO</span>
+        <span className="mono-label text-yellow-ink">DIRECTORIO</span>
         <h1 className="font-display text-[clamp(48px,6vw,80px)] leading-[0.9] mt-3 text-ink">
           JUGADORES <span className="gradient-text">LATAM.</span>
         </h1>
@@ -115,7 +115,7 @@ export default function JugadoresPage({ players, currentUserId, viewerTeamId }) 
           placeholder="Buscar jugador…"
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="bg-[#0d0f15] border border-[rgba(241,237,229,0.10)] rounded-full px-4 py-2 text-[13px] text-ink placeholder:text-ink-dim focus:outline-none focus:border-yellow/40 transition-colors w-full sm:w-[240px]"
+          className="bg-surface border border-ink/[0.10] rounded-full px-4 py-2 text-[13px] text-ink placeholder:text-ink-dim focus:outline-none focus:border-yellow/40 transition-colors w-full sm:w-[240px]"
         />
 
         {/* Status filter */}
@@ -130,8 +130,8 @@ export default function JugadoresPage({ players, currentUserId, viewerTeamId }) 
               onClick={() => setFilterTeam(val)}
               className={`px-3 py-1.5 rounded-full text-[12px] font-semibold transition-all ${
                 filterTeam === val
-                  ? 'bg-yellow text-[#0a0a0a]'
-                  : 'border border-[rgba(241,237,229,0.10)] text-ink-dim hover:border-yellow/30 hover:text-ink'
+                  ? 'bg-yellow text-on-color'
+                  : 'border border-ink/[0.10] text-ink-dim hover:border-yellow/30 hover:text-ink'
               }`}
             >
               {label}
@@ -149,7 +149,7 @@ export default function JugadoresPage({ players, currentUserId, viewerTeamId }) 
                 key={role}
                 onClick={() => setFilterRole(active ? '' : role)}
                 className={`px-3 py-1 rounded-full text-[11px] font-semibold border transition-all ${
-                  active ? color : 'border-[rgba(241,237,229,0.08)] text-ink-dim hover:border-[rgba(241,237,229,0.20)]'
+                  active ? color : 'border-rule text-ink-dim hover:border-ink/[0.20]'
                 }`}
               >
                 {role}

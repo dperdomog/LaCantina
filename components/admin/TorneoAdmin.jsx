@@ -5,9 +5,9 @@ import { useRouter } from 'next/navigation';
 import TorneoForm from './TorneoForm';
 
 const STATUS_STYLE = {
-  open:   'text-green  border-green/30  bg-green/10',
-  soon:   'text-cyan   border-cyan/30   bg-cyan/10',
-  live:   'text-pink   border-pink/30   bg-pink/10',
+  open:   'text-green-ink  border-green/30  bg-green/10',
+  soon:   'text-cyan-ink   border-cyan/30   bg-cyan/10',
+  live:   'text-pink-ink   border-pink/30   bg-pink/10',
   closed: 'text-ink-dim border-ink-dim/20 bg-ink-dim/5',
 };
 const STATUS_LABEL = { open: 'Abierto', soon: 'Próximamente', live: 'En vivo', closed: 'Cerrado' };
@@ -49,8 +49,8 @@ export default function TorneoAdmin({ tournament, registrations }) {
 
         {/* Header */}
         <div className="mb-8">
-          <span className="mono-label text-yellow text-[10px] block mb-2">
-            // TORNEO · {tournament.id}
+          <span className="mono-label text-yellow-ink text-[10px] block mb-2">
+            TORNEO · {tournament.id}
           </span>
           <div className="flex items-start justify-between gap-4 flex-wrap">
             <h1 className="font-display text-[clamp(32px,4vw,56px)] leading-none text-ink">
@@ -60,7 +60,7 @@ export default function TorneoAdmin({ tournament, registrations }) {
               href={`/torneos/${tournament.id}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="mono-label text-[11px] text-ink-dim border border-[rgba(241,237,229,0.1)] px-4 py-2 rounded-full hover:border-ink-dim transition-colors no-underline shrink-0"
+              className="mono-label text-[11px] text-ink-dim border border-ink/[0.1] px-4 py-2 rounded-full hover:border-ink-dim transition-colors no-underline shrink-0"
             >
               Ver público ↗
             </a>
@@ -83,7 +83,7 @@ export default function TorneoAdmin({ tournament, registrations }) {
                 className={`mono-label text-[9px] px-3 py-1.5 rounded-full border transition-colors disabled:opacity-40 disabled:cursor-default ${
                   s === tournament.status
                     ? STATUS_STYLE[s] + ' border-current'
-                    : 'border-[rgba(241,237,229,0.12)] text-ink-dim hover:border-yellow/50 hover:text-yellow'
+                    : 'border-ink/[0.12] text-ink-dim hover:border-yellow/50 hover:text-yellow-ink'
                 }`}
               >
                 {STATUS_LABEL[s]}
@@ -93,7 +93,7 @@ export default function TorneoAdmin({ tournament, registrations }) {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 mb-8 border-b border-[rgba(241,237,229,0.08)]">
+        <div className="flex gap-1 mb-8 border-b border-rule">
           {[
             { key: 'inscriptos', label: `Inscriptos (${registrations.length})` },
             { key: 'editar',     label: 'Editar torneo' },
@@ -103,7 +103,7 @@ export default function TorneoAdmin({ tournament, registrations }) {
               onClick={() => setActiveTab(tab.key)}
               className={`mono-label text-[11px] px-4 py-2.5 border-b-2 -mb-px transition-colors ${
                 activeTab === tab.key
-                  ? 'border-yellow text-yellow'
+                  ? 'border-yellow text-yellow-ink'
                   : 'border-transparent text-ink-dim hover:text-ink'
               }`}
             >
@@ -116,13 +116,13 @@ export default function TorneoAdmin({ tournament, registrations }) {
         {activeTab === 'inscriptos' && (
           <div>
             {registrations.length === 0 ? (
-              <div className="text-center py-20 border border-dashed border-[rgba(241,237,229,0.1)] rounded-[16px]">
+              <div className="text-center py-20 border border-dashed border-ink/[0.1] rounded-[16px]">
                 <p className="font-display text-[28px] text-ink-dim">Sin inscriptos aún.</p>
               </div>
             ) : (
               <div className="flex flex-col gap-3">
                 {registrations.map((r, i) => (
-                  <div key={r.id} className="bg-[#0d0f15] border border-[rgba(241,237,229,0.08)] rounded-[14px] overflow-hidden">
+                  <div key={r.id} className="bg-surface border border-rule rounded-[14px] overflow-hidden">
                     <div className="px-5 py-4 flex items-center gap-4">
                       {/* Position */}
                       <span className="mono-label text-ink-faint text-[12px] w-7 shrink-0 text-right">
@@ -142,7 +142,7 @@ export default function TorneoAdmin({ tournament, registrations }) {
                             <span className="mono-label text-[10px] text-ink-dim">@{r.captain_discord}</span>
                           )}
                           {r.region && (
-                            <span className="pill border border-[rgba(241,237,229,0.12)] text-ink-dim text-[9px]">{r.region}</span>
+                            <span className="pill border border-ink/[0.12] text-ink-dim text-[9px]">{r.region}</span>
                           )}
                         </div>
                       </div>
@@ -156,7 +156,7 @@ export default function TorneoAdmin({ tournament, registrations }) {
                       {r.members && (
                         <button
                           onClick={() => setExpandedId(expandedId === r.id ? null : r.id)}
-                          className="mono-label text-[9px] text-ink-dim border border-[rgba(241,237,229,0.1)] px-2.5 py-1 rounded-full hover:border-yellow/50 hover:text-yellow transition-colors shrink-0"
+                          className="mono-label text-[9px] text-ink-dim border border-ink/[0.1] px-2.5 py-1 rounded-full hover:border-yellow/50 hover:text-yellow-ink transition-colors shrink-0"
                         >
                           {expandedId === r.id ? '▲ Ocultar' : '▼ Jugadores'}
                         </button>
@@ -166,7 +166,7 @@ export default function TorneoAdmin({ tournament, registrations }) {
                       <button
                         onClick={() => handleRemoveReg(r.id)}
                         disabled={removingId === r.id}
-                        className="mono-label text-[9px] text-pink border border-pink/20 px-2.5 py-1 rounded-full hover:bg-pink/10 transition-colors shrink-0 disabled:opacity-40"
+                        className="mono-label text-[9px] text-pink-ink border border-pink/20 px-2.5 py-1 rounded-full hover:bg-pink/10 transition-colors shrink-0 disabled:opacity-40"
                       >
                         {removingId === r.id ? '…' : 'Quitar'}
                       </button>
@@ -174,7 +174,7 @@ export default function TorneoAdmin({ tournament, registrations }) {
 
                     {/* Members expanded */}
                     {expandedId === r.id && r.members && (
-                      <div className="px-5 pb-4 pt-0 border-t border-[rgba(241,237,229,0.06)] mt-0">
+                      <div className="px-5 pb-4 pt-0 border-t border-ink/[0.06] mt-0">
                         <pre className="mono-label text-[11px] text-ink-dim whitespace-pre-wrap leading-relaxed mt-3">
                           {r.members}
                         </pre>

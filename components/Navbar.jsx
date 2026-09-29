@@ -57,14 +57,14 @@ export default function Navbar() {
   return (
     <>
       {/* ── Main nav ── */}
-      <nav className="sticky top-0 z-[100] border-b border-[rgba(241,237,229,0.08)] backdrop-blur-[12px] bg-[rgba(6,7,10,0.88)]">
+      <nav className="sticky top-0 z-[100] border-b border-rule backdrop-blur-[12px] bg-bg/90">
         <div className="max-w-[1160px] mx-auto px-6 flex items-center h-[66px] gap-8">
 
           {/* Logo */}
           <a href={isHome ? '#hero' : '/'} className="shrink-0 no-underline">
             <img src="/logo.png" alt="La Cantina" className="h-[50px] w-auto" />
           </a>
-          <span className="mono-label px-1.5 py-0.5 border border-[rgba(241,237,229,0.08)] hidden md:inline">
+          <span className="mono-label px-1.5 py-0.5 border border-rule hidden md:inline">
             DEADLOCK · LATAM
           </span>
 
@@ -103,28 +103,28 @@ export default function Navbar() {
                     <img
                       src={user.user_metadata.avatar_url}
                       alt="avatar"
-                      className="w-8 h-8 rounded-full border border-[rgba(241,237,229,0.15)] group-hover:border-yellow transition-colors"
+                      className="w-8 h-8 rounded-full border border-ink/[0.15] group-hover:border-yellow transition-colors"
                     />
                   ) : (
-                    <div className="w-8 h-8 rounded-full bg-yellow flex items-center justify-center font-display text-[13px] text-[#0a0a0a]">
+                    <div className="w-8 h-8 rounded-full bg-yellow flex items-center justify-center font-display text-[13px] text-on-color">
                       {(user.user_metadata?.full_name ?? user.email ?? '?')[0].toUpperCase()}
                     </div>
                   )}
-                  <span className="mono-label hidden md:block group-hover:text-yellow transition-colors">
+                  <span className="mono-label hidden md:block group-hover:text-yellow-ink transition-colors">
                     {displayName ?? user.user_metadata?.full_name ?? user.email}
                   </span>
                 </a>
                 {isAdmin && (
                   <a
                     href="/admin"
-                    className="mono-label text-[11px] text-yellow border border-yellow/30 bg-yellow/5 px-3 py-1.5 rounded-full hover:bg-yellow/10 transition-colors no-underline hidden md:block"
+                    className="mono-label text-[11px] text-yellow-ink border border-yellow/30 bg-yellow/5 px-3 py-1.5 rounded-full hover:bg-yellow/10 transition-colors no-underline hidden md:block"
                   >
                     ⚡ Admin
                   </a>
                 )}
                 <button
                   onClick={handleSignOut}
-                  className="text-[13px] font-medium text-ink-dim border border-[rgba(241,237,229,0.08)] px-4 py-2 rounded-full hover:border-ink-dim transition-colors"
+                  className="text-[13px] font-medium text-ink-dim border border-rule px-4 py-2 rounded-full hover:border-ink-dim transition-colors"
                 >
                   Salir
                 </button>
@@ -132,7 +132,7 @@ export default function Navbar() {
             ) : (
               <button
                 onClick={loginWithDiscord}
-                className="text-[13px] font-bold bg-yellow text-[#0a0a0a] px-4 py-2 rounded-full hover:opacity-90 transition-opacity"
+                className="text-[13px] font-bold bg-yellow text-on-color px-4 py-2 rounded-full hover:opacity-90 transition-opacity"
               >
                 Conectar Discord
               </button>
@@ -153,7 +153,7 @@ export default function Navbar() {
 
         {/* Mobile menu */}
         {mobileOpen && (
-          <div className="lg:hidden flex flex-col bg-[rgba(6,7,10,0.98)] border-t border-[rgba(241,237,229,0.08)] px-6 py-4 gap-0.5">
+          <div className="lg:hidden flex flex-col bg-[rgba(6,7,10,0.98)] border-t border-rule px-6 py-4 gap-0.5">
             {[
               ['/torneos',  'Torneos',  false],
               ['/equipos',  'Equipos',  false],
@@ -165,7 +165,7 @@ export default function Navbar() {
                 href={href}
                 onClick={() => setMobileOpen(false)}
                 {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                className="text-ink-dim no-underline py-3 text-[1.05rem] border-b border-[rgba(241,237,229,0.08)] hover:text-yellow transition-colors"
+                className="text-ink-dim no-underline py-3 text-[1.05rem] border-b border-rule hover:text-yellow-ink transition-colors"
               >
                 {label}
               </a>

@@ -93,23 +93,23 @@ export default async function TeamPage({ params }) {
   const memberCount = team.team_members?.length ?? 0;
 
   return (
-    <main className="min-h-screen bg-[#06070a] py-16 px-6 md:px-14">
+    <main className="min-h-screen bg-bg py-16 px-6 md:px-14">
       <div className="max-w-[860px] mx-auto">
 
         {/* Back */}
-        <a href="/equipos" className="mono-label text-ink-dim hover:text-yellow transition-colors no-underline mb-10 block">
+        <a href="/equipos" className="mono-label text-ink-dim hover:text-yellow-ink transition-colors no-underline mb-10 block">
           ← Todos los equipos
         </a>
 
         {/* Header del equipo */}
-        <div className="bg-[#0d0f15] border border-[rgba(255,214,10,0.2)] rounded-[20px] p-8 mb-6 glow-yellow">
+        <div className="bg-surface border border-yellow/[0.2] rounded-[20px] p-8 mb-6 glow-yellow">
           <div className="flex items-start gap-6 flex-wrap">
 
             {/* Logo */}
             {team.logo_url
               ? <img src={team.logo_url} alt={team.name}
-                  className="w-24 h-24 rounded-[16px] object-cover border border-[rgba(255,214,10,0.2)] shrink-0" />
-              : <div className="w-24 h-24 rounded-[16px] bg-yellow/10 border border-yellow/20 flex items-center justify-center font-display text-[40px] text-yellow shrink-0">
+                  className="w-24 h-24 rounded-[16px] object-cover border border-yellow/[0.2] shrink-0" />
+              : <div className="w-24 h-24 rounded-[16px] bg-yellow/10 border border-yellow/20 flex items-center justify-center font-display text-[40px] text-yellow-ink shrink-0">
                   {team.name[0].toUpperCase()}
                 </div>
             }
@@ -117,7 +117,7 @@ export default async function TeamPage({ params }) {
             <div className="flex-1 min-w-0">
               <div className="flex items-start justify-between gap-4 flex-wrap mb-2">
                 <div>
-                  <span className="mono-label text-yellow">// EQUIPO</span>
+                  <span className="mono-label text-yellow-ink">EQUIPO</span>
                   <h1 className="font-display text-[clamp(36px,6vw,64px)] leading-none text-ink mt-1">
                     {team.name}
                   </h1>
@@ -126,14 +126,14 @@ export default async function TeamPage({ params }) {
                   {team.commitment && (
                     <span className={`pill border text-[11px] font-semibold ${
                       team.commitment === 'Serio'
-                        ? 'border-yellow/40 bg-yellow/10 text-yellow'
-                        : 'border-cyan/40 bg-cyan/10 text-cyan'
+                        ? 'border-yellow/40 bg-yellow/10 text-yellow-ink'
+                        : 'border-cyan/40 bg-cyan/10 text-cyan-ink'
                     }`}>
                       {team.commitment === 'Serio' ? '⚡ Serio' : '🎮 Por diversión'}
                     </span>
                   )}
                   {team.region && (
-                    <span className="pill border border-[rgba(241,237,229,0.12)] text-ink-dim text-[11px]">
+                    <span className="pill border border-ink/[0.12] text-ink-dim text-[11px]">
                       {team.region}
                     </span>
                   )}
@@ -150,12 +150,12 @@ export default async function TeamPage({ params }) {
                 <div className="flex items-center gap-2">
                   {team.profiles?.avatar_url
                     ? <img src={team.profiles.avatar_url} alt="" className="w-6 h-6 rounded-full" />
-                    : <div className="w-6 h-6 rounded-full bg-yellow/20 flex items-center justify-center mono-label text-[9px] text-yellow">
+                    : <div className="w-6 h-6 rounded-full bg-yellow/20 flex items-center justify-center mono-label text-[9px] text-yellow-ink">
                         {(team.profiles?.display_name ?? '?')[0]}
                       </div>
                   }
                   <span className="mono-label text-[10px]">
-                    Capitán: <a href={`/jugador/${team.captain_id}`} className="text-ink hover:text-yellow transition-colors no-underline">
+                    Capitán: <a href={`/jugador/${team.captain_id}`} className="text-ink hover:text-yellow-ink transition-colors no-underline">
                       {team.profiles?.display_name ?? team.profiles?.discord_username ?? '—'}
                     </a>
                   </span>
@@ -173,8 +173,8 @@ export default async function TeamPage({ params }) {
             <div className="flex justify-between mono-label mb-2">
               <span>Cupos</span><span>{memberCount} / 9</span>
             </div>
-            <div className="h-[4px] bg-[rgba(241,237,229,0.07)] rounded-full overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-yellow to-[#ffe566] rounded-full transition-all"
+            <div className="h-[4px] bg-ink/[0.07] rounded-full overflow-hidden">
+              <div className="h-full bg-gradient-to-r from-yellow to-yellow rounded-full transition-all"
                 style={{ width: `${(memberCount / 9) * 100}%` }} />
             </div>
           </div>
@@ -200,8 +200,8 @@ export default async function TeamPage({ params }) {
         <PendingInvitationBanner invitation={pendingInvitation} />
 
         {/* Miembros */}
-        <div className="bg-[#0d0f15] border border-[rgba(241,237,229,0.08)] rounded-[20px] p-8">
-          <span className="mono-label text-yellow block mb-6">// ROSTER</span>
+        <div className="bg-surface border border-rule rounded-[20px] p-8">
+          <span className="mono-label text-yellow-ink block mb-6">ROSTER</span>
           <TeamRoster
             members={team.team_members}
             captainId={team.captain_id}

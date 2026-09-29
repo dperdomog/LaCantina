@@ -211,7 +211,7 @@ export default function TorneoForm({ tournament, onSaved }) {
       <label className="flex items-center gap-3 cursor-pointer">
         <div
           onClick={() => set('featured', !form.featured)}
-          className={`w-10 h-5 rounded-full transition-colors relative ${form.featured ? 'bg-yellow' : 'bg-[rgba(241,237,229,0.1)]'}`}
+          className={`w-10 h-5 rounded-full transition-colors relative ${form.featured ? 'bg-yellow' : 'bg-ink/[0.1]'}`}
         >
           <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all ${form.featured ? 'left-5' : 'left-0.5'}`} />
         </div>
@@ -219,7 +219,7 @@ export default function TorneoForm({ tournament, onSaved }) {
       </label>
 
       {error && (
-        <div className="px-4 py-3 bg-pink/10 border border-pink/30 rounded-xl text-pink text-[13px]">
+        <div className="px-4 py-3 bg-pink/10 border border-pink/30 rounded-xl text-pink-ink text-[13px]">
           {error}
         </div>
       )}
@@ -228,7 +228,7 @@ export default function TorneoForm({ tournament, onSaved }) {
         <button
           type="submit"
           disabled={loading || !form.name.trim()}
-          className="px-8 py-3.5 rounded-full bg-yellow text-[#0a0a0a] font-bold text-[15px] shadow-yellow-btn hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-8 py-3.5 rounded-full bg-yellow text-on-color font-bold text-[15px] shadow-yellow-btn hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? 'Guardando…' : isEdit ? 'Guardar cambios →' : 'Crear torneo →'}
         </button>

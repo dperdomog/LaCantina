@@ -6,9 +6,9 @@ import { useState } from 'react';
 const TorneoModal = dynamic(() => import('./TorneoModal'), { ssr: false });
 
 const STATUS = {
-  open:   { label: 'Inscripciones abiertas', color: 'text-green border-green/30 bg-green/10' },
-  soon:   { label: 'Próximamente',           color: 'text-cyan  border-cyan/30  bg-cyan/10'  },
-  live:   { label: 'En vivo',                color: 'text-pink  border-pink/30  bg-pink/10'  },
+  open:   { label: 'Inscripciones abiertas', color: 'text-green-ink border-green/30 bg-green/10' },
+  soon:   { label: 'Próximamente',           color: 'text-cyan-ink  border-cyan/30  bg-cyan/10'  },
+  live:   { label: 'En vivo',                color: 'text-pink-ink  border-pink/30  bg-pink/10'  },
   closed: { label: 'Cerrado',                color: 'text-ink-dim border-ink-dim/20 bg-ink-dim/5' },
 };
 
@@ -34,7 +34,7 @@ export default function TorneoDetallePage({ torneo, registrations }) {
         {/* Back */}
         <a
           href="/#torneos"
-          className="mono-label text-[11px] text-ink-dim hover:text-yellow transition-colors no-underline inline-flex items-center gap-1.5 mb-10"
+          className="mono-label text-[11px] text-ink-dim hover:text-yellow-ink transition-colors no-underline inline-flex items-center gap-1.5 mb-10"
         >
           ← TORNEOS
         </a>
@@ -42,7 +42,7 @@ export default function TorneoDetallePage({ torneo, registrations }) {
         {/* ── Header ── */}
         <div className="mb-10">
           <div className="flex flex-wrap items-center gap-3 mb-4">
-            <span className="mono-label text-yellow">DEADLOCK · {torneo.format} · {torneo.region}</span>
+            <span className="mono-label text-yellow-ink">DEADLOCK · {torneo.format} · {torneo.region}</span>
             <span className={`pill border ${s.color} text-[10px]`}>{s.label}</span>
           </div>
 
@@ -58,7 +58,7 @@ export default function TorneoDetallePage({ torneo, registrations }) {
               { icon: '🏆', label: 'Premio',  value: torneo.prize },
               { icon: '👥', label: 'Formato', value: `${torneo.format} · Máx ${torneo.maxSlots}` },
             ].map(({ icon, label, value }) => (
-              <div key={label} className="bg-[#0d0f15] border border-[rgba(241,237,229,0.08)] rounded-[14px] p-4">
+              <div key={label} className="bg-surface border border-rule rounded-[14px] p-4">
                 <span className="text-[20px] block mb-2">{icon}</span>
                 <span className="mono-label text-[9px] block mb-1">{label}</span>
                 <span className="text-ink text-[14px] font-semibold">{value}</span>
@@ -72,9 +72,9 @@ export default function TorneoDetallePage({ torneo, registrations }) {
               <span>Equipos registrados</span>
               <span>{registrations.length} / {torneo.maxSlots}</span>
             </div>
-            <div className="h-[5px] bg-[rgba(241,237,229,0.07)] rounded-full overflow-hidden">
+            <div className="h-[5px] bg-ink/[0.07] rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-yellow to-[#ffe566] rounded-full transition-all duration-[1200ms]"
+                className="h-full bg-gradient-to-r from-yellow to-yellow rounded-full transition-all duration-[1200ms]"
                 style={{ width: `${pct}%` }}
               />
             </div>
@@ -84,7 +84,7 @@ export default function TorneoDetallePage({ torneo, registrations }) {
           {torneo.status === 'open' && (
             <button
               onClick={() => setShowModal(true)}
-              className="px-8 py-3.5 rounded-full bg-yellow text-[#0a0a0a] font-bold text-[15px] shadow-yellow-btn hover:opacity-90 hover:-translate-y-0.5 transition-all"
+              className="px-8 py-3.5 rounded-full bg-yellow text-on-color font-bold text-[15px] shadow-yellow-btn hover:opacity-90 hover:-translate-y-0.5 transition-all"
             >
               Inscribirse →
             </button>
@@ -93,18 +93,18 @@ export default function TorneoDetallePage({ torneo, registrations }) {
 
         {/* ── Registered list ── */}
         <div>
-          <span className="mono-label text-yellow text-[10px] block mb-5">
+          <span className="mono-label text-yellow-ink text-[10px] block mb-5">
             // {isTeam ? 'EQUIPOS REGISTRADOS' : 'JUGADORES REGISTRADOS'} ({registrations.length})
           </span>
 
           {registrations.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 border border-[rgba(241,237,229,0.06)] rounded-[20px]">
+            <div className="flex flex-col items-center justify-center py-20 border border-ink/[0.06] rounded-[20px]">
               <p className="font-display text-[32px] text-ink-dim">Aún no hay inscriptos.</p>
               <p className="mono-label text-[11px] mt-2 text-ink-faint">Sé el primero en registrar tu equipo.</p>
               {torneo.status === 'open' && (
                 <button
                   onClick={() => setShowModal(true)}
-                  className="mt-6 px-6 py-3 rounded-full border border-yellow text-yellow font-bold text-[14px] hover:bg-yellow/10 transition-colors"
+                  className="mt-6 px-6 py-3 rounded-full border border-yellow text-yellow-ink font-bold text-[14px] hover:bg-yellow/10 transition-colors"
                 >
                   Inscribirse →
                 </button>
@@ -115,7 +115,7 @@ export default function TorneoDetallePage({ torneo, registrations }) {
               {registrations.map((r, i) => (
                 <div
                   key={r.id}
-                  className="bg-[#0d0f15] border border-[rgba(241,237,229,0.08)] rounded-[14px] px-5 py-4 flex items-center gap-4"
+                  className="bg-surface border border-rule rounded-[14px] px-5 py-4 flex items-center gap-4"
                 >
                   {/* Position number */}
                   <span className="mono-label text-ink-faint text-[12px] w-7 shrink-0 text-right">
@@ -136,7 +136,7 @@ export default function TorneoDetallePage({ torneo, registrations }) {
 
                   {/* Region pill */}
                   {r.region && (
-                    <span className="pill border border-[rgba(241,237,229,0.12)] text-ink-dim text-[10px] shrink-0">
+                    <span className="pill border border-ink/[0.12] text-ink-dim text-[10px] shrink-0">
                       {r.region}
                     </span>
                   )}

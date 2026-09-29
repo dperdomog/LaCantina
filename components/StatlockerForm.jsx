@@ -30,13 +30,13 @@ export default function StatlockerForm({ initialUrl }) {
   }
 
   return (
-    <div className="bg-[#0d0f15] border border-[rgba(241,237,229,0.08)] rounded-[16px] p-5 col-span-full">
+    <div className="bg-surface border border-rule rounded-[16px] p-5 col-span-full">
       <div className="flex items-center justify-between mb-4">
-        <span className="mono-label text-yellow">// DEADLOCK · STATLOCKER</span>
+        <span className="mono-label text-yellow-ink">DEADLOCK · STATLOCKER</span>
         {!editing && (
           <button
             onClick={() => setEditing(true)}
-            className="mono-label text-[10px] text-ink-dim hover:text-yellow transition-colors"
+            className="mono-label text-[10px] text-ink-dim hover:text-yellow-ink transition-colors"
           >
             {saved ? 'Editar →' : 'Vincular →'}
           </button>
@@ -49,7 +49,7 @@ export default function StatlockerForm({ initialUrl }) {
             href={saved}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full border border-[rgba(255,214,10,0.3)] text-yellow text-[13px] font-semibold no-underline hover:bg-yellow/10 transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full border border-yellow/[0.3] text-yellow-ink text-[13px] font-semibold no-underline hover:bg-yellow/10 transition-colors"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
@@ -74,19 +74,19 @@ export default function StatlockerForm({ initialUrl }) {
               required
             />
           </label>
-          {error && <p className="text-pink text-[12px]">{error}</p>}
+          {error && <p className="text-pink-ink text-[12px]">{error}</p>}
           <div className="flex gap-2">
             <button
               type="submit"
               disabled={loading || !url}
-              className="flex-1 py-3 rounded-full bg-yellow text-[#0a0a0a] font-bold text-[13px] hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 py-3 rounded-full bg-yellow text-on-color font-bold text-[13px] hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Guardando…' : 'Guardar →'}
             </button>
             <button
               type="button"
               onClick={() => { setEditing(false); setUrl(saved); setError(''); }}
-              className="px-5 py-3 rounded-full border border-[rgba(241,237,229,0.08)] text-ink-dim text-[13px] hover:border-ink-dim transition-colors"
+              className="px-5 py-3 rounded-full border border-rule text-ink-dim text-[13px] hover:border-ink-dim transition-colors"
             >
               Cancelar
             </button>

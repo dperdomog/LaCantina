@@ -91,7 +91,7 @@ export default function TwitchCarousel() {
             <p className="text-white font-bold text-[13px] truncate">{s.username}</p>
             <p className="text-white/50 text-[11px] truncate">{s.title || 'Deadlock'}{s.game ? ` · ${s.game}` : ''}</p>
           </div>
-          <span className="mono-label text-green text-[10px] shrink-0">{formatViewers(s.viewers)} viewers</span>
+          <span className="mono-label text-green-ink text-[10px] shrink-0">{formatViewers(s.viewers)} viewers</span>
         </div>
       )}
 
