@@ -3,14 +3,12 @@ export const metadata = { title: 'Admin — La Cantina' };
 export default function AdminLayout({ children }) {
   return (
     <div className="min-h-screen">
-      {/* Admin topbar */}
-      <div className="sticky top-[66px] z-50 bg-yellow/[0.08] border-b border-yellow/20 px-6 py-2 flex items-center gap-3">
-        <span className="mono-label text-yellow-ink text-[10px]">⚡ ADMIN PANEL</span>
-        <span className="text-ink/[0.2] text-[10px]">·</span>
-        <a href="/admin" className="mono-label text-[10px] text-ink-dim hover:text-yellow-ink transition-colors no-underline">Dashboard</a>
-        <span className="text-ink/[0.2] text-[10px]">·</span>
-        <a href="/admin/torneos/nuevo" className="mono-label text-[10px] text-ink-dim hover:text-yellow-ink transition-colors no-underline">+ Nuevo torneo</a>
-        <a href="/" className="ml-auto mono-label text-[10px] text-ink-faint hover:text-ink transition-colors no-underline">← Sitio público</a>
+      {/* Barra del panel admin */}
+      <div className="max-w-[1180px] mx-auto px-5 pt-10 flex flex-wrap items-center gap-2">
+        <span className="pill bg-yellow text-on-color">⚡ Panel admin</span>
+        <a href="/admin" className="pill bg-surface text-ink no-underline hover:bg-surface-2 transition-colors">Dashboard</a>
+        <a href="/admin/torneos/nuevo" className="pill bg-surface text-ink no-underline hover:bg-surface-2 transition-colors">+ Nuevo torneo</a>
+        <a href="/" className="ml-auto text-[13px] font-bold text-ink-dim hover:text-ink transition-colors no-underline">← Sitio público</a>
       </div>
       {children}
     </div>

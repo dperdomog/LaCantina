@@ -8,9 +8,9 @@ import { slugify } from '@/lib/admin';
 function Field({ label, note, children }) {
   return (
     <label className="flex flex-col gap-1.5">
-      <span className="mono-label text-[10px]">
+      <span className="mono-label">
         {label}
-        {note && <span className="ml-1 normal-case text-ink-faint">{note}</span>}
+        {note && <span className="ml-1 normal-case tracking-normal font-medium text-ink-faint">{note}</span>}
       </span>
       {children}
     </label>
@@ -108,7 +108,7 @@ export default function TorneoForm({ tournament, onSaved }) {
       {!isEdit && (
         <Field label="ID / URL" note="(auto-generado, editable)">
           <div className="flex items-center gap-2">
-            <span className="mono-label text-ink-faint text-[11px] shrink-0">/torneos/</span>
+            <span className="text-[13px] font-bold text-ink-dim shrink-0">/torneos/</span>
             <input
               type="text"
               value={form.id}
@@ -121,7 +121,7 @@ export default function TorneoForm({ tournament, onSaved }) {
         </Field>
       )}
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
         {/* Formato */}
         <Field label="Formato">
@@ -211,15 +211,15 @@ export default function TorneoForm({ tournament, onSaved }) {
       <label className="flex items-center gap-3 cursor-pointer">
         <div
           onClick={() => set('featured', !form.featured)}
-          className={`w-10 h-5 rounded-full transition-colors relative ${form.featured ? 'bg-yellow' : 'bg-ink/[0.1]'}`}
+          className={`w-12 h-7 shrink-0 rounded-full border-[3px] border-line transition-colors relative ${form.featured ? 'bg-yellow' : 'bg-surface-2'}`}
         >
-          <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all ${form.featured ? 'left-5' : 'left-0.5'}`} />
+          <div className={`absolute top-[2px] w-4 h-4 rounded-full bg-[#1c1c1c] transition-all ${form.featured ? 'left-[24px]' : 'left-[2px]'}`} />
         </div>
-        <span className="mono-label text-[10px]">Torneo destacado <span className="normal-case text-ink-faint">(aparece primero en el home)</span></span>
+        <span className="mono-label">Torneo destacado <span className="normal-case tracking-normal font-medium text-ink-faint">(aparece primero en el inicio)</span></span>
       </label>
 
       {error && (
-        <div className="px-4 py-3 bg-pink/10 border border-pink/30 rounded-xl text-pink-ink text-[13px]">
+        <div className="px-4 py-3 bg-pink/15 border-[3px] border-line rounded-2xl text-pink-ink text-[14px] font-medium">
           {error}
         </div>
       )}
@@ -228,11 +228,11 @@ export default function TorneoForm({ tournament, onSaved }) {
         <button
           type="submit"
           disabled={loading || !form.name.trim()}
-          className="px-8 py-3.5 rounded-full bg-yellow text-on-color font-bold text-[15px] shadow-yellow-btn hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          className="btn btn-primary"
         >
           {loading ? 'Guardando…' : isEdit ? 'Guardar cambios →' : 'Crear torneo →'}
         </button>
-        <a href="/admin" className="mono-label text-[11px] text-ink-dim hover:text-ink transition-colors no-underline">
+        <a href="/admin" className="btn btn-secondary">
           Cancelar
         </a>
       </div>
