@@ -1,7 +1,15 @@
 import { createClient } from '@/lib/supabase/server';
 import JugadoresPage from '@/components/JugadoresPage';
 
-export const metadata = { title: 'Jugadores — La Cantina' };
+export const metadata = {
+  title: 'Jugadores — La Cantina',
+  description: 'Directorio de jugadores de Deadlock en LATAM: filtra por rol, rango y país.',
+  openGraph: {
+    title: 'Jugadores — La Cantina',
+    description: 'Directorio de jugadores de Deadlock en LATAM: filtra por rol, rango y país.',
+    images: ['/og.png'],
+  },
+};
 
 export default async function Page() {
   const supabase = await createClient();
@@ -11,7 +19,7 @@ export default async function Page() {
   const [{ data: profiles }, { data: memberships }] = await Promise.all([
     supabase
       .from('profiles')
-      .select('id, display_name, discord_username, avatar_url, player_role')
+      .select('id, display_name, discord_username, avatar_url, player_role, rank_badge, country')
       .order('created_at', { ascending: false }),
     supabase
       .from('team_members')

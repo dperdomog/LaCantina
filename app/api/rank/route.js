@@ -1,4 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
+import { accountIdFromStatlocker, fetchRanks, rankInfo } from '@/lib/ranks';
 import { NextResponse } from 'next/server';
 
 function normalizeStatlockerUrl(raw) {
@@ -55,5 +57,20 @@ export async function POST(request) {
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  return NextResponse.json({ statlocker_url });
+  // Traer el rango ya mismo. Lo escribe el servidor: el usuario no puede editar su rango.
+  const accountId = accountIdFromStatlocker(statlocker_url);
+  const ranks     = await fetchRanks([accountId]);
+  const badge     = ranks.has(accountId) ? ranks.get(accountId) : null;
+  try {
+    await createAdminClient().from('profiles').update({
+      rank_badge:      badge,
+      deadlock_rank:   badge === null ? null : rankInfo(badge).name,
+      // Sin dato (API caída o cuenta privada): se reintenta en la próxima visita
+      rank_updated_at: badge === null ? null : new Date().toISOString(),
+    }).eq('id', user.id);
+  } catch {
+    // El rango no es crítico; el enlace ya quedó guardado
+  }
+
+  return NextResponse.json({ statlocker_url, rank_badge: badge });
 }

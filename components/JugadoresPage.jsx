@@ -1,6 +1,9 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import RankBadge from '@/components/RankBadge';
+import { RANK_OPTIONS } from '@/lib/ranks';
+import { COUNTRIES, countryInfo } from '@/lib/countries';
 
 const ROLE_COLORS = {
   Carry:     'bg-yellow',
@@ -16,6 +19,7 @@ const ROLES = ['Carry', 'Flex', 'Frontline', 'Support', 'Pick', 'Roamer'];
 function PlayerCard({ player, currentUserId, viewerTeamId }) {
   const teamName = player.team?.name ?? null;
   const isOwnProfile = player.id === currentUserId;
+  const country = countryInfo(player.country);
 
   return (
     <a
@@ -39,14 +43,19 @@ function PlayerCard({ player, currentUserId, viewerTeamId }) {
           <p className="font-display text-ink text-[18px] leading-tight truncate group-hover:underline">
             {player.display_name ?? player.discord_username ?? 'Jugador'}
           </p>
-          {player.discord_username && (
-            <p className="text-[13px] text-ink-dim truncate">@{player.discord_username}</p>
+          {(player.discord_username || country) && (
+            <p className="text-[13px] text-ink-dim truncate">
+              {country && <span title={country.name}>{country.flag} </span>}
+              {player.discord_username ? `@${player.discord_username}` : country.name}
+            </p>
           )}
         </div>
         {isOwnProfile && (
           <span className="ml-auto pill bg-yellow text-on-color shrink-0">Tú</span>
         )}
       </div>
+
+      {player.rank_badge > 0 && <div className="mb-3"><RankBadge badge={player.rank_badge} /></div>}
 
       {/* Team + rol */}
       <div className="flex items-center justify-between gap-2 flex-wrap">
@@ -75,6 +84,8 @@ export default function JugadoresPage({ players, currentUserId, viewerTeamId }) 
   const [search,     setSearch]     = useState('');
   const [filterRole, setFilterRole] = useState('');
   const [filterTeam, setFilterTeam] = useState('all'); // all | fa | team
+  const [minRank,    setMinRank]    = useState(0);
+  const [country,    setCountry]    = useState('');
 
   const filtered = useMemo(() => {
     return players.filter(p => {
@@ -86,10 +97,12 @@ export default function JugadoresPage({ players, currentUserId, viewerTeamId }) 
       if (filterTeam === 'team' && !hasTeam) return false;
 
       if (filterRole && p.player_role !== filterRole) return false;
+      if (minRank && !((p.rank_badge ?? 0) >= minRank)) return false;
+      if (country && p.country !== country) return false;
 
       return true;
     });
-  }, [players, search, filterRole, filterTeam]);
+  }, [players, search, filterRole, filterTeam, minRank, country]);
 
   const faCount   = players.filter(p => !p.team).length;
   const teamCount = players.filter(p => !!p.team).length;
@@ -136,6 +149,20 @@ export default function JugadoresPage({ players, currentUserId, viewerTeamId }) 
               {label}
             </button>
           ))}
+        </div>
+
+        {/* Rango y país */}
+        <div className="flex gap-2 flex-wrap">
+          <select value={minRank} onChange={e => setMinRank(Number(e.target.value))}
+            aria-label="Rango mínimo" className="field !rounded-full !py-2 !w-auto text-[14px]">
+            <option value={0}>Cualquier rango</option>
+            {RANK_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+          </select>
+          <select value={country} onChange={e => setCountry(e.target.value)}
+            aria-label="País" className="field !rounded-full !py-2 !w-auto text-[14px]">
+            <option value="">Todos los países</option>
+            {COUNTRIES.map(c => <option key={c.code} value={c.code}>{c.flag} {c.name}</option>)}
+          </select>
         </div>
 
         {/* Rol filter */}

@@ -1,13 +1,15 @@
 'use client';
 
 import { useState } from 'react';
+import RankBadge from '@/components/RankBadge';
 
-export default function StatlockerForm({ initialUrl }) {
+export default function StatlockerForm({ initialUrl, initialRank = null }) {
   const [editing, setEditing] = useState(false);
   const [url, setUrl]         = useState(initialUrl ?? '');
   const [saved, setSaved]     = useState(initialUrl ?? '');
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState('');
+  const [rank, setRank]       = useState(initialRank);
 
   async function handleSave(e) {
     e.preventDefault();
@@ -26,6 +28,7 @@ export default function StatlockerForm({ initialUrl }) {
     if (!res.ok) { setError(data.error ?? 'Error al guardar.'); return; }
 
     setSaved(data.statlocker_url);
+    setRank(data.rank_badge ?? null);
     setEditing(false);
   }
 
@@ -42,6 +45,14 @@ export default function StatlockerForm({ initialUrl }) {
           </button>
         )}
       </div>
+
+      {!editing && saved && (
+        <div className="mb-4">
+          {rank !== null
+            ? <RankBadge badge={rank} size="lg" />
+            : <p className="text-ink-dim text-[14px]">No pudimos leer tu rango todavía (la cuenta puede ser privada o la API estar ocupada). Se reintenta solo.</p>}
+        </div>
+      )}
 
       {!editing && (
         saved ? (

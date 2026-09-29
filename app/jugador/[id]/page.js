@@ -2,6 +2,10 @@ import { createClient } from '@/lib/supabase/server';
 import { notFound } from 'next/navigation';
 import InviteButton from '@/components/InviteButton';
 import CopyButton from '@/components/CopyButton';
+import RankBadge from '@/components/RankBadge';
+import { createAdminClient } from '@/lib/supabase/admin';
+import { refreshStaleRanks } from '@/lib/ranks';
+import { countryInfo } from '@/lib/countries';
 
 const ROLE_COLORS = {
   Carry:     'bg-yellow',
@@ -13,18 +17,50 @@ const ROLE_COLORS = {
 };
 const STRIPES = ['#00d97e', '#00c8f0', '#ffd400', '#ff7043', '#ff2d2d'];
 
+export async function generateMetadata({ params }) {
+  const { id } = await params;
+  const supabase = await createClient();
+  const { data: p } = await supabase
+    .from('profiles').select('display_name, discord_username, avatar_url').eq('id', id).single();
+  if (!p) return { title: 'Jugador — La Cantina' };
+
+  const name        = p.display_name ?? p.discord_username ?? 'Jugador';
+  const title       = `${name} — La Cantina`;
+  const description = `Perfil de ${name} en La Cantina, la comunidad de Deadlock en español.`;
+  return { title, description, openGraph: { title, description, images: [p.avatar_url ?? '/og.png'] } };
+}
+
 export default async function JugadorPage({ params }) {
   const { id } = await params;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  const { data: profile } = await supabase
+  const { data: found } = await supabase
     .from('profiles')
     .select('*')
     .eq('id', id)
     .single();
 
-  if (!profile) notFound();
+  if (!found) notFound();
+
+  // Rango: se refresca si tiene más de 6 h (si falla, queda el anterior)
+  let profile = found;
+  try {
+    [profile] = await refreshStaleRanks(createAdminClient(), [found]);
+  } catch {}
+
+  const bannerUrl = profile.custom_banner_url ?? profile.banner_url;
+  const country   = countryInfo(profile.country);
+
+  // Trofeos: torneos ganados por una inscripción en la que jugó
+  const { data: regs } = await supabase
+    .from('registrations').select('id').contains('player_ids', [profile.id]);
+  const regIds = (regs ?? []).map(r => r.id);
+  const { data: trophies } = regIds.length
+    ? await supabase.from('tournaments')
+        .select('id, name, starts_at, date_display')
+        .in('winner_registration_id', regIds)
+    : { data: [] };
 
   // Equipo del jugador
   const { data: membership } = await supabase
@@ -52,8 +88,8 @@ export default async function JugadorPage({ params }) {
         {/* Portada + identidad */}
         <div className="sticker overflow-hidden">
           <div className="relative h-[150px] md:h-[190px] border-b-[3px] border-line">
-            {profile.banner_url
-              ? <img src={profile.banner_url} alt="" className="w-full h-full object-cover" />
+            {bannerUrl
+              ? <img src={bannerUrl} alt="" className="w-full h-full object-cover" />
               : <div className="absolute inset-0 flex">
                   {STRIPES.map(c => <span key={c} className="flex-1" style={{ background: c }} />)}
                 </div>
@@ -72,9 +108,14 @@ export default async function JugadorPage({ params }) {
                 <h1 className="font-display text-[clamp(30px,5vw,48px)] leading-none text-ink break-words">
                   {profile.display_name ?? profile.discord_username ?? 'Jugador'}
                 </h1>
-                {profile.discord_username && (
-                  <p className="text-[15px] text-ink-dim mt-1.5">@{profile.discord_username}</p>
+                {(profile.discord_username || country) && (
+                  <p className="text-[15px] text-ink-dim mt-1.5">
+                    {profile.discord_username ? `@${profile.discord_username}` : ''}
+                    {profile.discord_username && country ? ' · ' : ''}
+                    {country ? `${country.flag} ${country.name}` : ''}
+                  </p>
                 )}
+                {profile.rank_badge != null && <div className="mt-2"><RankBadge badge={profile.rank_badge} /></div>}
               </div>
               {canInvite && <InviteButton teamId={viewerTeamId} inviteeId={profile.id} />}
               {isOwnProfile && (
@@ -120,10 +161,30 @@ export default async function JugadorPage({ params }) {
           <div className="sticker p-6 flex flex-col">
             <span className="mono-label block mb-4">📈 Deadlock · StatLocker</span>
             {profile.statlocker_url
-              ? <a href={profile.statlocker_url} target="_blank" rel="noopener noreferrer" className="btn btn-primary self-start">
-                  Ver en StatLocker ↗
-                </a>
+              ? <>
+                  {profile.rank_badge != null && <div className="mb-4"><RankBadge badge={profile.rank_badge} size="lg" /></div>}
+                  <a href={profile.statlocker_url} target="_blank" rel="noopener noreferrer" className="btn btn-primary self-start">
+                    Ver en StatLocker ↗
+                  </a>
+                </>
               : <p className="text-ink-dim text-[15px]">Todavía no vinculó su perfil de StatLocker.</p>
+            }
+          </div>
+
+          {/* Trofeos */}
+          <div className="sticker p-6 sm:col-span-2">
+            <span className="mono-label block mb-4">🏆 Trofeos</span>
+            {trophies?.length
+              ? <ul className="flex flex-wrap gap-3">
+                  {trophies.map(t => (
+                    <li key={t.id}>
+                      <a href={`/torneos/${t.id}`} className="sticker-sm bg-yellow text-on-color px-4 py-2 inline-flex items-center gap-2 font-display text-[16px] no-underline hover:-translate-y-0.5 transition-transform">
+                        🏆 {t.name}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              : <p className="text-ink-dim text-[15px]">Todavía sin trofeos. ¡El próximo torneo puede ser el suyo!</p>
             }
           </div>
 

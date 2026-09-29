@@ -5,6 +5,10 @@ import TeamRoleForm from '@/components/TeamRoleForm';
 import TeamSection from '@/components/TeamSection';
 import InvitationsSection from '@/components/InvitationsSection';
 import UsernameForm from '@/components/UsernameForm';
+import CountryForm from '@/components/CountryForm';
+import BannerUpload from '@/components/BannerUpload';
+import RankBadge from '@/components/RankBadge';
+import { countryInfo } from '@/lib/countries';
 
 export const metadata = { title: 'Mi Perfil — La Cantina' };
 
@@ -21,7 +25,8 @@ export default async function ProfilePage() {
   const meta            = user.user_metadata ?? {};
   const discordIdentity = user.identities?.find(i => i.provider === 'discord');
   const avatarUrl       = profile?.avatar_url ?? meta.avatar_url;
-  const bannerUrl       = profile?.banner_url;
+  const bannerUrl       = profile?.custom_banner_url ?? profile?.banner_url;
+  const country         = countryInfo(profile?.country);
   const username        = profile?.discord_username
                         || meta.user_name
                         || discordIdentity?.identity_data?.user_name
@@ -64,11 +69,12 @@ export default async function ProfilePage() {
         <div className="sticker overflow-hidden">
           <div className="relative h-[150px] md:h-[190px] border-b-[3px] border-line">
             {bannerUrl
-              ? <img src={bannerUrl} alt="Banner de Discord" className="w-full h-full object-cover" />
+              ? <img src={bannerUrl} alt="Banner del perfil" className="w-full h-full object-cover" />
               : <div className="absolute inset-0 flex">
                   {STRIPES.map(c => <span key={c} className="flex-1" style={{ background: c }} />)}
                 </div>
             }
+            <BannerUpload userId={user.id} hasCustom={!!profile?.custom_banner_url} />
           </div>
           <div className="px-6 pb-6 flex flex-col sm:flex-row gap-4 sm:gap-5">
             {avatarUrl
@@ -84,7 +90,8 @@ export default async function ProfilePage() {
                 <h1 className="font-display text-[clamp(30px,5vw,48px)] leading-none text-ink break-words mt-1">
                   {displayName ?? username ?? 'Jugador'}
                 </h1>
-                {username && <p className="text-[15px] text-ink-dim mt-1.5">@{username}</p>}
+                {username && <p className="text-[15px] text-ink-dim mt-1.5">@{username}{country ? ` · ${country.flag} ${country.name}` : ''}</p>}
+                {profile?.rank_badge != null && <div className="mt-2"><RankBadge badge={profile.rank_badge} /></div>}
               </div>
               <a href={`/jugador/${user.id}`} className="btn btn-secondary btn-sm">Ver perfil público →</a>
             </div>
@@ -112,7 +119,7 @@ export default async function ProfilePage() {
           }
 
           {/* StatLocker */}
-          <StatlockerForm initialUrl={profile?.statlocker_url ?? null} />
+          <StatlockerForm initialUrl={profile?.statlocker_url ?? null} initialRank={profile?.rank_badge ?? null} />
 
           {/* Identidad — editable */}
           <UsernameForm
@@ -120,7 +127,9 @@ export default async function ProfilePage() {
             discordUsername={username ?? null}
           />
 
-          <div className="sticker p-6">
+          <CountryForm initialCountry={profile?.country ?? null} />
+
+          <div className="sticker p-6 sm:col-span-2">
             <span className="mono-label block mb-4">✉️ Contacto</span>
             <dl className="flex flex-col gap-4">
               <div>
