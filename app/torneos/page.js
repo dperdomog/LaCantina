@@ -27,7 +27,7 @@ export default async function TorneosPage() {
   }));
 
   return (
-    <main className="min-h-screen bg-bg">
+    <main>
       <Torneos torneos={torneosConCupos} />
     </main>
   );

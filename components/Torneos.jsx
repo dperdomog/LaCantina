@@ -2,11 +2,13 @@
 
 import { useEffect } from 'react';
 
+const DISCORD_INVITE = process.env.NEXT_PUBLIC_DISCORD_INVITE ?? '#discord';
+
 const STATUS = {
-  open:   { label: 'Inscripciones abiertas', color: 'text-green-ink border-green/30 bg-green/10' },
-  soon:   { label: 'Próximamente',           color: 'text-cyan-ink  border-cyan/30  bg-cyan/10'  },
-  live:   { label: 'En vivo',                color: 'text-pink-ink  border-pink/30  bg-pink/10'  },
-  closed: { label: 'Cerrado',                color: 'text-ink-dim border-ink-dim/20 bg-ink-dim/5' },
+  open:   { label: 'Inscripciones abiertas', color: 'bg-green text-on-color' },
+  soon:   { label: 'Próximamente',           color: 'bg-cyan text-on-color'  },
+  live:   { label: 'En vivo',                color: 'bg-red text-white'      },
+  closed: { label: 'Cerrado',                color: 'bg-surface-2 text-ink-dim' },
 };
 
 function TorneoCard({ t }) {
@@ -17,66 +19,54 @@ function TorneoCard({ t }) {
   const s     = STATUS[t.status] ?? STATUS.closed;
 
   return (
-    <div className={`reveal bg-surface rounded-[16px] p-6 relative transition-all duration-[250ms] hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,.4)] border ${
-      t.featured
-        ? 'border-yellow/[0.4] shadow-[0_0_40px_rgba(255,214,10,0.08)]'
-        : 'border-rule'
-    }`}>
+    <div className="reveal sticker p-6 relative transition-transform duration-[250ms] hover:-translate-y-1">
       {t.featured && (
-        <div className="absolute -top-3 left-5 bg-yellow text-on-color font-display text-[13px] px-3.5 py-0.5 rounded-full tracking-wide">
+        <div className="absolute -top-4 left-5 bg-yellow text-on-color font-display text-[14px] px-3.5 py-1 rounded-full border-[3px] border-line shadow-sticker-sm -rotate-2">
           🔥 Destacado
         </div>
       )}
 
-      <div className="flex items-center justify-between mb-3">
-        <span className="mono-label text-yellow-ink">DEADLOCK</span>
-        <span className={`pill border ${s.color} text-[10px]`}>
+      <div className="flex items-center justify-between gap-3 mb-4 mt-1">
+        <span className="mono-label">Deadlock</span>
+        <span className={`pill ${s.color}`}>
           {t.status === 'live' && <span className="dot-live" style={{ background: 'currentColor' }} />}
           {s.label}
         </span>
       </div>
 
-      <h3 className="font-display text-[26px] leading-none text-ink mb-5">{t.name}</h3>
+      <h3 className="font-display text-[28px] leading-[1.05] text-ink mb-5">{t.name}</h3>
 
       <div className="grid grid-cols-2 gap-3 mb-5">
-        <div className="flex items-start gap-2">
-          <span className="text-[18px] shrink-0 mt-0.5">📅</span>
-          <div className="text-[13px] text-ink-dim">
-            <span className="block text-ink text-[11px] font-semibold mb-0.5">Fecha</span>
-            {date}
+        {[
+          ['📅', 'Fecha',   date],
+          ['👥', 'Formato', `${t.format} — ${t.region}`],
+          ['⏰', 'Hora',    time],
+        ].map(([icon, label, value]) => (
+          <div key={label} className="bg-surface-2 border-[3px] border-line rounded-2xl px-3 py-2.5 flex items-start gap-2">
+            <span className="text-[18px] shrink-0">{icon}</span>
+            <div className="text-[13px] text-ink-dim min-w-0">
+              <span className="block text-ink text-[12px] font-bold mb-0.5">{label}</span>
+              {value}
+            </div>
           </div>
-        </div>
-        <div className="flex items-start gap-2">
-          <span className="text-[18px] shrink-0 mt-0.5">👥</span>
-          <div className="text-[13px] text-ink-dim">
-            <span className="block text-ink text-[11px] font-semibold mb-0.5">Formato</span>
-            {t.format} — {t.region}
-          </div>
-        </div>
-        <div className="flex items-start gap-2">
-          <span className="text-[18px] shrink-0 mt-0.5">⏰</span>
-          <div className="text-[13px] text-ink-dim">
-            <span className="block text-ink text-[11px] font-semibold mb-0.5">Hora</span>
-            {time}
-          </div>
-        </div>
-        <div className="flex items-start gap-2">
-          <span className="text-[18px] shrink-0 mt-0.5">🏆</span>
-          <div>
-            <span className="block text-ink text-[11px] font-semibold mb-0.5">Premio</span>
-            <span className="font-display text-[20px] text-yellow-ink leading-none">{t.prize}</span>
+        ))}
+        <div className="bg-yellow text-on-color border-[3px] border-line rounded-2xl px-3 py-2.5 flex items-start gap-2">
+          <span className="text-[18px] shrink-0">🏆</span>
+          <div className="min-w-0">
+            <span className="block text-[12px] font-bold mb-0.5">Premio</span>
+            <span className="font-display text-[17px] leading-tight">{t.prize}</span>
           </div>
         </div>
       </div>
 
-      <div className="mb-5">
-        <div className="flex justify-between mono-label mb-2">
+      <div className="mb-6">
+        <div className="flex justify-between text-[13px] font-bold text-ink mb-2">
           <span>{t.status === 'soon' ? 'Inscripciones próximamente' : 'Cupos ocupados'}</span>
           <span>{t.filled ?? 0} / {t.max_slots}</span>
         </div>
-        <div className="h-[5px] bg-ink/[0.07] rounded-full overflow-hidden">
+        <div className="h-4 bg-surface-2 border-[3px] border-line rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-yellow to-yellow rounded-full transition-all duration-[1200ms]"
+            className="h-full bg-orange transition-all duration-[1200ms]"
             style={{ width: `${pct}%` }}
           />
         </div>
@@ -84,12 +74,12 @@ function TorneoCard({ t }) {
 
       <a
         href={`/torneos/${t.id}`}
-        className={`block w-full py-3.5 rounded-full font-bold text-[14px] tracking-wide text-center no-underline transition-all ${
+        className={`btn w-full ${
           t.featured
-            ? 'bg-yellow text-on-color shadow-yellow-btn hover:opacity-90 hover:-translate-y-0.5'
+            ? 'btn-primary'
             : t.status === 'open'
-              ? 'bg-transparent border border-yellow text-yellow-ink hover:bg-yellow/10 hover:-translate-y-0.5'
-              : 'bg-ink/[0.05] border border-rule text-ink-dim pointer-events-none'
+              ? 'btn-secondary'
+              : 'btn-secondary opacity-50 pointer-events-none'
         }`}
       >
         {t.status === 'open' ? 'Ver torneo →' : 'Próximamente'}
@@ -111,38 +101,49 @@ export default function Torneos({ torneos = [] }) {
   }, []);
 
   return (
-    <section id="torneos" className="py-24 px-6 md:px-14">
-      <div className="max-w-[1160px] mx-auto">
-        <div className="flex items-end justify-between mb-12 flex-wrap gap-4 reveal">
-          <div>
-            <span className="mono-label text-yellow-ink">COMPETENCIAS</span>
-            <h2 className="font-display text-[clamp(48px,6vw,80px)] leading-[0.9] mt-3 text-ink">
-              TORNEOS <span className="gradient-text">ACTIVOS.</span>
-            </h2>
-          </div>
-          <a href="#discord" className="text-[14px] text-ink border-b border-yellow pb-0.5 no-underline hover:text-yellow-ink transition-colors">
-            Calendario completo →
+    <section id="torneos" className="max-w-[1180px] mx-auto px-5 py-14 md:py-20">
+      <div className="flex items-end justify-between mb-12 flex-wrap gap-4 reveal">
+        <div>
+          <span className="mono-label">🏆 Competencias</span>
+          <h1 className="font-display text-[clamp(40px,6vw,68px)] leading-[1] tracking-[-0.02em] mt-2 text-ink">
+            Torneos{' '}
+            <mark className="bg-yellow text-on-color px-3 rounded-2xl border-[3px] border-line inline-block -rotate-2">activos</mark>
+          </h1>
+          <p className="text-[18px] text-ink-dim mt-4 max-w-[520px]">
+            Inscribe a tu equipo, sigue los cupos y juega con la comunidad.
+          </p>
+        </div>
+        <a href={DISCORD_INVITE} target="_blank" rel="noopener noreferrer" className="font-display text-[17px] text-ink underline decoration-[3px] decoration-yellow underline-offset-4 hover:text-yellow-ink transition-colors">
+          Calendario en Discord ↗
+        </a>
+      </div>
+
+      {torneos.length === 0 ? (
+        <div className="sticker p-10 md:p-14 text-center max-w-[640px] mx-auto">
+          <span className="text-[48px] block">🍳</span>
+          <p className="font-display text-[clamp(26px,4vw,34px)] leading-tight text-ink mt-3">
+            Se está cocinando el próximo torneo.
+          </p>
+          <p className="text-[16px] text-ink-dim mt-3 max-w-[420px] mx-auto">
+            Los torneos se anuncian primero en Discord. Entra y activa los avisos para no quedarte afuera.
+          </p>
+          <a href={DISCORD_INVITE} target="_blank" rel="noopener noreferrer" className="btn btn-discord mt-7">
+            Avisarme en Discord ↗
           </a>
         </div>
-
-        {torneos.length === 0 ? (
-          <div className="text-center py-16">
-            <p className="font-display text-[28px] text-ink-dim">No hay torneos activos por el momento.</p>
-          </div>
-        ) : (
-          <div className={`grid gap-5 items-start ${
-            torneos.length === 1
-              ? 'grid-cols-1 max-w-[480px]'
-              : torneos.length === 2
-                ? 'grid-cols-1 sm:grid-cols-2 max-w-[800px]'
-                : 'grid-cols-1 lg:grid-cols-3'
-          }`}>
-            {torneos.map(t => (
-              <TorneoCard key={t.id} t={t} />
-            ))}
-          </div>
-        )}
-      </div>
+      ) : (
+        <div className={`grid gap-7 items-start pt-3 ${
+          torneos.length === 1
+            ? 'grid-cols-1 max-w-[480px]'
+            : torneos.length === 2
+              ? 'grid-cols-1 sm:grid-cols-2 max-w-[820px]'
+              : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+        }`}>
+          {torneos.map(t => (
+            <TorneoCard key={t.id} t={t} />
+          ))}
+        </div>
+      )}
     </section>
   );
 }
