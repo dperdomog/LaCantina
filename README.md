@@ -73,6 +73,44 @@ Para probar el build de Workers localmente: `npm run preview`.
 
 ---
 
+## Respaldos
+
+`.github/workflows/backup.yml` respalda la base todos los días (07:00 UTC): roles, esquema y datos, incluidos los usuarios (`auth`). El repo es público, así que el respaldo se **cifra** antes de subirse como artifact; cada uno se guarda 30 días.
+
+**No incluye** los archivos subidos (logos de equipos y banners): esos viven en Supabase Storage, no en la base.
+
+### Configurar (una vez)
+
+1. En Supabase: **Connect → Session pooler** y copia la cadena de conexión (con tu contraseña de la base en lugar de `[YOUR-PASSWORD]`). Usa la del *pooler*: la conexión directa es solo IPv6 y GitHub no la alcanza.
+2. En GitHub: **Settings → Secrets and variables → Actions → New repository secret**:
+   - `SUPABASE_DB_URL` — la cadena del paso 1.
+   - `BACKUP_PASSPHRASE` — una contraseña larga. **Guárdala en un lugar seguro**: sin ella los respaldos no se pueden abrir.
+3. En **Actions → Respaldo de la base de datos → Run workflow** córrelo una vez para probar.
+
+GitHub pausa los workflows programados de repos públicos tras 60 días sin actividad en el repo; si pasa, reactívalo desde la pestaña Actions.
+
+### Restaurar
+
+1. Descarga el artifact desde **Actions** (el `.zip` trae un `lacantina-FECHA.tar.gz.gpg`).
+2. Descifra y descomprime:
+   ```bash
+   gpg -d lacantina-FECHA.tar.gz.gpg | tar -xz   # pide BACKUP_PASSPHRASE
+   ```
+3. Restaura en un proyecto de Supabase **nuevo y vacío** (cadena del Session pooler del proyecto nuevo):
+   ```bash
+   psql \
+     --single-transaction \
+     --variable ON_ERROR_STOP=1 \
+     --file roles.sql \
+     --file schema.sql \
+     --command 'SET session_replication_role = replica' \
+     --file data.sql \
+     --dbname "CADENA_DEL_PROYECTO_NUEVO"
+   ```
+4. Actualiza `NEXT_PUBLIC_SUPABASE_URL`, las keys y el Discord OAuth como en el Setup, y vuelve a crear el bucket `avatars` si hace falta.
+
+---
+
 ## Estructura del proyecto
 
 ```

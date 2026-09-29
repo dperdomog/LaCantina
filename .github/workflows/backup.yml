@@ -1,0 +1,72 @@
+# Respaldo diario de la base de datos de Supabase.
+# El repo es público: el respaldo se cifra antes de subirlo como artifact.
+# Secrets requeridos (Settings → Secrets and variables → Actions):
+#   SUPABASE_DB_URL   — cadena de conexión "Session pooler" (Supabase → Connect)
+#   BACKUP_PASSPHRASE — contraseña para cifrar; sin ella no se puede restaurar
+# Cómo restaurar: ver la sección "Respaldos" del README.
+name: Respaldo de la base de datos
+
+on:
+  schedule:
+    - cron: '0 7 * * *' # todos los días, 07:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Revisar secrets
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          [ -n "$SUPABASE_DB_URL" ]   || { echo "::error::Falta el secret SUPABASE_DB_URL"; exit 1; }
+          [ -n "$BACKUP_PASSPHRASE" ] || { echo "::error::Falta el secret BACKUP_PASSPHRASE"; exit 1; }
+
+      - uses: supabase/setup-cli@v3
+        with:
+          version: latest
+
+      - name: Volcar roles, esquema y datos
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          set -euo pipefail
+          mkdir -p backup
+          supabase db dump --db-url "$SUPABASE_DB_URL" -f backup/roles.sql --role-only
+          supabase db dump --db-url "$SUPABASE_DB_URL" -f backup/schema.sql
+          supabase db dump --db-url "$SUPABASE_DB_URL" -f backup/data.sql --use-copy --data-only \
+            -x "storage.buckets_vectors" -x "storage.vector_indexes"
+          # Un volcado vacío no sirve: debe traer los perfiles y los usuarios
+          grep -qiE 'COPY "?public"?\."?profiles"?' backup/data.sql || { echo "::error::El volcado no trae public.profiles"; exit 1; }
+          grep -qiE 'COPY "?auth"?\."?users"?'      backup/data.sql || { echo "::error::El volcado no trae auth.users"; exit 1; }
+          ls -la backup
+
+      - name: Comprimir y cifrar
+        env:
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          set -euo pipefail
+          name="lacantina-$(date -u +%Y-%m-%d-%H%M)"
+          tar -czf "$name.tar.gz" -C backup .
+          gpg --batch --yes --pinentry-mode loopback --passphrase "$BACKUP_PASSPHRASE" \
+            --symmetric --cipher-algo AES256 -o "$name.tar.gz.gpg" "$name.tar.gz"
+          rm -rf backup "$name.tar.gz"
+          ls -la "$name.tar.gz.gpg"
+          echo "BACKUP_NAME=$name" >> "$GITHUB_ENV"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ env.BACKUP_NAME }}
+          path: ${{ env.BACKUP_NAME }}.tar.gz.gpg
+          retention-days: 30
+          if-no-files-found: error
+          compression-level: 0
