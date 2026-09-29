@@ -20,6 +20,8 @@ const TYPE_ICON = {
   scrim_declined:       '❌',
   scrim_cancelled:      '🚫',
   report_new:           '🚩',
+  account_banned:       '⛔',
+  account_unbanned:     '✅',
   default:              '🔔',
 };
 

@@ -8,6 +8,7 @@ import { refreshStaleRanks } from '@/lib/ranks';
 import { countryInfo } from '@/lib/countries';
 import { getPlayerStats } from '@/lib/playerStats';
 import PlayerStats from '@/components/PlayerStats';
+import ReportButton from '@/components/ReportButton';
 
 const ROLE_COLORS = {
   Carry:     'bg-yellow',
@@ -126,6 +127,9 @@ export default async function JugadorPage({ params }) {
               {canInvite && <InviteButton teamId={viewerTeamId} inviteeId={profile.id} />}
               {isOwnProfile && (
                 <a href="/profile" className="btn btn-secondary btn-sm">Editar perfil →</a>
+              )}
+              {!isOwnProfile && (
+                <ReportButton targetType="profile" targetId={profile.id} isLoggedIn={!!user} />
               )}
             </div>
           </div>

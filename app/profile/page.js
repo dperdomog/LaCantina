@@ -12,6 +12,7 @@ import { countryInfo } from '@/lib/countries';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { getPlayerStats } from '@/lib/playerStats';
 import PlayerStats from '@/components/PlayerStats';
+import BannedNotice from '@/components/BannedNotice';
 
 export const metadata = { title: 'Mi Perfil — La Cantina' };
 
@@ -70,6 +71,8 @@ export default async function ProfilePage() {
   return (
     <main className="min-h-screen">
       <div className="max-w-[860px] mx-auto px-5 py-14 md:py-20">
+
+        {profile?.banned_at && <BannedNotice reason={profile.ban_reason} className="mb-8" />}
 
         {/* Portada + identidad */}
         <div className="sticker overflow-hidden">
