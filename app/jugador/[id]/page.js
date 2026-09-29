@@ -6,6 +6,8 @@ import RankBadge from '@/components/RankBadge';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { refreshStaleRanks } from '@/lib/ranks';
 import { countryInfo } from '@/lib/countries';
+import { getPlayerStats } from '@/lib/playerStats';
+import PlayerStats from '@/components/PlayerStats';
 
 const ROLE_COLORS = {
   Carry:     'bg-yellow',
@@ -44,10 +46,14 @@ export default async function JugadorPage({ params }) {
   if (!found) notFound();
 
   // Rango: se refresca si tiene más de 6 h (si falla, queda el anterior)
+  const admin = createAdminClient();
   let profile = found;
   try {
-    [profile] = await refreshStaleRanks(createAdminClient(), [found]);
+    [profile] = await refreshStaleRanks(admin, [found]);
   } catch {}
+
+  // Estadísticas de partidas (caché de 3 h; null si no hay datos)
+  const stats = await getPlayerStats(admin, profile);
 
   const bannerUrl = profile.custom_banner_url ?? profile.banner_url;
   const country   = countryInfo(profile.country);
@@ -170,6 +176,9 @@ export default async function JugadorPage({ params }) {
               : <p className="text-ink-dim text-[15px]">Todavía no vinculó su perfil de StatLocker.</p>
             }
           </div>
+
+          {/* Partidas */}
+          <PlayerStats stats={stats} hasStatlocker={!!profile.statlocker_url} isOwnProfile={isOwnProfile} />
 
           {/* Trofeos */}
           <div className="sticker p-6 sm:col-span-2">

@@ -9,6 +9,9 @@ import CountryForm from '@/components/CountryForm';
 import BannerUpload from '@/components/BannerUpload';
 import RankBadge from '@/components/RankBadge';
 import { countryInfo } from '@/lib/countries';
+import { createAdminClient } from '@/lib/supabase/admin';
+import { getPlayerStats } from '@/lib/playerStats';
+import PlayerStats from '@/components/PlayerStats';
 
 export const metadata = { title: 'Mi Perfil — La Cantina' };
 
@@ -53,6 +56,9 @@ export default async function ProfilePage() {
       .eq('status', 'pending');
     applications = data ?? [];
   }
+
+  // Estadísticas de partidas (caché de 3 h; null si no hay datos)
+  const stats = profile ? await getPlayerStats(createAdminClient(), profile) : null;
 
   // Invitaciones pendientes para el usuario
   const { data: invitations } = await supabase
@@ -152,6 +158,9 @@ export default async function ProfilePage() {
             initialTeam={null}
             initialRole={profile?.player_role ?? null}
           />
+
+          {/* Partidas — ancho completo */}
+          <PlayerStats stats={stats} hasStatlocker={!!profile?.statlocker_url} isOwnProfile />
 
         </div>
 
